@@ -1,0 +1,56 @@
+const express = require('express')
+const cors = require('cors')
+const helmet = require('helmet')
+const healthRoutes = require('./routes/healthRoutes')
+const authRoutes = require('./routes/authRoutes')
+const departmentRoutes = require('./routes/departmentRoutes')
+const studentRoutes = require('./routes/studentRoutes')
+const lecturerRoutes = require('./routes/lecturerRoutes')
+const companyRoutes = require('./routes/companyRoutes')
+const companyMentorRoutes = require('./routes/companyMentorRoutes')
+const internshipPeriodRoutes = require('./routes/internshipPeriodRoutes')
+const topicRoutes = require('./routes/topicRoutes')
+const internshipRoutes = require('./routes/internshipRoutes')
+const internshipLogRoutes = require('./routes/internshipLogRoutes')
+const reportRoutes = require('./routes/reportRoutes')
+const evaluationRoutes = require('./routes/evaluationRoutes')
+const notificationRoutes = require('./routes/notificationRoutes')
+const settingsRoutes = require('./routes/settingsRoutes')
+const userRoutes = require('./routes/userRoutes')
+const exportRoutes = require('./routes/exportRoutes')
+const statisticsRoutes = require('./routes/statisticsRoutes')
+const { notFoundHandler, errorHandler } = require('./middleware/errorHandler')
+
+const app = express()
+
+app.use(helmet())
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+  }),
+)
+app.use(express.json({ limit: '1mb' }))
+
+app.use('/api', healthRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/departments', departmentRoutes)
+app.use('/api/students', studentRoutes)
+app.use('/api/lecturers', lecturerRoutes)
+app.use('/api/companies', companyRoutes)
+app.use('/api/company-mentors', companyMentorRoutes)
+app.use('/api/internship-periods', internshipPeriodRoutes)
+app.use('/api/topics', topicRoutes)
+app.use('/api/internships', internshipRoutes)
+app.use('/api/internship-logs', internshipLogRoutes)
+app.use('/api/reports', reportRoutes)
+app.use('/api/evaluations', evaluationRoutes)
+app.use('/api/notifications', notificationRoutes)
+app.use('/api/settings', settingsRoutes)
+app.use('/api/users', userRoutes)
+app.use('/api/exports', exportRoutes)
+app.use('/api/statistics', statisticsRoutes)
+
+app.use(notFoundHandler)
+app.use(errorHandler)
+
+module.exports = app

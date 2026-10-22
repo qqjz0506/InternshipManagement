@@ -1,0 +1,180 @@
+# REQUIREMENT TRACEABILITY MATRIX
+
+Nguồn yêu cầu: xem `docs/PHASE_7A_EVIDENCE_LOG.md` mục 8 — **không có đặc tả/use-case gốc độc lập trong repo**, mọi REQ dưới đây tái dựng từ tên đề tài + `DATABASE_DESIGN.md` + yêu cầu export do người dùng nêu rõ (Phase 5) + business rule đã implement/test thật. Cột "Test" ghi đúng bằng chứng: tên test tự động (`server/tests/*.test.js`), hoặc "Manual HTTP" (đã test qua curl ở phase tương ứng, không tự động hóa), hoặc "Code review only" (chỉ đọc code, chưa có test thật nào).
+
+Chú thích trạng thái: ✅ Đầy đủ bằng chứng · 🟡 Triển khai, test chưa đầy đủ/thủ công · 🟠 Một phần · ⬜ Chưa triển khai · N/A Không áp dụng theo thiết kế.
+
+## A. Authentication & Authorization
+
+| REQ | Nội dung | Nguồn | Vai trò | Mức độ | Tiêu chí nghiệm thu | Use case | Frontend | Context | API | Controller/Service | DB | Scope rule | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-001 | Đăng nhập bằng email/password, nhận JWT | Tên đề tài + 3 | Tất cả | Cao | Sai mật khẩu/email → 401; đúng → token + user an toàn (không password) | Đăng nhập | `pages/auth/LoginPage.jsx` | `AuthContext.login()` | `POST /api/auth/login` | `authController.login` → `authService.login` | `users` | N/A (public) | `tests/auth.test.js` (A1–A4) | ✅ |
+| REQ-002 | Khôi phục session từ token lưu sẵn | 4 | Tất cả | Cao | F5 không bị văng về `/login` nếu token còn hạn | Giữ đăng nhập qua reload | `AuthContext` (`isInitializing`), `ProtectedRoute.jsx` | `AuthContext` | `GET /api/auth/me` | `authController.me` | `users` | Chính mình | `tests/auth.test.js` (A5) | ✅ |
+| REQ-003 | Mật khẩu chỉ lưu bcrypt hash, không bao giờ trả ra ngoài | Tên đề tài (bảo mật) | Tất cả | Cao | Không `password`/`password_hash` trong bất kỳ response nào | — | — | — | Mọi response user | `authService.toSafeUser`, `userService` | `users.password_hash` | N/A | `tests/auth.test.js`, `tests/security.test.js`, `tests/users.test.js` | ✅ |
+| REQ-004 | RBAC theo route (role-gate) cho mọi domain | 4 | Tất cả | Cao | Role không phù hợp → 403 | — | `routes/ProtectedRoute.jsx` (UX only) | — | mọi route | `requireRole` (`authorizationMiddleware.js`) | — | Route-level | `tests/rbac.test.js` | ✅ |
+| REQ-005 | Ownership/scope dữ liệu theo role (data-level, không tin query param) | 4 | Student/Lecturer/Mentor | Cao | `?student_id=khác` không vượt scope | — | — | — | mọi GET list | `scopeService` + từng `*Service.getAll` | — | Data-level | `tests/idor.test.js` | ✅ |
+
+## B. Quản lý tài khoản (Users/Accounts)
+
+| REQ | Nội dung | Nguồn | Vai trò | Mức độ | Tiêu chí nghiệm thu | Frontend | Context | API | Controller/Service | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-006 | Admin tạo tài khoản + liên kết hồ sơ (atomic) | 4F-1 audit | Admin | Cao | Tạo user + link profile trong 1 transaction; lỗi → rollback, không mồ côi | `AdminAccountsPage.jsx` | `UsersContext.createUser` | `POST /api/users` | `userController.create`→`userService.create` | `users`, `students/lecturers/company_mentors.user_id` | Admin only | `tests/users.test.js` | ✅ |
+| REQ-007 | `role`/`profile_id`/`password_hash`/`id` immutable khi update | 4F-1 | Admin | Cao | Mỗi field → 400 nếu gửi | `AccountFormModal.jsx` (UI khóa field) | `UsersContext.updateUser` | `PUT /api/users/:id` | `userService.update` | `users` | Admin only | `tests/users.test.js` | ✅ |
+| REQ-008 | 1 user chỉ liên kết đúng 1 loại hồ sơ (role/profile matching + cross-profile uniqueness) | 4F-1 | Admin | Cao | Sai role/profile → 400/409; link chéo bị chặn | — | — | `POST /api/users`, `PUT /api/students\|lecturers\|company-mentors/:id` | `userService.assertUserCanLinkProfileType` | `users.role` × 3 bảng profile | Admin only | `tests/users.test.js`, `tests/dbIntegrity.test.js` | ✅ |
+| REQ-009 | Xem danh sách/chi tiết tài khoản | 4F-2 | Admin | Trung bình | List/detail không lộ password | `AdminAccountsPage.jsx`, `AccountDetailModal.jsx` | `UsersContext` | `GET /api/users`, `GET /api/users/:id` | `userController.list/getOne` | `users` | Admin only | `tests/rbac.test.js`, `tests/users.test.js`, `tests/crudSmoke.test.js` | ✅ |
+| REQ-010 | Khóa/mở tài khoản (`users.status`); KHÔNG có xóa tài khoản (vẫn giữ quyết định có chủ đích từ Phase 4F-1 — chỉ bổ sung khóa/mở, không bổ sung xóa) | Người dùng yêu cầu trực tiếp | Admin | Trung bình | Khóa → đăng nhập 403 + token cũ bị chặn ngay; không tự khóa chính mình; không khóa được admin cuối cùng đang active | `AdminAccountsPage.jsx` (nút Khóa/Mở) | `UsersContext.setStatus` | `PUT /api/users/:id/status` | `userController.setStatus`→`userService.setStatus` | `users.status` | Admin only | `tests/accountSecurity.test.js` | ✅ (khóa/mở) / ⬜ (xóa — vẫn chưa triển khai theo thiết kế, không đổi) |
+| REQ-062 | Đổi mật khẩu tự thân (đúng mật khẩu cũ, mật khẩu mới ≥8 ký tự + có chữ và số + khác mật khẩu cũ) | Người dùng yêu cầu trực tiếp | Tất cả (Admin/Student/Lecturer/Company Mentor) | Cao | Sai mật khẩu cũ → 401; mật khẩu yếu → 400; trùng mật khẩu cũ → 400; đúng → 200, đăng nhập lại bằng mật khẩu mới | `ChangePasswordPage.jsx` (route `/change-password`, link ở `Topbar.jsx`) | — (gọi trực tiếp `authApi`) | `PUT /api/auth/change-password` | `authController.changePassword`→`authService.changePassword` | `users.password_hash` | Chính mình | `tests/accountSecurity.test.js` | ✅ |
+| REQ-063 | Admin đặt lại mật khẩu cho tài khoản khác, mật khẩu tạm trả về đúng 1 lần | Người dùng yêu cầu trực tiếp | Admin | Trung bình | Mật khẩu tạm dùng đăng nhập được ngay; không lộ qua GET list/detail | `AccountDetailModal.jsx` (nút "Đặt lại mật khẩu") | `UsersContext.resetPassword` | `PUT /api/users/:id/reset-password` | `userController.resetPassword`→`userService.resetPassword` | `users.password_hash` | Admin only | `tests/accountSecurity.test.js` | ✅ |
+| REQ-064 | Rate limiting `POST /api/auth/login` (10 lần/15 phút/IP) + `helmet` security header + giới hạn body request 1MB | Người dùng yêu cầu trực tiếp | N/A (hạ tầng) | Trung bình | Header bảo mật cơ bản có mặt mọi response; payload >1MB bị chặn; tự tắt rate-limit khi `NODE_ENV=test` | — | — | Mọi route (`app.js`), `POST /api/auth/login` | `middleware/rateLimiter.js` | — | N/A | `tests/accountSecurity.test.js` (helmet header, body limit, xác nhận skip khi test — KHÔNG test được hành vi chặn 429 thật, xem README Mục 18) | ✅ (triển khai + test được phần có thể) |
+
+## C. Danh mục (Departments, Internship Periods, Topics)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-011 | CRUD Khoa/Bộ môn | Admin (ghi), tất cả (đọc) | `pages/admin/DepartmentsPage.jsx` | `/api/departments` | `departments` | GET mọi role, ghi admin | `tests/rbac.test.js`, `tests/crudSmoke.test.js` | ✅ |
+| REQ-012 | CRUD Đợt thực tập | Admin (ghi), tất cả (đọc) | `pages/admin/InternshipPeriodsPage.jsx` | `/api/internship-periods` | `internship_periods` | GET mọi role, ghi admin | `tests/crudSmoke.test.js` | ✅ |
+| REQ-013 | Admin CRUD đề tài; Student đề xuất đề tài cho chính mình | Admin, Student | `pages/admin/TopicsPage.jsx`, `StudentProposeTopicModal.jsx` | `POST/PUT/DELETE /api/topics` | `topics` | Student bị ép `suggested_by_student_id` về chính mình | `tests/fieldInjection.test.js` (1 case), Manual HTTP (4B-4) | ✅ |
+| REQ-014 | Lecturer duyệt/từ chối đề tài (status-only, scoped theo internship phụ trách) | Lecturer | `LecturerStudentDetailPage.jsx` | `PUT /api/topics/:id` | `topics.status` | Chỉ đề tài gắn internship mình phụ trách, chỉ khi `status='proposed'` | `tests/fieldInjection.test.js` | ✅ |
+
+## D. Hồ sơ nghiệp vụ (Students, Lecturers, Companies, Company Mentors)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-015 | Admin CRUD hồ sơ Sinh viên | Admin | `pages/admin/StudentsPage.jsx` | `/api/students` | `students` | GET scoped, ghi admin (+ student self-edit, xem REQ-016) | `tests/crudSmoke.test.js`, Manual HTTP (4B-2) | ✅ |
+| REQ-016 | Student tự sửa field liên hệ của chính mình (`email/phone/address/gender/date_of_birth`) | Student | `pages/student/StudentProfilePage.jsx` | `PUT /api/students/:id` | `students` | Chỉ chính mình, chỉ 5 field whitelist | `tests/studentSelfEdit.test.js` (Phase 7C: self-edit field hợp lệ + khôi phục, field ngoài whitelist 403, sửa hồ sơ người khác 403) | ✅ |
+| REQ-017 | Admin CRUD hồ sơ Giảng viên | Admin | `pages/admin/LecturersPage.jsx` | `/api/lecturers` | `lecturers` | GET scoped, ghi admin | `tests/crudSmoke.test.js` | ✅ |
+| REQ-018 | Admin CRUD Doanh nghiệp | Admin | `pages/admin/CompaniesPage.jsx` | `/api/companies` | `companies` | GET mọi role, ghi admin | `tests/crudSmoke.test.js` | ✅ |
+| REQ-019 | Admin CRUD Người hướng dẫn doanh nghiệp + transaction gỡ phân công khi đổi doanh nghiệp | Admin | `pages/admin/CompanyMentorsPage.jsx` | `/api/company-mentors` | `company_mentors`, `internships` | GET scoped, ghi admin | `tests/crudSmoke.test.js`, Manual HTTP (4B-3) | ✅ |
+
+## E. Hồ sơ thực tập (Internships — bảng trung tâm)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-020 | Student tự đăng ký thực tập (ép `student_id` về chính mình) | Student | `StudentInternshipRegisterModal.jsx` | `POST /api/internships` | `internships` | Ép `student_id` | `tests/idor.test.js` (gián tiếp), Manual HTTP (2D/3B) | ✅ |
+| REQ-021 | Admin tạo hồ sơ thực tập cho bất kỳ sinh viên | Admin | `InternshipCreateModal.jsx` | `POST /api/internships` | `internships` | Admin bypass scope, vẫn qua validate | `tests/internshipAdminLifecycle.test.js` (Phase 7C: Admin tạo hồ sơ cho sinh viên khác -> 201 pending, dọn lại) | ✅ |
+| REQ-022 | Workflow trạng thái: pending→approved→in_progress→completed, rejected/cancelled | Admin (chính), Student (giới hạn) | `InternshipDetailPage.jsx` | `PUT /api/internships/:id` | `internships.status` | `ALLOWED_TRANSITIONS` (đồng bộ FE/BE) | `tests/internshipWorkflow.test.js` (Phase 7B: transition sai bị chặn, trạng thái cuối không chuyển được, round-trip hợp lệ, role-gate PUT) | ✅ |
+| REQ-023 | Phân công Giảng viên/Doanh nghiệp/Mentor/Đề tài (mentor phải thuộc đúng company) | Admin | `AssignLecturerModal.jsx`, `AssignCompanyModal.jsx`, `AssignTopicModal.jsx` | `PUT /api/internships/:id` | `internships` | Validate mentor.company_id khớp | `tests/internshipWorkflow.test.js` (Phase 7B: mentor sai company bị chặn, đổi company không kèm mentor mới bị chặn, gán hợp lệ + khôi phục) | ✅ |
+| REQ-024 | `student_id`/`period_id` immutable sau khi tạo | Mọi role (kể cả Admin) | — | `PUT /api/internships/:id` | `internships` | Reject cứng 400 | `tests/fieldInjection.test.js` | ✅ |
+| REQ-025 | Student tự đổi company/mentor/topic (3 field, chỉ khi còn pending/approved) | Student | `StudentProposeCompanyModal.jsx` | `PUT /api/internships/:id` | `internships` | Field + status whitelist | `tests/internshipWorkflow.test.js` (Phase 7B: Student đổi status ngoài whitelist bị chặn, bị khóa khi internship không còn pending/approved, không sửa được internship người khác) | ✅ |
+| REQ-026 | Xóa hồ sơ thực tập (chỉ khi `pending`) | Admin | `InternshipDetailPage.jsx` | `DELETE /api/internships/:id` | `internships` | Status-gated | `tests/internshipAdminLifecycle.test.js` (Phase 7C: xóa khi != pending -> 409, Student 403 route-level, xóa hợp lệ khi pending) | ✅ |
+
+## F. Nhật ký thực tập (Internship Logs)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-027 | Student ghi nhật ký hàng tuần (chỉ khi internship `in_progress`) | Student | `pages/student/StudentLogsPage.jsx` | `POST /api/internship-logs` | `internship_logs` | Chính mình + status-gated | `tests/internshipLogsAuthorization.test.js` (Phase 7C: tạo log hợp lệ -> 201 submitted, dọn lại); các case từ chối đã có từ Phase 7B | ✅ |
+| REQ-028 | Lecturer/Company Mentor nhận xét nhật ký (field-whitelist riêng từng role) | Lecturer, Company Mentor | `LecturerLogReviewModal.jsx`, `CompanyLogCommentModal.jsx` | `PUT /api/internship-logs/:id` | `internship_logs` | Scoped theo internship phụ trách + field whitelist | `tests/internshipLogsAuthorization.test.js` (Phase 7B: cross-scope 403, field ngoài whitelist 403 cho cả Lecturer/Mentor, update hợp lệ + khôi phục) | ✅ |
+| REQ-029 | Khóa nội dung/xóa khi đã `reviewed` (một chiều, áp dụng cả Admin) | Tất cả | — | `PUT/DELETE /api/internship-logs/:id` | `internship_logs.status` | — | `tests/businessRules.test.js` (3 test) | ✅ |
+
+## G. Báo cáo thực tập (Reports)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-030 | Student nộp báo cáo (tuần/tổng kết); `submitted_at`/`status` do server tự sinh | Student | `pages/student/StudentReportsPage.jsx` | `POST /api/reports` | `reports` | Chính mình | `tests/businessRules.test.js` | ✅ |
+| REQ-031 | Lecturer duyệt (status + reviewer_comment); Company Mentor nhận xét (company_comment) | Lecturer, Company Mentor | `LecturerReportReviewModal.jsx`, `CompanyReportCommentModal.jsx` | `PUT /api/reports/:id` | `reports` | Scoped + field whitelist riêng | `tests/reportsAuthorization.test.js` (Phase 7B: field ngoài whitelist 403 cho cả 2 role, cross-scope 403, Student không có PUT, update hợp lệ + khôi phục) | ✅ |
+| REQ-032 | Report KHÔNG có khóa trạng thái sau duyệt (khác Logs) | Tất cả | — | `PUT /api/reports/:id` | `reports` | — | Code review (xác nhận KHÔNG có rule khóa — ghi nhận đây là thiết kế thật, không phải thiếu sót) | N/A (xác nhận đúng thiết kế hiện tại) |
+| REQ-033 | Report có file upload/lưu trữ file thật (.pdf/.doc/.docx, tối đa 10MB) + tải xuống | Student (nộp), Student/Lecturer/Company Mentor/Admin (tải xuống) | `ReportFormModal.jsx` (upload), nút "Tải xuống" ở mọi trang hiển thị báo cáo | `POST /api/reports` (multipart), `GET /api/reports/:id/download` | `reports.stored_file_name/file_size/mime_type` + `server/uploads/reports/` (đĩa) | Tải xuống: scope giống `getByIdForUser` (403 ngoài phạm vi) | `tests/reportUpload.test.js` (upload hợp lệ, sai định dạng — cả extension và mimetype, quá 10MB, tải xuống đúng nội dung/tên gốc, ngoài scope 403, chưa có file 404) | ✅ |
+
+## H. Đánh giá (Evaluations)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-034 | Lecturer/Company Mentor tạo đánh giá (4 điểm + tổng kết, 0–10), evaluator suy từ internship (không `evaluator_id`) | Lecturer, Company Mentor | `LecturerEvaluationForm.jsx`, `CompanyEvaluationForm.jsx` | `POST /api/evaluations` | `evaluations` | Scoped + ép `evaluator_role` theo role tài khoản | `tests/businessRules.test.js` | ✅ |
+| REQ-035 | Unique 1 đánh giá / (`internship_id`, `evaluator_role`) | — | — | `POST /api/evaluations` | `evaluations` (UNIQUE KEY) | — | `tests/businessRules.test.js`, `tests/dbIntegrity.test.js` | ✅ |
+| REQ-036 | Công bố đánh giá — một chiều cho Lecturer/Mentor, 2 chiều cho Admin | Lecturer, Company Mentor, Admin | Form tương ứng (nút "Công bố") | `PUT /api/evaluations/:id` | `evaluations.is_published` | — | `tests/businessRules.test.js` | ✅ |
+| REQ-037 | Đánh giá đã công bố khóa sửa điểm/nhận xét | Tất cả | — | `PUT /api/evaluations/:id` | `evaluations` | — | `tests/businessRules.test.js` | ✅ |
+| REQ-038 | Student CHỈ xem đánh giá đã công bố của chính mình (kể cả của chính mình, nếu chưa công bố thì không thấy) | Student | `pages/student/StudentEvaluationsPage.jsx` | `GET /api/evaluations` | `evaluations` | `is_published=1 AND student_id=own` | `tests/idor.test.js`, `exportService.test.js` | ✅ |
+| REQ-039 | `internship_id`/`evaluator_role` immutable | Tất cả | — | `PUT /api/evaluations/:id` | `evaluations` | — | `tests/fieldInjection.test.js` | ✅ |
+
+## I. Thông báo (Notifications)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-040 | Xem thông báo của chính mình (kể cả Admin), đánh dấu đã đọc từng cái hoặc tất cả cùng lúc | Admin, Student, Lecturer, Company Mentor | `*NotificationsPage.jsx` (đủ cả 4 role, kể cả `AdminNotificationsPage.jsx`), badge ở `Topbar.jsx` (tự refresh 30s) | `GET/PUT /api/notifications`, `PUT /api/notifications/read-all` | `notifications` | `user_id = chính mình`, không tin `?user_id=` | `tests/idor.test.js`, `tests/notifications.test.js` (read-all chỉ tác động thông báo của chính mình) | ✅ |
+| REQ-041 | Tự động sinh thông báo khi có sự kiện nghiệp vụ (đăng ký, đổi trạng thái, phân công, đề xuất/duyệt đề tài, nộp nhật ký/báo cáo, nhận xét/duyệt, công bố đánh giá) | Người dùng yêu cầu trực tiếp (trước đó: quyết định có chủ đích từ Phase 4E-2 — không triển khai) | Tất cả (tùy sự kiện) | — (phía server, gọi từ `internshipService`/`internshipLogService`/`reportService`/`evaluationService`/`topicService`) | `POST` ngầm qua `notificationService.notify()` | `notifications` | Người nhận suy từ profile liên quan (`scopeService.get*BasicInfo`), bỏ qua êm nếu profile chưa liên kết `user_id` | `tests/notifications.test.js` (4 kịch bản: nhận xét log, tự đăng ký, phân công giảng viên, công bố đánh giá — đều verify đúng người nhận + người khác không đọc được) | ✅ — **không phải event engine/queue thật**, chỉ 1 `INSERT` đơn giản ngay sau khi nghiệp vụ chính thành công, lỗi tạo thông báo không làm fail nghiệp vụ chính (trừ khi chạy trong transaction được truyền vào) |
+
+## J. Cài đặt hệ thống (Settings)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-042 | Xem/sửa cấu hình hệ thống (tên hệ thống, đợt mặc định, cho phép đăng ký) | Admin (sửa), Admin+Student (xem) | `AdminSettingsPage.jsx` | `/api/settings` | `settings` (single-row, `CHECK id=1`) | GET mọi role, PUT admin | `tests/crudSmoke.test.js` (GET), `tests/settingsAuthorization.test.js` (Phase 7C: PUT non-admin 403, field immutable `id` 400, sửa hợp lệ + khôi phục) | ✅ |
+| REQ-043 | `allowStudentRegistration` tắt → ẩn nút đăng ký thực tập ở Student | Student | `StudentInternshipPage.jsx` | — | `settings.allow_student_registration` | — | Code review (4E-3) | 🟡 |
+
+## K. Thống kê (Admin Statistics)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-044 | Thống kê tổng hợp theo Khoa/Đợt/Doanh nghiệp (derived từ Context đã load, không gọi API riêng) | Admin | `AdminStatisticsPage.jsx` | (tái dùng `/api/students`, `/api/internships`, `/api/reports`, `/api/evaluations` đã load) | — | Dữ liệu đã scoped theo Admin (toàn quyền) | Code review (Full System Gap Audit) | 🟡 |
+
+## L. Xuất báo cáo Excel (Export)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-045 | Xuất thông tin thực tập (.xlsx), scoped theo role, filter period/department/company | Admin/Lecturer/Company Mentor (UI); Student (API hỗ trợ, chưa có UI) | `AdminStatisticsPage.jsx`, `LecturerStudentsPage.jsx`, `CompanyStudentsPage.jsx` | `GET /api/exports/internships.xlsx` | JOIN `internships`+5 bảng | Giống `GET /internships` | `exportService.test.js`, `tests/idor.test.js` (gián tiếp qua HTTP Phase 5) | ✅ (Admin/Lecturer/Company Mentor) / 🟡 (Student — backend PASS, chưa có UI, không thuộc yêu cầu) |
+| REQ-046 | Xuất đánh giá/nhận xét (.xlsx), KHÔNG lộ đánh giá chưa công bố cho Student | Admin/Lecturer/Company Mentor (UI); Student (API) | `AdminStatisticsPage.jsx`, `LecturerEvaluationsPage.jsx`, `CompanyEvaluationsPage.jsx` | `GET /api/exports/evaluations.xlsx` | JOIN `evaluations`+5 bảng | Giống `GET /evaluations` | `exportService.test.js` | ✅ (Admin/Lecturer/Company Mentor) / 🟡 (Student) |
+| REQ-047 | Xuất PDF/CSV | — | — | — | — | — | — | ⬜ **Không áp dụng theo thiết kế** — Phase 5 chốt rõ chỉ làm `.xlsx` |
+
+## M. Chất lượng / Vận hành
+
+| REQ | Nội dung | Mức độ | Bằng chứng | Trạng thái |
+|---|---|---|---|---|
+| REQ-048 | Automated regression suite bảo vệ Auth/RBAC/IDOR/business rule | Cao | `server/tests/*.test.js` — 215/215 PASS (số liệu tại thời điểm đợt kiểm tra trước bảo vệ, xem README Mục 15 để lấy số mới nhất) | ✅ |
+| REQ-049 | DB integrity ổn định (14 bảng, 19 FK, không orphan) | Cao | `tests/dbIntegrity.test.js` + Evidence Log mục 2 | ✅ |
+| REQ-050 | Browser E2E verified | Trung bình | Playwright (`npm run test:e2e`, gốc dự án) — `e2e/auth.spec.js` + `e2e/full-workflow.spec.js`, chạy Chromium thật trên backend+frontend thật (DB test riêng) — 13/13 PASS, bao phủ luồng chính 4 role | ✅ (đợt kiểm tra trước bảo vệ — trước đó ⬜ chưa xác minh vì môi trường không có browser automation tool) |
+| REQ-051 | Response lỗi không lộ stack trace/thông tin nội bộ theo mặc định (kể cả khi chưa set `NODE_ENV`) | Cao | `server/middleware/errorHandler.js` (Phase 7B, fix F-03 từ Phase 7A) | `tests/errorHandling.test.js` (401/403/400/500 không lộ stack; `DEBUG_ERRORS=true` tường minh mới bật được) | ✅ |
+
+## N. Business Rules V2 (siết chặt nghiệp vụ — bổ sung sau Phase 7C)
+
+Toàn bộ REQ dưới đây là business rule MỚI, bổ sung theo yêu cầu trực tiếp của người dùng (không tái dựng từ nguồn nào khác) — chỉ thêm rule/test, không đổi schema, không đổi route ngoại trừ REQ-059 (mở `PUT /reports/:id` cho Student, enforce chặt ở service).
+
+| REQ | Nội dung | Vai trò | API | Service | Test | Trạng thái |
+|---|---|---|---|---|---|---|
+| REQ-052 | Chặn đăng ký thực tập mới: đợt `status='closed'` (mọi role, 409); `settings.allow_student_registration=0` (chỉ Student, 403); hồ sơ sinh viên `status='inactive'` (chỉ Student, 403) — Admin vẫn tạo được khi đăng ký bị khóa | Student, Admin | `POST /api/internships` | `internshipService.create` | `tests/businessRulesV2.test.js` (Rule 1, 3 test) | ✅ |
+| REQ-053 | Gán `topic_id`: Student chỉ chọn đề tài `approved` hoặc `proposed` do chính mình đề xuất; Admin không gán được đề tài `rejected` | Student, Admin | `POST/PUT /api/internships` | `internshipService.create/update` (`assertTopicAssignable`) | `tests/businessRulesV2.test.js` (Rule 2, 2 test) | ✅ |
+| REQ-054 | Gán `company_id`/`lecturer_id`/`company_mentor_id`: đối tượng phải đang `status='active'` | Admin, Student | `POST/PUT /api/internships` | `internshipService.create/update` | `tests/businessRulesV2.test.js` (Rule 3) | ✅ |
+| REQ-055 | Chuyển trạng thái `approved→in_progress` bắt buộc đã có đủ `lecturer_id`+`company_id`+`company_mentor_id` (giá trị hiệu lực, kể cả vừa gán trong cùng request) | Admin | `PUT /api/internships/:id` | `internshipService.update` | `tests/businessRulesV2.test.js` (Rule 4a) | ✅ |
+| REQ-056 | Chuyển trạng thái `in_progress→completed` bắt buộc có ≥1 báo cáo `report_type='final'` đã `status='approved'` VÀ đủ đánh giá ĐÃ CÔNG BỐ (`is_published=1`) từ cả `lecturer` và `company` (siết từ "chỉ cần tồn tại" — đợt kiểm tra trước bảo vệ) | Admin | `PUT /api/internships/:id` | `internshipService.update` | `tests/businessRulesV2.test.js` (Rule 4b, negative + "đủ nhưng chưa công bố vẫn 409" + full positive flow) | ✅ |
+| REQ-057 | `start_date`/`end_date` của hồ sơ thực tập phải nằm trong khoảng `start_date`–`end_date` của đợt thực tập | Admin, Student | `POST/PUT /api/internships` | `internshipService.create/update` | `tests/businessRulesV2.test.js` (Rule 5a) | ✅ |
+| REQ-058 | `log_date` của nhật ký không được ở tương lai, và phải nằm trong khoảng `start_date`–`end_date` của hồ sơ thực tập (nếu có) | Student, mọi role ghi log | `POST/PUT /api/internship-logs` | `internshipLogService.create/update` (`validateLogDate`) | `tests/businessRulesV2.test.js` (Rule 5b) | ✅ |
+| REQ-059 | Báo cáo: chỉ nộp khi hồ sơ `in_progress`/`completed`; tối đa 1 báo cáo `final` chưa `rejected`/hồ sơ; Student được nộp lại báo cáo CỦA MÌNH khi đang `rejected` (chỉ sửa `file_name`, tự reset `status='submitted'`, xóa `reviewer_comment`) | Student | `POST/PUT /api/reports` | `reportService.create/update` | `tests/businessRulesV2.test.js` (Rule 6a/6b/6c) | ✅ |
+| REQ-060 | `overall_score` của đánh giá do server tự tính = trung bình 4 điểm thành phần (làm tròn 1 chữ số thập phân), reject 400 nếu client gửi kèm (create hoặc update) | Lecturer, Company Mentor, Admin | `POST/PUT /api/evaluations` | `evaluationService.create/update` (`computeOverallScore`) | `tests/businessRulesV2.test.js` (Rule 7) | ✅ |
+| REQ-061 | Student tự sửa `email` (field tự sửa) → nếu hồ sơ có `user_id`, đồng bộ `users.email` trong cùng 1 transaction; check trùng ở bảng `users` (không phải `students`) | Student | `PUT /api/students/:id` | `studentService.update` | `tests/businessRulesV2.test.js` (Rule 8, 2 test) | ✅ |
+
+## O. Điểm tổng kết thực tập (Final Result — bổ sung theo yêu cầu trực tiếp của người dùng)
+
+| REQ | Nội dung | Vai trò | Frontend | API | DB | Scope | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|---|
+| REQ-065 | `settings.lecturer_weight`/`company_weight` (TINYINT, mặc định 60/40), tổng phải luôn = 100 — validate 2 lớp độc lập: `settingsService.update()` (app) VÀ `CHECK chk_settings_weight_sum` (DB, migration `003_settings_weights.sql`) | Admin (sửa), mọi role (xem) | `AdminSettingsPage.jsx` (2 input số + cảnh báo tổng ≠100 chặn Save) | `PUT /api/settings` | `settings.lecturer_weight`, `settings.company_weight` (`CHECK`) | PUT: Admin only; GET: mọi role | `tests/evaluationFinalResult.test.js` ("Settings: ..." — 3 test: tổng≠100, âm/thiếu field, hợp lệ+khôi phục) | ✅ |
+| REQ-066 | Điểm tổng kết thực tập = `overall_score`(lecturer)×`lecturer_weight` + `overall_score`(company)×`company_weight`, chia 100, làm tròn 1 chữ số thập phân — CHỈ tính khi CẢ HAI đánh giá (lecturer + company) đã `is_published=1` (data-availability gate, áp dụng đồng nhất mọi role, kể cả Admin) | Tất cả (qua API, tự scope) | `StudentEvaluationsPage.jsx`, `InternshipDetailPage.jsx` (Admin), `LecturerStudentDetailPage.jsx` | `GET /api/internships/:id/final-result` | `evaluations.overall_score` + `settings.lecturer_weight/company_weight` (chỉ đọc) | Giống `GET /internships/:id` (`internshipService.getByIdForUser`) | `tests/evaluationFinalResult.test.js` (công thức theo trọng số hiện tại, equal-score trick, null khi thiếu 1/2, 403 khi xem hồ sơ người khác) | ✅ |
+| REQ-067 | Xếp loại theo điểm tổng kết: `>=9` Xuất sắc, `>=8` Giỏi, `>=6.5` Khá, `>=5` Trung bình, `<5` Không đạt | Tất cả (cùng API REQ-066) | Hiển thị cùng các trang ở REQ-066 | `GET /api/internships/:id/final-result` | — (tính thuần, không lưu DB) | Giống REQ-066 | `tests/evaluationFinalResult.test.js` (5 test mốc biên: 9/8/6.5/5/4.9) | ✅ |
+| REQ-068 | Cột "Điểm tổng kết thực tập" + "Xếp loại" trong file Excel xuất đánh giá, tính bulk theo `internship_id` (tránh N+1); bỏ trống khi internship chưa đủ 2 đánh giá công bố | Giống scope `GET /api/exports/evaluations.xlsx` (REQ-046) | — (cột trong file xuất, không phải trang riêng) | `GET /api/exports/evaluations.xlsx` | Giống REQ-066 | Giống REQ-046 | `server/services/exportService.test.js` (header đúng vị trí cuối bảng — không xô lệch index cột cũ; giá trị khớp `computeFinalResult`, trống khi thiếu) | ✅ |
+
+## P. Đợt kiểm tra cuối trước bảo vệ (hạ tầng test, phân trang, thống kê, múi giờ, bảo mật)
+
+| REQ | Nội dung | Vai trò | Frontend | API | Service | Test | Trạng thái |
+|---|---|---|---|---|---|---|---|
+| REQ-069 | Database test RIÊNG (`DB_NAME_TEST`) cho automated test, tách khỏi DB dev — `npm test` tự `NODE_ENV=test` (qua `cross-env`), `config/database.js` tự chuyển DB theo `NODE_ENV` | — (hạ tầng dev/test) | — | — | `server/config/database.js`, `server/db/testSetup.js` (`npm run test:setup`) | Toàn bộ `server/tests/*.test.js` (215 test) chạy PASS trên DB này | ✅ |
+| REQ-070 | `server/db/migrate.js` (`npm run db:migrate`) chạy migration CHƯA áp dụng, lưu vào `schema_migrations`, **idempotent thật** (tự phát hiện lỗi "duplicate column/key/constraint" — mã 1060/1061/1826 — thay vì crash nếu chạy trên DB đã có sẵn thay đổi đó) | Admin/dev vận hành | — | — | `server/db/migrate.js` | `tests/dbMigrate.test.js` | ✅ |
+| REQ-071 | Phân trang server-side optional cho `GET /students`, `/internships`, `/reports`, `/internship-logs` (`?page=&pageSize=`, tối đa 100) — không truyền `page` giữ nguyên hành vi cũ (trả toàn bộ) | Mọi role (scope giữ nguyên) | Chưa có UI dùng (API sẵn sàng, xem DEFENSE_QA.md câu hỏi liên quan) | `GET` 4 route trên | `server/utils/pagination.js` + từng `*Service.getAll` | `tests/pagination.test.js` | ✅ (API) / 🟡 (chưa có UI) |
+| REQ-072 | `GET /api/statistics/summary` (Admin only) — KPI + breakdown theo khoa/đợt/doanh nghiệp/trạng thái, tính bằng SQL `GROUP BY` ở server, thay cho tính ở client từ dữ liệu Context đã tải | Admin | `AdminStatisticsPage.jsx` | `GET /api/statistics/summary` | `server/services/statisticsService.js` | `tests/statisticsSummary.test.js` | ✅ |
+| REQ-073 | "Hôm nay"/"tương lai" tính theo múi giờ `APP_TIMEZONE` (mặc định `Asia/Ho_Chi_Minh`), không còn theo UTC — áp dụng cho `log_date` (không được ở tương lai), `reports.submitted_at`, `evaluations.published_at`, tên file export | Tất cả (qua các rule liên quan) | — | — | `server/utils/dateTime.js` | `tests/dateTime.test.js`, `tests/timezoneBusinessRules.test.js` (mock `Date` toàn cục ở mốc 01:00 sáng giờ VN) | ✅ |
+| REQ-074 | Chuyển `in_progress→completed` siết từ "đủ 2 đánh giá tồn tại" lên "đủ 2 đánh giá ĐÃ CÔNG BỐ" (`is_published=1`) — đảm bảo hồ sơ `completed` luôn có điểm tổng kết tính được ngay (REQ-066) | Admin | `InternshipDetailPage.jsx` | `PUT /api/internships/:id` | `internshipService.update` | `tests/businessRulesV2.test.js` (Rule 4b, ca mới: đủ 2 đánh giá nhưng chưa công bố vẫn 409) | ✅ |
+| REQ-075 | `users.must_change_password` — bật khi Admin đặt mật khẩu tạm (`reset-password`), bắt đăng nhập lần đó phải đổi mật khẩu trước khi dùng hệ thống; tự tắt khi tự đổi mật khẩu thành công. **Chặn ở SERVER** (`requireAuth` trả 403 + `code:"MUST_CHANGE_PASSWORD"` cho mọi route trừ `/auth/me`/`/auth/change-password` — bổ sung sau khi phát hiện bản đầu chỉ chặn ở frontend, không đủ) | Admin (đặt), chính user (bị bắt đổi) | `ProtectedRoute.jsx` (chặn mọi route khác, trừ `/change-password`), `ChangePasswordPage.jsx` (banner khi bị bắt), `apiClient.js` (`onMustChangePassword` listener) | `PUT /api/users/:id/reset-password`, `PUT /api/auth/change-password`, mọi route khác (qua `requireAuth`) | `userService.resetPassword`, `authService.changePassword`, `middleware/authMiddleware.js` | `tests/accountSecurity.test.js` | ✅ |
+| REQ-076 | Upload file tên tiếng Việt có dấu không bị mojibake — `multer`/`busboy` mặc định decode filename bằng latin1, set `defParamCharset:'utf8'` | Student (nộp báo cáo) | `ReportFormModal.jsx` | `POST /api/reports` | `server/config/upload.js` | `tests/reportUpload.test.js`, `e2e/full-workflow.spec.js` Bước 4 | ✅ |
+| REQ-077 | Bất biến hồ sơ `completed` (kể cả Admin): không bỏ công bố/xóa đánh giá; không đổi status/xóa báo cáo tổng kết đã duyệt; không gỡ (null) company_id/lecturer_id/company_mentor_id khi `in_progress`/`completed` (đổi sang đối tượng khác vẫn được khi `in_progress`) | Admin (và mọi role khác) | `InternshipDetailPage.jsx`, `AdminEvaluationDetailPage.jsx`, `AdminReportDetailPage.jsx` | `PUT/DELETE /api/evaluations/:id`, `PUT/DELETE /api/reports/:id`, `PUT /api/internships/:id` | `evaluationService`, `reportService`, `internshipService` | `tests/completedInvariants.test.js` | ✅ |
+| REQ-078 | Điểm tổng kết thực tập (`internships.final_score`/`final_classification`, migration `005`) được CHỐT (tính + ghi) tại thời điểm chuyển `completed`, dùng trọng số TẠI THỜI ĐIỂM ĐÓ — đổi trọng số Settings sau đó không ảnh hưởng hồ sơ đã hoàn thành | Tất cả (qua API final-result/export) | — (cùng trang Mục O) | `GET /api/internships/:id/final-result`, `GET /api/exports/evaluations.xlsx` | `evaluationService.computeFinalResult`/`computeFinalResultsBulk`, `internshipService.update` | `tests/completedInvariants.test.js` (chốt điểm + đổi trọng số sau đó không ảnh hưởng) | ✅ |
+| REQ-079 | Nộp lại báo cáo tổng kết (`report_type='final'`) đang `rejected` phải kiểm tra `hasActiveFinalReport(internship_id, id)` — chặn trường hợp đã có báo cáo final KHÁC đang active (lỗ hổng: tạo final B hợp lệ sau khi final A bị reject, rồi nộp lại A tạo ra 2 final active cùng lúc) | Student | `StudentReportsPage.jsx` | `PUT /api/reports/:id` | `reportService.update` | `tests/businessRulesV2.test.js` (Rule 6d) | ✅ |
+| REQ-080 | Mật khẩu tạm (Admin reset) sinh bằng `crypto.randomInt` (CSPRNG) thay vì `Math.random()` (không phải CSPRNG, có thể dự đoán được) | — (hạ tầng bảo mật) | — | `PUT /api/users/:id/reset-password` | `userService.generateTemporaryPassword` | Code review (không có test riêng cho tính ngẫu nhiên của CSPRNG — không khả thi kiểm chứng bằng unit test) | ✅ |
+
+---
+
+**Tổng hợp (đã đối chiếu lại bằng cách đếm trực tiếp từng dòng REQ trong bảng):** 80 REQ (REQ-010, REQ-033, REQ-041 chuyển từ ⬜ sang ✅ theo các yêu cầu bổ sung trực tiếp của người dùng; phần xóa tài khoản trong REQ-010 vẫn không triển khai theo thiết kế; REQ-065–068 — điểm tổng kết thực tập; REQ-069–075 — đợt kiểm tra cuối trước bảo vệ (lần 1): DB test riêng, migration idempotent, phân trang, thống kê, múi giờ, siết rule hoàn thành, mật khẩu tạm bắt buộc đổi; REQ-076–080 — đợt kiểm tra cuối trước bảo vệ (lần 2): mojibake tên file, bất biến hồ sơ completed, chốt điểm tổng kết, chặn nộp lại final trùng, CSPRNG cho mật khẩu tạm; REQ-050 chuyển từ ⬜ sang ✅ — Browser E2E đã verify bằng Playwright).
+
+- ✅ Đầy đủ bằng chứng: **73** (61 trước đó + REQ-050 chuyển từ ⬜ + 6 REQ-069/070/072/073/074/075 + 5 REQ-076–080 — REQ-071 tính riêng ở mục 🟡 vì chỉ có API, chưa có UI).
+- 🟡 Triển khai, test chưa đầy đủ/thủ công: **2 thuần** (REQ-043, REQ-044) **+ 3 một phần** (REQ-045, REQ-046 — Admin/Lecturer/Company Mentor đã có UI, chỉ Student còn thiếu UI export; REQ-071 — phân trang có API, chưa có UI dùng).
+- ⬜ Chưa triển khai (có chủ đích hoặc thật sự thiếu): **1** (REQ-047 — REQ-050 đã chuyển sang ✅; phần "xóa tài khoản" trong REQ-010 vẫn ⬜ theo thiết kế, ghi chú trực tiếp trong dòng REQ-010).
+- N/A: **1** (REQ-032).
+
+Ghi chú minh bạch: các báo cáo Phase 7A/7B trước đó ghi "🟡: 12", "⬜: 7", "N/A: 2" — các số này **không khớp** với số dòng thật trong bảng (đếm lại ra 9 dòng 🟡, 5 dòng ⬜, 1 dòng N/A ở thời điểm cuối Phase 7B). Đây là lỗi đếm thủ công khi tổng hợp, không phải do bảng bị sửa sai lệch — đã sửa lại số liệu ở đây theo đúng Nguyên tắc Phase 7C ("kiểm tra tài liệu và code thực tế trước khi dùng con số cũ").
+
+**Cập nhật Phase 7C:** rà soát lại toàn bộ 9 REQ 🟡 tồn đọng tại thời điểm cuối Phase 7B (REQ-016, 021, 026, 027, 042, 043, 044, 045, 046 — chi tiết từng REQ ở `docs/PHASE_7C_FINAL_PREPARATION.md` mục Task A). 5 REQ backend-testable (REQ-016, 021, 026, 027, 042) đã được bổ sung automated test thật (chỉ thêm test, không sửa business logic) và nâng lên ✅. 4 REQ còn lại (REQ-043, 044, 045, 046) giữ nguyên 🟡 có chủ đích — là logic thuần frontend (ẩn nút theo setting, số liệu thống kê derived) hoặc thiếu UI cho 3 role ngoài Admin (export Excel), không phải lỗi đúng/sai nghiệp vụ mà chỉ thiếu bằng chứng test tự động hoặc chưa có UI — xem khuyến nghị chi tiết trong Phase 7C.

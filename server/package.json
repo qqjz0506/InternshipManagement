@@ -1,0 +1,31 @@
+{
+  "name": "internship-management-server",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Backend REST API cho Hệ thống Quản lý Thực tập Tốt nghiệp",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "cross-env NODE_ENV=test node --test --test-concurrency=1 tests/auth.test.js tests/rbac.test.js tests/idor.test.js tests/fieldInjection.test.js tests/businessRules.test.js tests/users.test.js tests/crudSmoke.test.js tests/security.test.js tests/errorHandling.test.js tests/internshipWorkflow.test.js tests/internshipLogsAuthorization.test.js tests/reportsAuthorization.test.js tests/studentSelfEdit.test.js tests/internshipAdminLifecycle.test.js tests/settingsAuthorization.test.js tests/businessRulesV2.test.js tests/accountSecurity.test.js tests/notifications.test.js tests/reportUpload.test.js tests/evaluationFinalResult.test.js tests/pagination.test.js tests/statisticsSummary.test.js tests/dbMigrate.test.js tests/dateTime.test.js tests/timezoneBusinessRules.test.js tests/completedInvariants.test.js tests/dbIntegrity.test.js services/exportService.test.js",
+    "test:setup": "node db/testSetup.js",
+    "db:migrate": "node db/migrate.js",
+    "db:seed": "node db/seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "exceljs": "^4.4.0",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.4.0",
+    "mysql2": "^3.11.0"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "nodemon": "^3.1.4"
+  }
+}

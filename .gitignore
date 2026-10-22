@@ -1,0 +1,27 @@
+node_modules/
+.env
+server/.env
+client/.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Build output (client/package.json "build" -> vite build)
+dist/
+client/dist/
+
+# Uploaded files (server/config/upload.js tạo lại thư mục này lúc runtime nếu chưa có)
+server/uploads/
+uploads/
+
+# Playwright E2E output (npm run test:e2e)
+test-results/
+playwright-report/

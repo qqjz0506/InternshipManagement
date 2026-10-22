@@ -1,0 +1,24 @@
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 520px;
+}
+
+.settings-saved {
+  color: var(--color-success);
+  font-size: 13px;
+}
+
+.settings-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  font-size: 14px;
+}

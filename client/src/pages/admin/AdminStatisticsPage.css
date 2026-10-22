@@ -1,0 +1,14 @@
+.statistics-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.statistics-section h3 {
+  font-size: 16px;
+}
+
+.statistics-note {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
