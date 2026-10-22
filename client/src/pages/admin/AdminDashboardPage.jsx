@@ -8,6 +8,7 @@ import { useDepartments } from '../../context/DepartmentsContext'
 import { useInternships } from '../../context/InternshipsContext'
 import { useInternshipLogs } from '../../context/InternshipLogsContext'
 import { useReports } from '../../context/ReportsContext'
+import { useRemindersOverview } from '../../hooks/useRemindersOverview'
 import { STATUS_META } from '../../utils/internshipStatus'
 import '../../components/common/ListPage.css'
 import './AdminDashboardPage.css'
@@ -23,6 +24,7 @@ function AdminDashboardPage() {
   const { internships } = useInternships()
   const { items: logs } = useInternshipLogs()
   const { items: reports } = useReports()
+  const { overview } = useRemindersOverview()
 
   const studentsWithInternship = new Set(internships.map((internship) => internship.student_id))
   const noInternshipCount = students.filter((student) => !studentsWithInternship.has(student.id)).length
@@ -114,6 +116,17 @@ function AdminDashboardPage() {
           </div>
         </InfoCard>
       </div>
+
+      <InfoCard title="Việc cần làm theo đợt" isEmpty={!overview?.items?.length} emptyMessage="Không có việc gì cần nhắc.">
+        <ul className="activity-list">
+          {overview?.items?.map((item) => (
+            <li key={item.periodId}>
+              <strong>{item.periodName} ({item.periodCode})</strong>: {item.logOverdueCount} hồ sơ trễ nhật ký,{' '}
+              {item.finalReportDueCount} hồ sơ sắp/quá hạn báo cáo tổng kết, {item.evaluationDueCount} hồ sơ sắp/quá hạn đánh giá.
+            </li>
+          ))}
+        </ul>
+      </InfoCard>
 
       <InfoCard title="Hoạt động gần đây" isEmpty={recentActivity.length === 0} emptyMessage="Chưa có hoạt động nào.">
         <ul className="activity-list">

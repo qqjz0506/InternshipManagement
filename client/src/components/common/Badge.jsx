@@ -1,7 +1,7 @@
 import './common.css'
 
-function Badge({ tone = 'neutral', children }) {
-  return <span className={`badge badge-${tone}`}>{children}</span>
+function Badge({ tone = 'neutral', className = '', children }) {
+  return <span className={`badge badge-${tone} ${className}`.trim()}>{children}</span>
 }
 
 export default Badge

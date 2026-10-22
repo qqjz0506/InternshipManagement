@@ -153,12 +153,27 @@ async function create(payload, currentUser) {
   if (company_comment) {
     throw new AppError(400, 'company_comment không được set khi tạo mới.')
   }
+  if ('is_late' in payload) {
+    throw new AppError(400, 'is_late do hệ thống tự tính, không được gửi khi tạo báo cáo.')
+  }
+
+  const submittedAt = todayDateString()
+  // is_late CHỈ có ý nghĩa với report_type='final' (so với internship_periods.final_report_deadline
+  // của đợt) — báo cáo tuần không có khái niệm hạn, luôn 0 (Mục 16J README).
+  let isLate = false
+  if (report_type === 'final') {
+    const [[period]] = await pool.execute(
+      'SELECT final_report_deadline FROM internship_periods WHERE id = ?',
+      [internship.period_id],
+    )
+    isLate = Boolean(period?.final_report_deadline) && submittedAt > period.final_report_deadline
+  }
 
   const [result] = await pool.execute(
     `INSERT INTO reports
-      (internship_id, report_type, file_name, stored_file_name, file_size, mime_type, submitted_at, status, reviewer_comment, company_comment)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'submitted', NULL, NULL)`,
-    [internship_id, report_type, file_name, stored_file_name ?? null, file_size ?? null, mime_type ?? null, todayDateString()],
+      (internship_id, report_type, file_name, stored_file_name, file_size, mime_type, submitted_at, is_late, status, reviewer_comment, company_comment)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'submitted', NULL, NULL)`,
+    [internship_id, report_type, file_name, stored_file_name ?? null, file_size ?? null, mime_type ?? null, submittedAt, isLate ? 1 : 0],
   )
   const created = await getById(result.insertId)
 
@@ -225,7 +240,7 @@ async function update(id, payload, currentUser) {
     return getById(id)
   }
 
-  ;['internship_id', 'report_type', 'file_name', 'submitted_at'].forEach((field) => {
+  ;['internship_id', 'report_type', 'file_name', 'submitted_at', 'is_late'].forEach((field) => {
     if (field in payload) {
       throw new AppError(400, `${field} là immutable — không được gửi field này khi cập nhật báo cáo.`)
     }

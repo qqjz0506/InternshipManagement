@@ -58,7 +58,14 @@ function CompanyReportsPage() {
       key: 'status',
       label: 'Trạng thái',
       render: (row) => (
-        <Badge tone={REPORT_STATUS_META[row.status].tone}>{REPORT_STATUS_META[row.status].label}</Badge>
+        <>
+          <Badge tone={REPORT_STATUS_META[row.status].tone}>{REPORT_STATUS_META[row.status].label}</Badge>
+          {Boolean(row.is_late) && (
+            <Badge tone="danger" className="report-late-badge">
+              Nộp trễ
+            </Badge>
+          )}
+        </>
       ),
     },
     {

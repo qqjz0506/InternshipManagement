@@ -32,6 +32,10 @@
   color: var(--color-text-muted);
 }
 
+.report-late-badge {
+  margin-left: 6px;
+}
+
 /* Button */
 .btn {
   padding: var(--space-2) var(--space-4);

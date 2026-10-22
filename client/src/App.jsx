@@ -19,6 +19,8 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import AppLayout from './layouts/AppLayout'
 import AuthLayout from './layouts/AuthLayout'
 import LoginPage from './pages/auth/LoginPage'
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from './pages/auth/ResetPasswordPage'
 import UnauthorizedPage from './pages/auth/UnauthorizedPage'
 import NotFoundPage from './pages/NotFoundPage'
 import StudentsPage from './pages/admin/StudentsPage'
@@ -89,6 +91,8 @@ function AppRoutes() {
 
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
       </Route>
 

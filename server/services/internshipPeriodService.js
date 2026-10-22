@@ -1,6 +1,16 @@
 const { pool } = require('../config/database')
 const AppError = require('../utils/AppError')
 
+// '' (chuỗi rỗng từ input date/number client gửi khi để trống) phải thành NULL — không được INSERT
+// thẳng '' vào cột DATE/TINYINT (lỗi SQL), giống resolveOptionalText() ở reportService/internshipLogService.
+function resolveOptionalDate(value) {
+  return value === undefined || value === null || value === '' ? null : value
+}
+
+function resolveLogFrequencyDays(value) {
+  return value === undefined || value === null || value === '' ? 7 : Number(value)
+}
+
 async function getAll({ search, status }) {
   const conditions = []
   const params = []
@@ -35,20 +45,30 @@ async function isCodeTaken(code, ignoreId) {
   return rows.length > 0
 }
 
-async function create({ period_code, period_name, start_date, end_date, status, description }) {
+async function create({
+  period_code, period_name, start_date, end_date, status, description,
+  log_frequency_days, final_report_deadline, evaluation_deadline,
+}) {
   if (await isCodeTaken(period_code)) {
     throw new AppError(409, 'Mã đợt thực tập đã tồn tại.')
   }
 
   const [result] = await pool.execute(
-    `INSERT INTO internship_periods (period_code, period_name, start_date, end_date, status, description)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [period_code, period_name, start_date, end_date, status ?? 'upcoming', description ?? null],
+    `INSERT INTO internship_periods
+      (period_code, period_name, start_date, end_date, status, description, log_frequency_days, final_report_deadline, evaluation_deadline)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      period_code, period_name, start_date, end_date, status ?? 'upcoming', description ?? null,
+      resolveLogFrequencyDays(log_frequency_days), resolveOptionalDate(final_report_deadline), resolveOptionalDate(evaluation_deadline),
+    ],
   )
   return getById(result.insertId)
 }
 
-async function update(id, { period_code, period_name, start_date, end_date, status, description }) {
+async function update(id, {
+  period_code, period_name, start_date, end_date, status, description,
+  log_frequency_days, final_report_deadline, evaluation_deadline,
+}) {
   const existing = await getById(id)
   if (!existing) {
     throw new AppError(404, 'Không tìm thấy đợt thực tập.')
@@ -60,9 +80,13 @@ async function update(id, { period_code, period_name, start_date, end_date, stat
 
   await pool.execute(
     `UPDATE internship_periods SET
-      period_code = ?, period_name = ?, start_date = ?, end_date = ?, status = ?, description = ?
+      period_code = ?, period_name = ?, start_date = ?, end_date = ?, status = ?, description = ?,
+      log_frequency_days = ?, final_report_deadline = ?, evaluation_deadline = ?
      WHERE id = ?`,
-    [period_code, period_name, start_date, end_date, status ?? 'upcoming', description ?? null, id],
+    [
+      period_code, period_name, start_date, end_date, status ?? 'upcoming', description ?? null,
+      resolveLogFrequencyDays(log_frequency_days), resolveOptionalDate(final_report_deadline), resolveOptionalDate(evaluation_deadline), id,
+    ],
   )
   return getById(id)
 }

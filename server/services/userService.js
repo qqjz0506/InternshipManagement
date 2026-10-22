@@ -269,4 +269,5 @@ module.exports = {
   assertUserCanLinkProfileType,
   resetPassword,
   setStatus,
+  generateTemporaryPassword,
 }

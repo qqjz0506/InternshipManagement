@@ -14,6 +14,7 @@ function toSafeUser(user) {
     role: user.role,
     status: user.status,
     mustChangePassword: Boolean(user.must_change_password),
+    emailNotifications: Boolean(user.email_notifications),
   }
 }
 
@@ -78,4 +79,11 @@ async function changePassword(userId, currentPassword, newPassword) {
   await pool.execute('UPDATE users SET password_hash = ?, must_change_password = 0 WHERE id = ?', [passwordHash, userId])
 }
 
-module.exports = { login, findUserById, toSafeUser, changePassword }
+// Tự phục vụ (currentUser tự tắt/bật email cho CHÍNH MÌNH) — không qua Admin, không dùng chung route
+// PUT /api/users/:id (admin-only tuyệt đối, xem server/routes/userRoutes.js).
+async function setEmailNotifications(userId, enabled) {
+  await pool.execute('UPDATE users SET email_notifications = ? WHERE id = ?', [enabled ? 1 : 0, userId])
+  return toSafeUser(await findUserById(userId))
+}
+
+module.exports = { login, findUserById, toSafeUser, changePassword, setEmailNotifications }

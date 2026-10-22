@@ -9,6 +9,9 @@ const EMPTY_FORM = {
   period_name: '',
   start_date: '',
   end_date: '',
+  log_frequency_days: 7,
+  final_report_deadline: '',
+  evaluation_deadline: '',
   status: 'upcoming',
   description: '',
 }
@@ -20,7 +23,13 @@ function PeriodFormModal({ isOpen, onClose, onSubmit, initialData, isCodeTaken, 
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(initialData ?? EMPTY_FORM)
+      // final_report_deadline/evaluation_deadline có thể là `null` từ API (chưa đặt hạn) — input
+      // type="date" không chấp nhận value={null} (React warning), phải chuẩn hóa về '' khi điền form.
+      setFormData(
+        initialData
+          ? { ...initialData, final_report_deadline: initialData.final_report_deadline ?? '', evaluation_deadline: initialData.evaluation_deadline ?? '' }
+          : EMPTY_FORM,
+      )
       setErrors({})
     }
   }, [isOpen, initialData])
@@ -58,6 +67,19 @@ function PeriodFormModal({ isOpen, onClose, onSubmit, initialData, isCodeTaken, 
       nextErrors.end_date = 'Ngày kết thúc phải sau ngày bắt đầu.'
     }
 
+    if (isRequired(formData.log_frequency_days)) {
+      const num = Number(formData.log_frequency_days)
+      if (!Number.isInteger(num) || num <= 0) {
+        nextErrors.log_frequency_days = 'Số ngày giữa 2 lần ghi nhật ký phải là số nguyên dương.'
+      }
+    }
+
+    ;['final_report_deadline', 'evaluation_deadline'].forEach((field) => {
+      if (isRequired(formData[field]) && isRequired(formData.start_date) && formData[field] < formData.start_date) {
+        nextErrors[field] = 'Phải nằm trong hoặc sau ngày bắt đầu đợt.'
+      }
+    })
+
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
@@ -67,7 +89,7 @@ function PeriodFormModal({ isOpen, onClose, onSubmit, initialData, isCodeTaken, 
     if (!validate()) {
       return
     }
-    onSubmit(formData)
+    onSubmit({ ...formData, log_frequency_days: Number(formData.log_frequency_days) })
   }
 
   return (
@@ -113,6 +135,38 @@ function PeriodFormModal({ isOpen, onClose, onSubmit, initialData, isCodeTaken, 
             <option value="ongoing">Đang diễn ra</option>
             <option value="closed">Đã kết thúc</option>
           </select>
+        </FormField>
+
+        <FormField
+          label="Số ngày tối đa giữa 2 lần ghi nhật ký"
+          htmlFor="log_frequency_days"
+          error={errors.log_frequency_days}
+        >
+          <input
+            id="log_frequency_days"
+            type="number"
+            min="1"
+            value={formData.log_frequency_days}
+            onChange={(event) => handleChange('log_frequency_days', event.target.value)}
+          />
+        </FormField>
+
+        <FormField label="Hạn nộp báo cáo tổng kết (tùy chọn)" htmlFor="final_report_deadline" error={errors.final_report_deadline}>
+          <input
+            id="final_report_deadline"
+            type="date"
+            value={formData.final_report_deadline}
+            onChange={(event) => handleChange('final_report_deadline', event.target.value)}
+          />
+        </FormField>
+
+        <FormField label="Hạn hoàn tất đánh giá (tùy chọn)" htmlFor="evaluation_deadline" error={errors.evaluation_deadline}>
+          <input
+            id="evaluation_deadline"
+            type="date"
+            value={formData.evaluation_deadline}
+            onChange={(event) => handleChange('evaluation_deadline', event.target.value)}
+          />
         </FormField>
 
         <FormField label="Mô tả" htmlFor="description">

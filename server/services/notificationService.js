@@ -1,5 +1,7 @@
 const { pool } = require('../config/database')
 const AppError = require('../utils/AppError')
+const mailService = require('./mailService')
+const settingsService = require('./settingsService')
 
 const TYPE_VALUES = ['internship', 'assignment', 'report', 'reminder', 'evaluation', 'log']
 
@@ -111,6 +113,30 @@ async function markAllAsRead(currentUser) {
 // — lỗi khi đó sẽ ĐƯỢC NÉM LẠI để caller rollback đúng. Mặc định (không có conn, tức notify() tự
 // chạy ngoài transaction của nghiệp vụ chính — đúng đa số trường hợp hiện tại): lỗi tạo thông báo
 // KHÔNG được làm fail nghiệp vụ chính đã thành công trước đó — chỉ log lại qua console.error.
+// "Bất đồng bộ, không chờ" áp dụng ở mức NGHIỆP VỤ: việc TẠO thông báo (INSERT ở trên) không phụ
+// thuộc kết quả gửi email — lỗi gửi email (SMTP sai cấu hình, mất mạng...) không bao giờ làm fail
+// notify() hay nghiệp vụ chính đã gọi notify() (try/catch nuốt lỗi, giống hệt nguyên tắc đã áp dụng
+// cho chính việc ghi notification ở trên). notify() VẪN await hàm này (khác với việc KHÔNG await lúc
+// gọi `sendMail` bên trong `mailService` khi gửi SMTP thật) — để hành vi gửi/không gửi theo
+// `email_notifications` xác định được ngay, test đọc outbox không cần sleep/polling không
+// deterministic. Dùng `pool` (không dùng `conn` dù notify() đang chạy trong 1 transaction) — gửi
+// email không phải 1 phần của transaction đó.
+async function sendNotificationEmail(userId, title, content) {
+  const [rows] = await pool.execute('SELECT email, email_notifications FROM users WHERE id = ?', [userId])
+  const user = rows[0]
+  if (!user || !user.email_notifications) {
+    return
+  }
+
+  const settings = await settingsService.get()
+  const systemName = settings?.system_name ?? 'Hệ thống quản lý thực tập'
+  const link = process.env.CLIENT_URL
+  const subject = `[${systemName}] ${title}`
+  const text = `${content ?? title}\n\nĐăng nhập để xem chi tiết: ${link}`
+  const html = `<p>${content ?? title}</p><p><a href="${link}">Đăng nhập để xem chi tiết</a></p>`
+  await mailService.sendMail({ to: user.email, subject, text, html })
+}
+
 async function notify({ userId, type, title, content }, conn) {
   if (!userId) {
     return
@@ -130,6 +156,13 @@ async function notify({ userId, type, title, content }, conn) {
       throw error
     }
     console.error('notify() thất bại (không làm fail nghiệp vụ chính):', error)
+    return
+  }
+
+  try {
+    await sendNotificationEmail(userId, title, content)
+  } catch (error) {
+    console.error('notify(): gửi email thất bại (không làm fail nghiệp vụ chính):', error)
   }
 }
 

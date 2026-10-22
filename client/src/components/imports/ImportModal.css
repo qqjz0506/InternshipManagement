@@ -1,0 +1,56 @@
+.import-modal-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.import-modal-hint {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.import-preview-table-wrap {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.import-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.import-preview-table th,
+.import-preview-table td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.import-row-error {
+  background-color: #fef2f2;
+  color: #b42318;
+}
+
+.import-row-valid {
+  color: #15803d;
+}
+
+.import-modal-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.import-modal-success {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}

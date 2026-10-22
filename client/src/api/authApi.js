@@ -12,3 +12,15 @@ export function getMe() {
 export function changePassword(currentPassword, newPassword) {
   return apiClient.put('/auth/change-password', { currentPassword, newPassword })
 }
+
+export function forgotPassword(email) {
+  return apiClient.post('/auth/forgot-password', { email }, { auth: false })
+}
+
+export function resetPassword(token, newPassword) {
+  return apiClient.post('/auth/reset-password', { token, newPassword }, { auth: false })
+}
+
+export function setEmailNotifications(emailNotifications) {
+  return apiClient.put('/auth/email-notifications', { emailNotifications })
+}

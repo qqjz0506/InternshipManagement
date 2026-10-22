@@ -15,6 +15,7 @@ import { useInternshipLogs } from '../../context/InternshipLogsContext'
 import { useReports } from '../../context/ReportsContext'
 import { useEvaluations } from '../../context/EvaluationsContext'
 import { useNotifications } from '../../context/NotificationsContext'
+import { useRemindersOverview } from '../../hooks/useRemindersOverview'
 import { STATUS_META } from '../../utils/internshipStatus'
 import '../../components/common/ListPage.css'
 import './StudentDashboardPage.css'
@@ -33,6 +34,7 @@ function StudentDashboardPage() {
   const { items: reports } = useReports()
   const { items: evaluations } = useEvaluations()
   const { items: notifications } = useNotifications()
+  const { overview } = useRemindersOverview()
 
   if (!student) {
     return (
@@ -129,6 +131,12 @@ function StudentDashboardPage() {
               </dl>
             </InfoCard>
           </div>
+
+          <InfoCard title="Việc cần làm" isEmpty={!overview?.items?.length} emptyMessage="Không có việc gì cần nhắc.">
+            <ul className="dashboard-notification-list">
+              {overview?.items?.map((item) => <li key={item.key}>{item.message}</li>)}
+            </ul>
+          </InfoCard>
 
           <InfoCard title="Thông báo gần đây">
             {recentNotifications.length === 0 ? (

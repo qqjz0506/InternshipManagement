@@ -140,7 +140,16 @@ function StudentReportsPage() {
     {
       key: 'status',
       label: 'Trạng thái',
-      render: (row) => <Badge tone={REPORT_STATUS_META[row.status].tone}>{REPORT_STATUS_META[row.status].label}</Badge>,
+      render: (row) => (
+        <>
+          <Badge tone={REPORT_STATUS_META[row.status].tone}>{REPORT_STATUS_META[row.status].label}</Badge>
+          {Boolean(row.is_late) && (
+            <Badge tone="danger" className="report-late-badge">
+              Nộp trễ
+            </Badge>
+          )}
+        </>
+      ),
     },
     {
       key: 'reviewer_comment',

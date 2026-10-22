@@ -5,9 +5,11 @@ import Pagination from '../../components/common/Pagination'
 import Badge from '../../components/common/Badge'
 import Button from '../../components/common/Button'
 import StudentFormModal from '../../components/students/StudentFormModal'
+import ImportModal from '../../components/imports/ImportModal'
 import { useDebounce } from '../../hooks/useDebounce'
 import { useStudents } from '../../context/StudentsContext'
 import { useDepartments } from '../../context/DepartmentsContext'
+import * as importApi from '../../api/importApi'
 import '../../components/common/ListPage.css'
 
 const PAGE_SIZE = 8
@@ -27,6 +29,7 @@ function StudentsPage() {
     updateItem,
     deleteItem,
     isFieldTaken,
+    refresh,
   } = useStudents()
   const { items: departments } = useDepartments()
 
@@ -42,6 +45,7 @@ function StudentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingStudent, setEditingStudent] = useState(null)
   const [submitError, setSubmitError] = useState('')
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   const filteredStudents = useMemo(() => {
     const keyword = debouncedSearch.trim().toLowerCase()
@@ -166,7 +170,12 @@ function StudentsPage() {
     <div className="list-page">
       <div className="page-header">
         <h2>Sinh viên</h2>
-        <Button onClick={openAddModal}>+ Thêm sinh viên</Button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button variant="secondary" onClick={() => setIsImportModalOpen(true)}>
+            Nhập từ Excel
+          </Button>
+          <Button onClick={openAddModal}>+ Thêm sinh viên</Button>
+        </div>
       </div>
 
       <div className="page-filters">
@@ -224,6 +233,16 @@ function StudentsPage() {
         isCodeTaken={isCodeTaken}
         submitError={submitError}
         isSubmitting={isMutating}
+      />
+
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        entityLabel="sinh viên"
+        getTemplate={importApi.getStudentsTemplate}
+        preview={importApi.previewStudents}
+        commit={importApi.commitStudents}
+        onImported={refresh}
       />
     </div>
   )

@@ -8,6 +8,7 @@ import { useInternshipLogs } from '../../context/InternshipLogsContext'
 import { useReports } from '../../context/ReportsContext'
 import { useEvaluations } from '../../context/EvaluationsContext'
 import { useNotifications } from '../../context/NotificationsContext'
+import { useRemindersOverview } from '../../hooks/useRemindersOverview'
 import '../../components/common/ListPage.css'
 import './LecturerDashboardPage.css'
 
@@ -19,6 +20,7 @@ function LecturerDashboardPage() {
   const { items: reports } = useReports()
   const { items: evaluations } = useEvaluations()
   const { items: notifications } = useNotifications()
+  const { overview } = useRemindersOverview()
 
   if (!lecturer) {
     return (
@@ -72,6 +74,19 @@ function LecturerDashboardPage() {
         <StatCard label="Báo cáo cần xem" value={reportsToReview} />
         <StatCard label="Đánh giá cần thực hiện" value={evaluationsNeeded} />
       </div>
+
+      <InfoCard title="Việc cần làm" isEmpty={!overview?.items?.length} emptyMessage="Không có việc gì cần nhắc.">
+        <ul className="dashboard-notification-list">
+          {overview?.items?.map((item) => (
+            <li key={item.internshipId}>
+              <strong>
+                {item.studentCode} - {item.studentName}
+              </strong>
+              : {item.issues.map((issue) => issue.message).join(' ')}
+            </li>
+          ))}
+        </ul>
+      </InfoCard>
 
       <InfoCard title="Thông báo gần đây">
         {recentNotifications.length === 0 ? (

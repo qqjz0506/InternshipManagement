@@ -84,7 +84,9 @@ async function queryInternships(filters, currentUser) {
       l.full_name AS lecturer_name, l.email AS lecturer_email,
       t.topic_code, t.topic_name,
       p.period_code, p.period_name, p.start_date AS period_start_date, p.end_date AS period_end_date,
-      i.status, i.progress, i.start_date, i.end_date, i.created_at, i.updated_at
+      i.status, i.progress, i.start_date, i.end_date, i.created_at, i.updated_at,
+      (SELECT r.is_late FROM reports r WHERE r.internship_id = i.id AND r.report_type = 'final'
+       ORDER BY r.id DESC LIMIT 1) AS final_report_late
     FROM internships i
     JOIN students s ON s.id = i.student_id
     JOIN departments d ON d.id = s.department_id
@@ -184,10 +186,14 @@ async function buildInternshipWorkbook(filters, currentUser) {
     { header: 'Tiến độ (%)', key: 'progress', width: 12 },
     { header: 'Ngày bắt đầu TT', key: 'start_date', width: 16 },
     { header: 'Ngày kết thúc TT', key: 'end_date', width: 16 },
+    // Thêm ở CUỐI (không chèn giữa) — tránh xô lệch index cột cũ mà exportService.test.js đang assert
+    // cứng, đúng tiền lệ đã làm khi thêm cột điểm tổng kết (Mục 16C README).
+    { header: 'Báo cáo tổng kết nộp trễ', key: 'final_report_late_label', width: 20 },
   ])
 
   rows.forEach((row) => {
-    sheet.addRow({ ...row, status_label: INTERNSHIP_STATUS_LABEL[row.status] ?? row.status })
+    const label = row.final_report_late === null ? '—' : row.final_report_late ? 'Có' : 'Không'
+    sheet.addRow({ ...row, status_label: INTERNSHIP_STATUS_LABEL[row.status] ?? row.status, final_report_late_label: label })
   })
 
   return workbook

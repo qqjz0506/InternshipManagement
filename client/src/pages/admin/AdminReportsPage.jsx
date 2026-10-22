@@ -133,9 +133,16 @@ function AdminReportsPage() {
       key: 'status',
       label: 'Trạng thái',
       render: (row) => (
-        <Badge tone={REPORT_STATUS_META[row.report.status].tone}>
-          {REPORT_STATUS_META[row.report.status].label}
-        </Badge>
+        <>
+          <Badge tone={REPORT_STATUS_META[row.report.status].tone}>
+            {REPORT_STATUS_META[row.report.status].label}
+          </Badge>
+          {Boolean(row.report.is_late) && (
+            <Badge tone="danger" className="report-late-badge">
+              Nộp trễ
+            </Badge>
+          )}
+        </>
       ),
     },
     {

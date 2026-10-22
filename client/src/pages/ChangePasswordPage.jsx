@@ -20,6 +20,26 @@ function ChangePasswordPage() {
   const [successMessage, setSuccessMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const [emailNotifications, setEmailNotifications] = useState(Boolean(currentUser?.emailNotifications))
+  const [isSavingEmailPref, setIsSavingEmailPref] = useState(false)
+  const [emailPrefError, setEmailPrefError] = useState('')
+
+  async function handleToggleEmailNotifications(event) {
+    const nextValue = event.target.checked
+    setEmailNotifications(nextValue)
+    setEmailPrefError('')
+    setIsSavingEmailPref(true)
+    try {
+      await authApi.setEmailNotifications(nextValue)
+      await refreshCurrentUser()
+    } catch (err) {
+      setEmailNotifications(!nextValue)
+      setEmailPrefError(err.message)
+    } finally {
+      setIsSavingEmailPref(false)
+    }
+  }
+
   function handleChange(field, value) {
     setFormData((prev) => ({ ...prev, [field]: value }))
     setSuccessMessage('')
@@ -110,6 +130,19 @@ function ChangePasswordPage() {
           </Button>
         </div>
       </form>
+
+      <div style={{ maxWidth: 420, marginTop: 24, paddingTop: 16, borderTop: '1px solid var(--color-border)' }}>
+        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <input
+            type="checkbox"
+            checked={emailNotifications}
+            onChange={handleToggleEmailNotifications}
+            disabled={isSavingEmailPref}
+          />
+          Nhận email khi có thông báo mới
+        </label>
+        {emailPrefError && <p className="form-field-error">{emailPrefError}</p>}
+      </div>
     </div>
   )
 }

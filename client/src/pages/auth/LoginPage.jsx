@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { ROLE_HOME_PATH } from '../../data/mockUsers'
 import './LoginPage.css'
@@ -66,6 +66,10 @@ function LoginPage() {
           {isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
         </button>
       </form>
+
+      <p style={{ marginTop: 12, fontSize: 13, textAlign: 'center' }}>
+        <Link to="/forgot-password">Quên mật khẩu?</Link>
+      </p>
 
       <div className="login-demo">
         <p>Tài khoản demo:</p>

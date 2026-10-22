@@ -96,7 +96,14 @@ function AdminReportDetailPage() {
           </Link>
           <h2>{formatReportCode(report.id)}</h2>
         </div>
-        <Badge tone={REPORT_STATUS_META[report.status].tone}>{REPORT_STATUS_META[report.status].label}</Badge>
+        <div>
+          <Badge tone={REPORT_STATUS_META[report.status].tone}>{REPORT_STATUS_META[report.status].label}</Badge>
+          {Boolean(report.is_late) && (
+            <Badge tone="danger" className="report-late-badge">
+              Nộp trễ
+            </Badge>
+          )}
+        </div>
       </div>
 
       <div className="card-grid">

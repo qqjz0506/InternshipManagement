@@ -33,6 +33,12 @@ CREATE TABLE users (
   -- Bổ sung sau đợt kiểm tra trước bảo vệ — xem server/db/migrations/004_must_change_password.sql
   -- cho database đã có.
   must_change_password TINYINT(1) NOT NULL DEFAULT 0,
+  -- email_notifications: tự tắt/bật việc nhận email khi có thông báo mới (notificationService.notify
+  -- gọi mailService.sendMail SAU KHI ghi notifications, chỉ khi cờ này = 1) — không liên quan gì tới
+  -- việc notification vẫn được ghi vào DB (luôn ghi, chỉ email là tùy chọn). Đổi qua
+  -- PUT /api/auth/email-notifications (tự phục vụ, không qua Admin). Bổ sung sau đợt kiểm tra trước
+  -- bảo vệ — xem server/db/migrations/006_email_notifications.sql cho database đã có.
+  email_notifications TINYINT(1) NOT NULL DEFAULT 1,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   UNIQUE KEY uk_users_email (email),
@@ -148,6 +154,14 @@ CREATE TABLE internship_periods (
   period_name VARCHAR(150) NOT NULL,
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
+  -- log_frequency_days: Sinh viên phải có ít nhất 1 nhật ký mới mỗi N ngày (mặc định 7) — dùng ở
+  -- reminderService.js để tính "quá hạn chưa ghi nhật ký". final_report_deadline/evaluation_deadline:
+  -- hạn nộp báo cáo tổng kết/hạn hoàn tất đánh giá của ĐỢT (không bắt buộc, NULL = chưa đặt hạn, không
+  -- nhắc). Bổ sung sau đợt kiểm tra trước bảo vệ — xem
+  -- server/db/migrations/008_internship_periods_reminders.sql cho database đã có.
+  log_frequency_days TINYINT UNSIGNED NOT NULL DEFAULT 7,
+  final_report_deadline DATE NULL,
+  evaluation_deadline DATE NULL,
   status ENUM('upcoming','ongoing','closed') NOT NULL DEFAULT 'upcoming',
   description TEXT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -259,6 +273,11 @@ CREATE TABLE reports (
   file_size INT UNSIGNED NULL,
   mime_type VARCHAR(100) NULL,
   submitted_at DATE NOT NULL,
+  -- is_late: CHỈ có ý nghĩa với report_type='final' — nộp sau internship_periods.final_report_deadline
+  -- của đợt (reportService.create() tự tính, client không gửi được). Báo cáo tuần ('weekly') không có
+  -- khái niệm hạn, luôn 0. Bổ sung sau đợt kiểm tra trước bảo vệ — xem
+  -- server/db/migrations/009_reports_is_late.sql cho database đã có.
+  is_late TINYINT(1) NOT NULL DEFAULT 0,
   status ENUM('draft','submitted','approved','rejected') NOT NULL DEFAULT 'draft',
   reviewer_comment TEXT NULL,
   company_comment TEXT NULL,
@@ -329,4 +348,39 @@ CREATE TABLE settings (
   CONSTRAINT chk_settings_singleton CHECK (id = 1),
   CONSTRAINT fk_settings_default_period FOREIGN KEY (default_internship_period_id) REFERENCES internship_periods(id)
     ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 15. PASSWORD_RESET_TOKENS (luồng "Quên mật khẩu" tự phục vụ)
+CREATE TABLE password_reset_tokens (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  -- token_hash: sha256(token gửi qua email) — KHÔNG BAO GIỜ lưu token gốc trong DB, chỉ so khớp bằng
+  -- hash (giống nguyên tắc password_hash, chỉ khác thuật toán vì đây không phải mật khẩu người dùng
+  -- tự chọn, không cần bcrypt cost factor).
+  token_hash CHAR(64) NOT NULL,
+  expires_at DATETIME NOT NULL,
+  used_at DATETIME NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uk_password_reset_tokens_hash (token_hash),
+  INDEX idx_password_reset_tokens_user (user_id),
+  CONSTRAINT fk_password_reset_tokens_user FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 16. REMINDER_LOGS (chống gửi trùng nhắc việc tự động — server/jobs/reminderJob.js)
+CREATE TABLE reminder_logs (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  -- reminder_key: định danh DUY NHẤT cho 1 "việc cần nhắc" cụ thể (vd. "log_overdue:internship:5",
+  -- "final_report_due:internship:5", "evaluation_due:internship:5:lecturer") — xem reminderService.js.
+  reminder_key VARCHAR(255) NOT NULL,
+  sent_date DATE NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  -- UNIQUE (user_id, reminder_key, sent_date): đây CHÍNH LÀ cơ chế chống gửi trùng — job tự INSERT
+  -- trước, chỉ thực sự gửi notify()/email nếu INSERT thành công (claim-ticket), không dựa vào cờ
+  -- in-memory (an toàn kể cả khi job chạy lại nhiều lần trong ngày hoặc server restart).
+  UNIQUE KEY uk_reminder_logs_user_key_date (user_id, reminder_key, sent_date),
+  INDEX idx_reminder_logs_user (user_id),
+  CONSTRAINT fk_reminder_logs_user FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
