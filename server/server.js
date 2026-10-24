@@ -1,5 +1,18 @@
 require('dotenv').config()
 
+// Kiểm tra cấu hình production TRƯỚC khi require bất kỳ module nào khác (fail fast) — JWT_SECRET
+// thiếu/quá ngắn, CLIENT_URL thiếu, hoặc DEBUG_ERRORS=true trong production là lỗi cấu hình nghiêm
+// trọng, không nên để server chạy "có vẻ ổn" rồi mới lộ ra khi có request thật. Không ảnh hưởng
+// NODE_ENV khác 'production' (xem server/config/productionChecks.js — trả về [] ngay nếu không phải
+// production).
+const { assertProductionConfig } = require('./config/productionChecks')
+try {
+  assertProductionConfig()
+} catch (error) {
+  console.error('[server] Không thể khởi động:', error.message)
+  process.exit(1)
+}
+
 const app = require('./app')
 const { testConnection } = require('./config/database')
 const { startReminderScheduler } = require('./jobs/reminderJob')

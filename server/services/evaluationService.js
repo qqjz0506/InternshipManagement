@@ -429,6 +429,20 @@ async function computeFinalResultsBulk(internshipIds) {
   return result
 }
 
+// Lấy CẢ 2 đánh giá (lecturer + company) ĐÃ CÔNG BỐ của 1 internship — dùng cho phiếu kết quả PDF
+// (Mục 16L README). CHỈ gọi khi internship.status === 'completed' (bất biến 16F đảm bảo cả 2 đã công
+// bố tại thời điểm đó và không thể bỏ công bố lại — không cần tự validate is_published ở đây).
+async function getPublishedPair(internshipId) {
+  const [rows] = await pool.execute(
+    `SELECT * FROM evaluations WHERE internship_id = ? AND evaluator_role IN ('lecturer', 'company') AND is_published = 1`,
+    [internshipId],
+  )
+  return {
+    lecturer: rows.find((row) => row.evaluator_role === 'lecturer') ?? null,
+    company: rows.find((row) => row.evaluator_role === 'company') ?? null,
+  }
+}
+
 module.exports = {
   getAll,
   getById,
@@ -439,4 +453,5 @@ module.exports = {
   classify,
   computeFinalResult,
   computeFinalResultsBulk,
+  getPublishedPair,
 }

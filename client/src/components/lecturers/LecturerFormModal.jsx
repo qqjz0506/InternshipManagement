@@ -11,6 +11,7 @@ const EMPTY_FORM = {
   phone: '',
   department_id: '',
   position: '',
+  max_students: 10,
   status: 'active',
 }
 
@@ -66,6 +67,11 @@ function LecturerFormModal({
       nextErrors.department_id = 'Vui lòng chọn khoa.'
     }
 
+    const maxStudents = Number(formData.max_students)
+    if (!Number.isInteger(maxStudents) || maxStudents <= 0) {
+      nextErrors.max_students = 'Số sinh viên tối đa hướng dẫn phải là số nguyên dương.'
+    }
+
     setErrors(nextErrors)
     return Object.keys(nextErrors).length === 0
   }
@@ -75,7 +81,7 @@ function LecturerFormModal({
     if (!validate()) {
       return
     }
-    onSubmit({ ...formData, department_id: Number(formData.department_id) })
+    onSubmit({ ...formData, department_id: Number(formData.department_id), max_students: Number(formData.max_students) })
   }
 
   return (
@@ -139,6 +145,16 @@ function LecturerFormModal({
             value={formData.position}
             onChange={(event) => handleChange('position', event.target.value)}
             placeholder="Giảng viên, Tiến sĩ, Phó giáo sư..."
+          />
+        </FormField>
+
+        <FormField label="Số sinh viên tối đa hướng dẫn (cùng 1 đợt)" htmlFor="max_students" error={errors.max_students}>
+          <input
+            id="max_students"
+            type="number"
+            min="1"
+            value={formData.max_students}
+            onChange={(event) => handleChange('max_students', event.target.value)}
           />
         </FormField>
 

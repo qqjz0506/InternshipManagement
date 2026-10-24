@@ -3,6 +3,11 @@ const AppError = require('../utils/AppError')
 const { sendSuccess } = require('../utils/response')
 const { isRequired, isValidEmail, isValidPhone, isValidId } = require('../utils/validators')
 
+function isValidMaxStudents(value) {
+  const num = Number(value)
+  return Number.isInteger(num) && num > 0
+}
+
 const STATUS_VALUES = ['active', 'inactive']
 
 function validateId(id) {
@@ -35,6 +40,9 @@ function validatePayload(body) {
   }
   if (body.user_id !== undefined && body.user_id !== null && !isValidId(body.user_id)) {
     throw new AppError(400, 'user_id không hợp lệ.')
+  }
+  if (body.max_students !== undefined && body.max_students !== null && body.max_students !== '' && !isValidMaxStudents(body.max_students)) {
+    throw new AppError(400, 'Số sinh viên tối đa hướng dẫn phải là số nguyên dương.')
   }
 }
 

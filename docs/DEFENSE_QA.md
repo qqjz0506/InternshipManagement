@@ -134,7 +134,7 @@ Có — endpoint export **tái sử dụng đúng logic scope** của endpoint G
 **33. Vì sao export chỉ có UI ở Admin?**
 Quyết định phạm vi — ưu tiên hoàn thiện Admin trước (nơi cần tổng hợp số liệu nhiều nhất). Backend đã hỗ trợ đúng scope cho cả 4 role (test PASS), chỉ thiếu nút UI cho 3 role còn lại — ghi nhận minh bạch ở `docs/PHASE_7C_FINAL_PREPARATION.md` (REQ-045/046), không tự ý bổ sung thêm UI mới sát ngày bảo vệ để tránh rủi ro.
 
-## L. Kiểm thử (262 test case backend + 14 Playwright E2E — xem README Mục 15 để lấy số mới nhất, số này có thể đổi theo phase)
+## L. Kiểm thử (301 test case backend + 17 Playwright E2E — xem README Mục 15 để lấy số mới nhất, số này có thể đổi theo phase)
 
 **34. Tại sao dùng `node:test` built-in mà không dùng Jest/Mocha?**
 Zero dependency mới — `node:test` + `node:assert/strict` đã có sẵn trong Node.js (từ bản 18+), đủ cho nhu cầu test HTTP integration của dự án, không cần thêm framework nặng.
@@ -237,6 +237,54 @@ Vì `internship_periods` chỉ có CHÍNH XÁC 1 cột hạn liên quan tới b�
 
 **67. Ngưỡng "sắp đến hạn" (7 ngày) cho đánh giá lấy từ đâu — có thể cấu hình riêng không?**
 Yêu cầu gốc chỉ nêu rõ số 7 ngày cho báo cáo tổng kết ("còn ≤ 7 ngày hoặc đã quá hạn"), không nêu số riêng cho đánh giá — quyết định tái dùng CÙNG 1 hằng số `DEADLINE_WARNING_DAYS = 7` (`server/services/reminderService.js`) cho cả 2 loại hạn (`final_report_deadline` và `evaluation_deadline`), để không tự đặt ra 1 số tùy ý không có cơ sở. Hiện KHÔNG cấu hình được riêng qua `.env`/Settings — nếu cần sau này, đây là 1 hằng số duy nhất, sửa 1 chỗ là đủ (không rải logic ở nhiều nơi).
+
+## S. Vị trí thực tập + Ứng tuyển + Giới hạn hướng dẫn (bổ sung theo yêu cầu trực tiếp của người dùng, xem README Mục 16K)
+
+**68. Vì sao "chấp nhận đơn ứng tuyển" lại tạo hồ sơ thực tập ở trạng thái `approved` ngay, bỏ qua `pending`, trong khi mọi hồ sơ khác đều phải bắt đầu từ `pending` rồi Admin duyệt?**
+Vì hành động "chấp nhận" CHÍNH LÀ hành động duyệt — Admin hoặc Mentor (người có quyền duyệt) đã chủ động xem xét và đồng ý nhận sinh viên đó, không có lý do nghiệp vụ nào để tạo thêm 1 bước "chờ duyệt lại lần 2" cho đúng hồ sơ vừa được duyệt. Đây là lý do `positionApplicationService.accept()` viết SQL `INSERT`/`UPDATE` trực tiếp trong transaction của chính nó, KHÔNG gọi lại `internshipService.create()` (hàm đó luôn ép `status='pending'` cho luồng đăng ký tự thân/Admin tạo hộ thông thường — đúng cho luồng đó, không đúng cho luồng này).
+
+**69. Vì sao khi Admin chấp nhận đơn, `company_mentor_id` của hồ sơ lại để trống (NULL) thay vì tự chọn 1 mentor nào đó của công ty?**
+Vì `internship_positions` (theo đúng thiết kế đã chốt) không có cột mentor riêng — 1 vị trí thuộc về 1 CÔNG TY, không gắn sẵn với 1 người hướng dẫn cụ thể nào. Khi chính Mentor tự chấp nhận, suy ra `company_mentor_id` từ hồ sơ của họ là hợp lý (họ đang chủ động nhận sinh viên về cho chính mình). Khi ADMIN chấp nhận (thường vì Mentor bận/chưa có tài khoản), hệ thống không có cách nào biết Admin "muốn" gán cho mentor nào trong số nhiều mentor của công ty đó — tự đoán 1 mentor bất kỳ có thể SAI và khó phát hiện. Giải pháp an toàn hơn: để trống, Admin tự gán mentor cụ thể sau đó qua `AssignCompanyModal.jsx` đã có sẵn (luồng này đã được kiểm chứng kỹ từ các phase trước).
+
+**70. Giới hạn "tối đa 3 đơn ứng tuyển đang chờ" tính theo TOÀN BỘ hệ thống hay riêng từng đợt thực tập?**
+Tính TOÀN CỤC (toàn hệ thống, không tách riêng theo đợt) — đúng theo cách yêu cầu gốc diễn đạt ("Tối đa 3 đơn đang chờ cùng lúc", không có chữ "mỗi đợt" hay "trong 1 đợt"). Lý do hợp lý: 1 sinh viên thường chỉ thực tập trong 1 đợt tại 1 thời điểm, nên việc rải đơn ra nhiều đợt khác nhau để "lách" giới hạn không phải tình huống thực tế cần lo — giữ đơn giản đúng nghĩa đen của yêu cầu.
+
+**71. Làm sao đảm bảo không có 2 sinh viên cùng được nhận vào 1 vị trí chỉ còn ĐÚNG 1 chỗ, nếu cả 2 request chấp nhận đến gần như CÙNG LÚC?**
+`accept()` dùng `SELECT ... FOR UPDATE` để khóa đúng hàng `internship_positions` của vị trí đó TRƯỚC KHI đếm số đơn đã `accepted` — về bản chất, đây là cách MySQL/InnoDB đảm bảo 2 transaction đang chạy đồng thời cho CÙNG 1 vị trí phải chạy TUẦN TỰ (transaction thứ 2 phải đợi transaction thứ 1 `COMMIT`/`ROLLBACK` xong mới được đọc tiếp), không thể cả 2 cùng đọc "còn 1 chỗ" rồi cả 2 cùng ghi "đã nhận". Transaction chạy sau (dù chỉ sau vài milli-giây) sẽ thấy số liệu MỚI NHẤT (đã tính cả transaction trước), tự phát hiện hết chỗ và trả 409. Test: `tests/positionApplications.test.js` dùng `Promise.all` gửi 2 request `accept` thật đồng thời, verify đúng 1 thành công.
+
+**72. Giới hạn `lecturers.max_students` tính theo TOÀN BỘ sinh viên giảng viên đó đang hướng dẫn, hay riêng từng đợt?**
+Tính RIÊNG TỪNG ĐỢT (theo `period_id` của hồ sơ đang gán) — đúng yêu cầu gốc ("số lượng internship... trong CÙNG đợt"). 1 giảng viên hướng dẫn 10 sinh viên ở đợt năm ngoái (đã `completed`, hoặc thậm chí vẫn đang `in_progress` ở đợt KHÁC) không ảnh hưởng gì tới khả năng nhận thêm sinh viên mới ở đợt hiện tại — tải giảng dạy được tính theo "hiện đang hướng dẫn bao nhiêu em CÙNG LÚC trong 1 đợt", không phải tổng tích lũy qua mọi thời gian.
+
+## T. Xuất giấy tờ PDF (bổ sung theo yêu cầu trực tiếp của người dùng, xem README Mục 16L)
+
+**73. Vì sao phải tự tải font tiếng Việt về (Be Vietnam Pro) thay vì dùng font có sẵn của `pdfkit`?**
+`pdfkit` dùng font chuẩn PDF (Helvetica, Times-Roman...) theo mặc định — các font này KHÔNG nhúng glyph cho ký tự Unicode có dấu tiếng Việt (ví dụ "ệ", "ầ", "ữ"), nên chữ có dấu sẽ hiện sai/thiếu nét hoặc ô vuông thay vì đúng ký tự. Giải pháp duy nhất với `pdfkit` là NHÚNG 1 font TTF thật có đủ glyph tiếng Việt vào file PDF — chọn Be Vietnam Pro (giấy phép SIL Open Font License 1.1, miễn phí dùng cả thương mại, không cần xin phép/trả tiền — xem `server/assets/fonts/OFL.txt`) vì được thiết kế chuyên cho tiếng Việt, đã quen mắt với văn bản hành chính VN.
+
+**74. Vì sao "Student chỉ tải phiếu kết quả khi đánh giá đã công bố" lại không có đoạn code kiểm tra `is_published` riêng nào trong `documentService.js`?**
+Vì điều kiện đó ĐÃ được bảo đảm GIÁN TIẾP bởi điều kiện "hồ sơ đã `completed`" — theo đúng Business Rules V2 (Mục 16B README), hồ sơ chỉ chuyển được sang `completed` khi CẢ 2 đánh giá (Giảng viên + Doanh nghiệp) đã công bố; và theo bất biến Mục 16F, MỘT KHI đã `completed`, không ai (kể cả Admin) có thể bỏ công bố lại các đánh giá đó nữa. Vậy "hồ sơ đang `completed`" và "2 đánh giá đã công bố" là 2 mệnh đề LUÔN đi cùng nhau, không thể tách rời — kiểm tra lại `is_published` ở `getResultSheet()` sẽ là kiểm tra TRÙNG LẶP, không có tình huống nào khác biệt thật sự xảy ra để nó có ý nghĩa.
+
+**75. Số giấy ("Số: .../GTTT") trên giấy giới thiệu có đúng quy chuẩn văn thư hành chính thật không, hay chỉ là placeholder?**
+Chỉ là định danh ĐƠN GIẢN để phân biệt giữa các giấy khác nhau (`{internship_id}/GTTT`), KHÔNG đúng quy chuẩn số văn bản hành chính thật của 1 trường đại học cụ thể (mỗi trường có quy tắc đánh số/ký hiệu văn bản riêng, thường do phòng Hành chính-Tổng hợp quản lý, ngoài phạm vi 1 hệ thống phần mềm quản lý thực tập tự quyết định). Đây là quyết định phạm vi có chủ đích — đáp ứng đúng yêu cầu "có số giấy" theo nghĩa tối thiểu (mỗi giấy có 1 mã nhận diện duy nhất dựa trên `internship_id`), không cố mô phỏng đúng 1 hệ thống đánh số công văn thật mà không có đặc tả.
+
+**76. Nếu Admin chưa cấu hình tên trường/khoa trong Settings, PDF sẽ trông như thế nào?**
+Phần tên trường/khoa sẽ hiện dòng chấm "..........................................." thay vì để trống hoặc hiện chữ "null" — giữ đúng hình thức văn bản hành chính GIẤY thật (các mẫu giấy tờ in sẵn luôn có dòng chấm để điền tay khi chưa biết trước nội dung), tránh PDF trông như lỗi/thiếu dữ liệu. Admin luôn có thể cấu hình đầy đủ trước khi dùng thật qua `/admin/settings`.
+
+**77. Vì sao file font (`.ttf`) được commit thẳng vào repo (`server/assets/fonts/`) thay vì tải tự động lúc deploy?**
+Vì font là 1 ASSET TĨNH cần thiết để ứng dụng chạy đúng (giống `server/uploads/` nhưng KHÔNG bị gitignore — font không phải dữ liệu người dùng tạo ra, mà là tài nguyên cố định của ứng dụng), tương tự cách các dự án khác thường commit font/icon/ảnh tĩnh vào repo thay vì tải lại mỗi lần build. Giấy phép SIL OFL cho phép phân phối lại tự do kèm sản phẩm, nên commit trực tiếp là hợp lệ — chỉ cần giữ nguyên file `OFL.txt` đi kèm để ghi nhận đúng nguồn/giấy phép (đã làm, xem README Mục 16L).
+
+## V. Triển khai production — Docker + kiểm tra cấu hình an toàn (bổ sung theo yêu cầu trực tiếp của người dùng, xem README Mục 16M, `docs/TRIEN_KHAI.md`)
+
+**78. Vì sao `trust proxy` dùng số hop cụ thể (`TRUST_PROXY_HOPS`) thay vì `app.set('trust proxy', true)` cho đơn giản?**
+Vì `trust proxy: true` tin tưởng VÔ ĐIỀU KIỆN header `X-Forwarded-For` từ bất kỳ ai gửi request tới — mà header này hoàn toàn có thể bị client tự đặt giá trị giả (spoof) nếu không có đúng 1 lớp proxy tin cậy chặn/ghi đè nó trước khi tới ứng dụng. `express-rate-limit` (thư viện đang dùng cho `loginLimiter`/`passwordResetLimiter`) khuyến cáo rõ KHÔNG dùng `true` chính vì lý do này — tin sai IP có thể khiến 1 kẻ tấn công tự xưng là IP của người khác để "mượn" hạn mức, hoặc khiến rate limiter gộp nhầm nhiều người dùng thật vào cùng 1 IP (DoS lẫn nhau). Dùng số hop cụ thể (`1` khi có đúng 1 Nginx đứng trước, theo đúng kiến trúc đề xuất ở `docs/TRIEN_KHAI.md`) buộc Express chỉ tin đúng N hop gần nhất, đúng với kiến trúc triển khai thật đã biết trước, không tin bất kỳ ai khác tự xưng.
+
+**79. Vì sao kiểm tra cấu hình production (`JWT_SECRET`/`CLIENT_URL`/`DEBUG_ERRORS`) lại viết thành hàm thuần `validateProductionConfig(env)` trả về danh sách lỗi, thay vì gọi `process.exit()` ngay trong hàm kiểm tra?**
+Để TEST ĐƯỢC logic kiểm tra mà không cần giết process thật — nếu hàm tự `process.exit(1)` bên trong, 1 test gọi tới hàm đó sẽ làm chết luôn tiến trình `node --test` đang chạy test, không thể viết test khẳng định "trường hợp X phải báo lỗi Y". Tách thành 2 lớp: `validateProductionConfig(env)` (thuần — nhận 1 object env, trả về mảng string lỗi, KHÔNG có side effect) để unit-test trực tiếp với env giả bất kỳ (`server/tests/productionConfig.test.js`, 10 test); và `assertProductionConfig()` (wrapper, `throw` nếu mảng lỗi không rỗng) chỉ được gọi + `catch` để thực sự `process.exit(1)` ở ĐÚNG 1 nơi duy nhất — `server.js`. Đây là cùng nguyên tắc "tách tính toán khỏi hành động phá hủy/không thể hoàn tác" đã áp dụng nhất quán trong dự án (ví dụ tính "quá hạn/sắp hạn" ở `reminderJob` tách khỏi việc thực sự gửi).
+
+**80. Vì sao `.env.production.example` nằm ở GỐC repo, không nằm trong `server/` giống `.env.example`?**
+Vì `docker-compose.yml` cũng nằm ở gốc repo, và lệnh chạy thật (`docker compose --env-file .env.production up`) cần ĐÚNG 1 file env cung cấp giá trị cho CẢ 2 việc cùng lúc: (1) thay thế trực tiếp các `${DB_PASSWORD}`, `${CLIENT_URL}`... ngay trong `docker-compose.yml`, và (2) thông qua khối `environment:` của service `app`, bơm các biến đó vào BÊN TRONG container (nơi `server/config/productionChecks.js` đọc `process.env` như bình thường). Nếu đặt trong `server/`, sẽ phải chỉ định đường dẫn `--env-file server/.env.production` dài hơn và có thể gây nhầm với `server/.env` (dùng cho dev, không qua Docker) — để ở gốc, cùng cấp `docker-compose.yml`, là lựa chọn rõ ràng hơn cho đúng mục đích "env file CỦA docker compose", tách bạch khỏi "env file của server khi chạy dev trực tiếp".
+
+**81. Docker/docker-compose.yml đã được chạy thật (`docker build`/`docker compose up`) để xác nhận chưa?**
+**Chưa** — môi trường phát triển dùng để viết các file này KHÔNG có Docker daemon cài sẵn (`docker --version` trả lỗi "command not found"), nên KHÔNG thể tự build/run thật để xác nhận end-to-end. Đã làm được: review kỹ cú pháp YAML/Dockerfile, đối chiếu với file thật trong repo (ví dụ xác nhận cả `client/package-lock.json` và `server/package-lock.json` đều tồn tại — cần cho dòng `COPY ... package-lock.json ./`; xác nhận thứ tự alphabet `schema.sql` đứng trước `seed.sql` để MySQL image chạy đúng thứ tự khi tự khởi tạo DB lần đầu). Phần KHÔNG phụ thuộc Docker daemon (static serving production, kiểm tra cấu hình `assertProductionConfig`) đã có automated test chạy thật và PASS. Đây là nguyên tắc minh bạch nhất quán đã áp dụng trong toàn dự án — không khẳng định đã verify điều chưa thực sự verify được (cùng cách đã công khai với hành vi chặn thật của `loginLimiter` và scheduler thời gian thực của `reminderJob`, xem Mục O/R).
 
 ## Q. Gửi email + Quên mật khẩu tự phục vụ (bổ sung theo yêu cầu trực tiếp của người dùng, xem README Mục 16I)
 

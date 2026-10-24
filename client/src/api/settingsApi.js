@@ -14,6 +14,11 @@ function toCamelCase(row) {
   return {
     systemName: row.system_name,
     systemDescription: row.system_description,
+    // schoolName/facultyName: in lên giấy giới thiệu/phiếu kết quả thực tập (PDF, Mục 16L README) —
+    // NULL = Admin chưa cấu hình, khác '' (chuỗi rỗng); AdminSettingsPage.jsx tự đổi null -> '' cho
+    // input controlled, gửi lại '' -> server tự lưu NULL (xem settingsService.update()).
+    schoolName: row.school_name,
+    facultyName: row.faculty_name,
     defaultInternshipPeriodId: row.default_internship_period_id,
     // allow_student_registration trả về 0/1 (TINYINT qua mysql2) — ép Boolean() tường minh để tránh
     // lặp lại lỗi so sánh `=== true` đã gặp với is_published ở Phase 4E-1.

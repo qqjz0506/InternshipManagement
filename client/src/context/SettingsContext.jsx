@@ -15,6 +15,10 @@ const DEFAULT_SETTINGS = {
   systemName: 'Hệ thống quản lý thực tập tốt nghiệp',
   systemDescription:
     'Hệ thống hỗ trợ quản lý quy trình thực tập giữa sinh viên, giảng viên, doanh nghiệp và khoa.',
+  // schoolName/facultyName: in lên giấy giới thiệu/phiếu kết quả thực tập (PDF, Mục 16L README) —
+  // '' (không phải null) để input controlled không bị warning value={null}.
+  schoolName: '',
+  facultyName: '',
   defaultInternshipPeriodId: null,
   allowStudentRegistration: true,
   // Trọng số tính điểm tổng kết thực tập — phải khớp DEFAULT ở server/db/schema.sql (settings table)

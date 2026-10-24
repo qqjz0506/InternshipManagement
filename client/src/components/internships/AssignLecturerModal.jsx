@@ -11,6 +11,10 @@ function AssignLecturerModal({
   lecturers,
   currentLecturerId,
   studentDepartmentId,
+  // lecturerCounts: { [lecturerId]: số hồ sơ đang hướng dẫn (pending/approved/in_progress) trong
+  // CÙNG đợt của hồ sơ đang xem } — tính CLIENT-SIDE từ InternshipsContext đã tải sẵn (chỉ hiển thị
+  // tham khảo, server vẫn là nguồn chặn thật qua lecturers.max_students, xem internshipService.js).
+  lecturerCounts = {},
   submitError,
   isSubmitting,
 }) {
@@ -53,7 +57,7 @@ function AssignLecturerModal({
             <option value="">-- Bỏ phân công --</option>
             {visibleLecturers.map((lecturer) => (
               <option key={lecturer.id} value={lecturer.id}>
-                {lecturer.lecturer_code} - {lecturer.full_name}
+                {lecturer.lecturer_code} - {lecturer.full_name} (đang hướng dẫn {lecturerCounts[lecturer.id] ?? 0}/{lecturer.max_students})
               </option>
             ))}
           </select>

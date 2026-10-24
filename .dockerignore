@@ -1,0 +1,17 @@
+node_modules
+client/node_modules
+server/node_modules
+client/dist
+server/uploads
+server/logs
+.env
+server/.env
+client/.env
+.env.production
+test-results
+playwright-report
+.git
+.vscode
+.idea
+npm-debug.log*
+*.log

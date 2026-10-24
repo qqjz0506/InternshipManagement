@@ -14,6 +14,7 @@ import { useCompanies } from '../../context/CompaniesContext'
 import { useCompanyMentors } from '../../context/CompanyMentorsContext'
 import { useLecturers } from '../../context/LecturersContext'
 import { useTopics } from '../../context/TopicsContext'
+import { downloadIntroductionLetter, downloadResultSheet } from '../../utils/internshipDocumentDownload'
 import { STATUS_META } from '../../utils/internshipStatus'
 import '../../components/common/ListPage.css'
 import './StudentInternshipPage.css'
@@ -112,6 +113,22 @@ function StudentInternshipPage() {
     )
   }
 
+  async function handleDownloadIntroductionLetter() {
+    try {
+      await downloadIntroductionLetter(internship.id, student.student_code)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
+  async function handleDownloadResultSheet() {
+    try {
+      await downloadResultSheet(internship.id, student.student_code)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
   const period = periods.find((item) => item.id === internship.period_id)
   const company = companies.find((item) => item.id === internship.company_id)
   const mentor = mentors.find((item) => item.id === internship.company_mentor_id)
@@ -193,6 +210,19 @@ function StudentInternshipPage() {
         <Badge tone={STATUS_META[internship.status].tone}>{STATUS_META[internship.status].label}</Badge>
       </div>
       <p className="internship-status-desc">{STATUS_DESCRIPTION[internship.status]}</p>
+
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {['approved', 'in_progress', 'completed'].includes(internship.status) && (
+          <Button variant="secondary" onClick={handleDownloadIntroductionLetter}>
+            Tải giấy giới thiệu thực tập (PDF)
+          </Button>
+        )}
+        {internship.status === 'completed' && (
+          <Button variant="secondary" onClick={handleDownloadResultSheet}>
+            Tải phiếu kết quả thực tập (PDF)
+          </Button>
+        )}
+      </div>
 
       <div className="card-grid">
         <InfoCard title="Đợt thực tập">

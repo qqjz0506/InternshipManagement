@@ -119,6 +119,27 @@ function AdminSettingsPage() {
             />
           </FormField>
 
+          <FormField label="Tên trường (in trên giấy tờ PDF)" htmlFor="schoolName">
+            <input
+              id="schoolName"
+              value={draft.schoolName ?? ''}
+              onChange={(event) => handleChange('schoolName', event.target.value)}
+              placeholder="VD: TRƯỜNG ĐẠI HỌC ..."
+            />
+          </FormField>
+
+          <FormField label="Tên khoa (in trên giấy tờ PDF)" htmlFor="facultyName">
+            <input
+              id="facultyName"
+              value={draft.facultyName ?? ''}
+              onChange={(event) => handleChange('facultyName', event.target.value)}
+              placeholder="VD: KHOA CÔNG NGHỆ THÔNG TIN"
+            />
+          </FormField>
+          <p className="form-hint">
+            Dùng để in lên Giấy giới thiệu thực tập và Phiếu kết quả thực tập (PDF) — để trống nếu chưa cấu hình.
+          </p>
+
           <FormField label="Phiên bản" htmlFor="version">
             <input id="version" value={FRONTEND_VERSION} disabled />
           </FormField>

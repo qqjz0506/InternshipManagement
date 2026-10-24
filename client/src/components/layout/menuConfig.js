@@ -9,6 +9,7 @@ export const MENU_BY_ROLE = {
     { label: 'Đợt thực tập', path: '/admin/internship-periods' },
     { label: 'Đề tài', path: '/admin/topics' },
     { label: 'Hồ sơ thực tập', path: '/admin/internships' },
+    { label: 'Vị trí thực tập', path: '/admin/internship-positions' },
     { label: 'Báo cáo', path: '/admin/reports' },
     { label: 'Đánh giá', path: '/admin/evaluations' },
     { label: 'Thống kê', path: '/admin/statistics' },
@@ -20,6 +21,7 @@ export const MENU_BY_ROLE = {
     { label: 'Dashboard', path: '/student/dashboard' },
     { label: 'Hồ sơ cá nhân', path: '/student/profile' },
     { label: 'Đăng ký thực tập', path: '/student/internship' },
+    { label: 'Vị trí thực tập', path: '/student/positions' },
     { label: 'Tiến độ', path: '/student/progress' },
     { label: 'Nhật ký thực tập', path: '/student/logs' },
     { label: 'Báo cáo', path: '/student/reports' },
@@ -39,6 +41,7 @@ export const MENU_BY_ROLE = {
   company_mentor: [
     { label: 'Dashboard', path: '/company/dashboard' },
     { label: 'Sinh viên phụ trách', path: '/company/students' },
+    { label: 'Vị trí thực tập', path: '/company/positions' },
     { label: 'Tiến độ', path: '/company/progress' },
     { label: 'Nhật ký', path: '/company/logs' },
     { label: 'Báo cáo', path: '/company/reports' },

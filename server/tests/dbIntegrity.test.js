@@ -23,18 +23,20 @@ const EXPECTED_BASELINE = {
   settings: 1,
   password_reset_tokens: 0,
   reminder_logs: 0,
+  internship_positions: 0,
+  position_applications: 0,
 }
 
 test.after(async () => {
   await pool.end()
 })
 
-test('DB integrity: đúng 16 bảng', async () => {
-  assert.equal(await tableCount(), 16)
+test('DB integrity: đúng 18 bảng', async () => {
+  assert.equal(await tableCount(), 18)
 })
 
-test('DB integrity: đúng 21 foreign keys', async () => {
-  assert.equal(await foreignKeyCount(), 21)
+test('DB integrity: đúng 25 foreign keys', async () => {
+  assert.equal(await foreignKeyCount(), 25)
 })
 
 for (const [table, expected] of Object.entries(EXPECTED_BASELINE)) {

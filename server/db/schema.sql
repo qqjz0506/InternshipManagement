@@ -93,6 +93,11 @@ CREATE TABLE lecturers (
   phone VARCHAR(15) NULL,
   department_id INT UNSIGNED NOT NULL,
   position VARCHAR(150) NULL,
+  -- max_students: số sinh viên tối đa giảng viên này hướng dẫn CÙNG LÚC trong 1 đợt thực tập (đếm
+  -- internship status pending/approved/in_progress — xem internshipService.assertLecturerCapacity).
+  -- Bổ sung sau đợt kiểm tra trước bảo vệ — xem server/db/migrations/011_lecturers_max_students.sql
+  -- cho database đã có.
+  max_students TINYINT UNSIGNED NOT NULL DEFAULT 10,
   status ENUM('active','inactive') NOT NULL DEFAULT 'active',
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -335,6 +340,12 @@ CREATE TABLE settings (
   id TINYINT UNSIGNED NOT NULL DEFAULT 1,
   system_name VARCHAR(255) NOT NULL,
   system_description TEXT NULL,
+  -- school_name/faculty_name: in lên giấy giới thiệu thực tập + phiếu kết quả thực tập (PDF, xem
+  -- server/services/documentService.js) — KHÁC system_name (tên hiển thị trong ứng dụng). NULL = Admin
+  -- chưa cấu hình, PDF tự hiện dòng chấm trống thay thế. Bổ sung sau đợt kiểm tra trước bảo vệ — xem
+  -- server/db/migrations/014_settings_school_faculty.sql cho database đã có.
+  school_name VARCHAR(255) NULL,
+  faculty_name VARCHAR(255) NULL,
   default_internship_period_id INT UNSIGNED NULL,
   allow_student_registration TINYINT(1) NOT NULL DEFAULT 1,
   -- lecturer_weight/company_weight: trọng số (%) dùng tính điểm tổng kết thực tập (evaluationService.
@@ -382,5 +393,48 @@ CREATE TABLE reminder_logs (
   UNIQUE KEY uk_reminder_logs_user_key_date (user_id, reminder_key, sent_date),
   INDEX idx_reminder_logs_user (user_id),
   CONSTRAINT fk_reminder_logs_user FOREIGN KEY (user_id) REFERENCES users(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 17. INTERNSHIP_POSITIONS (vị trí thực tập do Doanh nghiệp/Admin đăng, Sinh viên ứng tuyển)
+CREATE TABLE internship_positions (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  company_id INT UNSIGNED NOT NULL,
+  period_id INT UNSIGNED NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NULL,
+  requirements TEXT NULL,
+  slots TINYINT UNSIGNED NOT NULL,
+  -- status: 'open' = còn nhận đơn, 'closed' = đã đủ slot (tự đóng khi accepted >= slots, xem
+  -- positionApplicationService.accept) hoặc Admin/Mentor tự đóng tay.
+  status ENUM('open','closed') NOT NULL DEFAULT 'open',
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_internship_positions_company (company_id),
+  INDEX idx_internship_positions_period (period_id),
+  INDEX idx_internship_positions_status (status),
+  CONSTRAINT fk_internship_positions_company FOREIGN KEY (company_id) REFERENCES companies(id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_internship_positions_period FOREIGN KEY (period_id) REFERENCES internship_periods(id)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- 18. POSITION_APPLICATIONS (đơn ứng tuyển vị trí thực tập)
+CREATE TABLE position_applications (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  position_id INT UNSIGNED NOT NULL,
+  student_id INT UNSIGNED NOT NULL,
+  status ENUM('applied','accepted','rejected','withdrawn') NOT NULL DEFAULT 'applied',
+  note TEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  -- 1 sinh viên chỉ có ĐÚNG 1 đơn/vị trí — ứng tuyển lại sau khi rút/bị từ chối là UPDATE lại dòng
+  -- này (status -> 'applied'), không INSERT dòng mới (xem positionApplicationService.apply).
+  UNIQUE KEY uk_position_applications_position_student (position_id, student_id),
+  INDEX idx_position_applications_student (student_id),
+  INDEX idx_position_applications_status (status),
+  CONSTRAINT fk_position_applications_position FOREIGN KEY (position_id) REFERENCES internship_positions(id)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT fk_position_applications_student FOREIGN KEY (student_id) REFERENCES students(id)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;

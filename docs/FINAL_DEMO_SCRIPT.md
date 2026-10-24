@@ -80,6 +80,12 @@ Mở `http://localhost:5173` → phải thấy `/login`. **[API/TEST]**
    - Student nộp 1 báo cáo tổng kết mới (`StudentReportsPage.jsx`, dùng file demo PDF) → vì đã qua hạn vừa đặt → báo cáo hiện ngay badge đỏ "Nộp trễ"; thử xuất lại `internships.xlsx` để thấy cột "Báo cáo tổng kết nộp trễ" = "Có". **[API/TEST]** (`server/tests/reminderJob.test.js`, `server/tests/reportLateFlag.test.js`)
    - **Dọn dẹp sau demo**: xóa báo cáo final vừa nộp (Admin, `/admin/reports`), đặt lại 2 hạn của TT2024-2 về trống (bấm xóa nội dung ô ngày), và chạy `DELETE FROM reminder_logs WHERE sent_date = CURDATE();` (hoặc đợi qua ngày — `reminder_logs` không ảnh hưởng gì tới demo lần sau ngoài việc job sẽ bỏ qua các reminder_key đã gửi trong NGÀY HÔM ĐÓ).
 
+9b. **Vị trí thực tập + Ứng tuyển** — dùng `company2@example.com` ("mentorB", công ty FPT Software) và `student4@example.com` ("studentD", chưa có hồ sơ thực tập nào):
+    - Đăng nhập mentorB → `/company/positions` → "+ Đăng vị trí mới" → chọn đợt "TT2025-1" → nhập tên vị trí, số lượng (slots) = 1 → Lưu → vị trí mới hiện trong danh sách, trạng thái "Còn nhận đơn".
+    - Đăng xuất, đăng nhập studentD → `/student/positions` → thấy vị trí vừa đăng ở danh sách "Vị trí thực tập" → bấm "Ứng tuyển" → nhập ghi chú (tùy chọn) → "Gửi đơn ứng tuyển" → mục "Đơn ứng tuyển của tôi" hiện đơn mới, trạng thái "Đang chờ".
+    - Đăng xuất, đăng nhập lại mentorB → `/company/positions` → "Xem đơn ứng tuyển" trên vị trí đó → thấy đơn của studentD → bấm "Chấp nhận" → trạng thái đổi "Đã nhận" → đóng modal → vị trí tự chuyển "1/1" + "Đã đóng" (hết slot).
+    - Vào `/admin/internships` (đăng nhập Admin) → tìm hồ sơ thực tập mới của studentD (đợt TT2025-1, trạng thái "Đã duyệt") → chỉ ra hồ sơ này được **tự động tạo** từ hành động chấp nhận, không qua luồng đăng ký/duyệt thủ công thông thường. **[API/TEST]** (`server/tests/positionApplications.test.js`, `e2e/internshipPositions.spec.js`) — *dọn dẹp sau demo: Admin xóa hồ sơ thực tập vừa tạo (`/admin/internships`, chỉ xóa được khi `pending` — nếu đã `approved` thì sửa trực tiếp qua SQL hoặc để lại, không ảnh hưởng demo lần sau vì dùng period/slots mới mỗi lần).*
+
 9. **Quên mật khẩu + email** (làm TRƯỚC khi đăng nhập Admin, ở `/login`): bấm "Quên mật khẩu?" → nhập `student4@example.com` → "Gửi yêu cầu đặt lại mật khẩu" → thông báo chung (không lộ email có tồn tại hay không). Vì `.env` demo không bật `MAIL_ENABLED=true` (xem README Mục 16I), mở file `server/logs/mail-outbox.log` (dòng JSON cuối cùng) để lấy link + token thay cho việc đọc hộp thư thật — copy link dạng `.../reset-password?token=...` dán vào trình duyệt → nhập mật khẩu mới → tự chuyển về `/login` → đăng nhập thử bằng mật khẩu mới để xác nhận. Minh họa thêm: đăng nhập Admin → `/change-password` → tắt checkbox "Nhận email khi có thông báo mới" → thực hiện 1 hành động tạo thông báo (vd. duyệt báo cáo) → mở lại `mail-outbox.log`, chỉ ra KHÔNG có dòng mới cho Admin (notification vẫn có trong `/admin/notifications` như thường) → bật lại checkbox để khôi phục. **[API/TEST]** (`server/tests/passwordReset.test.js`, `server/tests/mail.test.js`) — *nếu có cấu hình SMTP thật (Gmail App Password/Mailtrap — README Mục 16I) trước giờ demo, có thể bật `MAIL_ENABLED=true` để mở hộp thư thật cho hội đồng xem trực tiếp, ấn tượng hơn đọc file log.*
 
 ### 5.2. Student (đăng nhập `student@example.com` — Nguyễn Minh Anh, `students.id=1`, có hồ sơ `internships.id=1` đang `in_progress`, GVHD = Trần Quốc Bảo, Mentor = Nguyễn Thị Hạnh)
@@ -104,6 +110,12 @@ Mở `http://localhost:5173` → phải thấy `/login`. **[API/TEST]**
 1. **Sinh viên hướng dẫn** (`/company/students`) — chỉ thấy đúng 1 sinh viên (Nguyễn Minh Anh) vì chỉ phụ trách 1 hồ sơ.
 2. **Nhật ký** (`/company/logs`) — thêm `company_comment` cho log — thử gửi kèm `lecturer_comment` (nếu có cách nào từ UI) → bị chặn 403 field ngoài whitelist (`tests/internshipLogsAuthorization.test.js`). **[API/TEST]**
 3. **Đánh giá** (`/company/evaluations`) — tạo đánh giá độc lập với đánh giá Lecturer (unique theo `(internship_id, evaluator_role)`).
+
+10. **Xuất giấy tờ PDF** — dùng `internships.id=1` (Student A, `in_progress`, đã có company) để demo giấy giới thiệu, và hồ sơ bất kỳ đã `completed` (vd. sau khi hoàn thành Bước 7 Mục 6 dưới đây) để demo phiếu kết quả:
+    - (Tùy chọn trước) `/admin/settings` → điền "Tên trường"/"Tên khoa" → Lưu → PDF sẽ có tên trường/khoa thay cho dòng chấm trống.
+    - Đăng nhập `student@example.com` → `/student/internship` → bấm "Tải giấy giới thiệu thực tập (PDF)" → file PDF tải xuống, mở ra xem đúng tên trường/khoa (hoặc dòng chấm nếu chưa cấu hình), thông tin sinh viên + doanh nghiệp, chữ tiếng Việt có dấu hiển thị đúng (không ô vuông/lỗi font).
+    - Với 1 hồ sơ đã `completed` (Admin, `/admin/internships/:id`, hoặc Lecturer ở `/lecturer/students/:id`) → bấm "Phiếu kết quả (PDF)" → file PDF có điểm 4 thành phần của cả Giảng viên/Doanh nghiệp, điểm tổng kết + xếp loại, nhận xét 2 phía.
+    - Minh họa chặn đúng điều kiện: thử gọi trực tiếp `GET /api/internships/3/documents/introduction-letter.pdf` (hồ sơ `pending`, chưa có company — qua Postman/trình duyệt) → nhận 409, không phải file PDF giả/lỗi. **[API/TEST]** (`server/tests/internshipDocuments.test.js`)
 
 ## 6. Luồng nghiệp vụ liên kết giữa các vai trò
 
@@ -150,7 +162,7 @@ npx playwright install chromium   # 1 lần đầu nếu máy chưa có
 npm run test:e2e                  # chạy từ gốc dự án
 ```
 
-Đây là smoke test tự động (không phải buổi demo thật) — tự dựng backend+frontend thật trên **database test riêng** (không đụng database dev đang dùng để demo), đăng nhập cả 4 role, đăng ký thực tập, ghi nhật ký, upload báo cáo PDF thật, nhận xét/duyệt, chấm+công bố điểm, chuyển `completed`, xem điểm tổng kết, xuất Excel, khóa/mở tài khoản, và Admin nhập 3 sinh viên từ file Excel mẫu. PASS hết nghĩa là luồng chính không có lỗi UI mới — không thay thế cho việc tự tay thử lại 1 lần trước hội đồng (UI thật có thể còn vài tiểu tiết trình bày Playwright không kiểm tra, ví dụ màu sắc/responsive).
+Đây là smoke test tự động (không phải buổi demo thật) — tự dựng backend+frontend thật trên **database test riêng** (không đụng database dev đang dùng để demo), đăng nhập cả 4 role, đăng ký thực tập, ghi nhật ký, upload báo cáo PDF thật, nhận xét/duyệt, chấm+công bố điểm, chuyển `completed`, xem điểm tổng kết, xuất Excel, khóa/mở tài khoản, Admin nhập 3 sinh viên từ file Excel mẫu, và Mentor đăng vị trí thực tập → Sinh viên ứng tuyển → Mentor chấp nhận. PASS hết nghĩa là luồng chính không có lỗi UI mới — không thay thế cho việc tự tay thử lại 1 lần trước hội đồng (UI thật có thể còn vài tiểu tiết trình bày Playwright không kiểm tra, ví dụ màu sắc/responsive).
 
 ## 11. Tình huống lỗi và phương án dự phòng an toàn
 
@@ -162,3 +174,4 @@ npm run test:e2e                  # chạy từ gốc dự án
 | Trình duyệt bị văng về `/login` giữa demo (token hết hạn) | Đăng nhập lại — `JWT_EXPIRES_IN=1d` theo `.env`, không nên kéo dài 1 session quá 1 ngày, nhưng nếu hết hạn thì đăng nhập lại là đủ, không mất dữ liệu |
 | Export Excel không tải được (lỗi mạng/trình duyệt chặn download) | Thử lại 1 lần; nếu vẫn lỗi, chuyển sang minh họa qua Postman/curl gọi trực tiếp `GET /api/exports/internships.xlsx` với token Admin để cho thấy backend vẫn hoạt động đúng |
 | Hội đồng yêu cầu xem 1 chức năng không có trong kịch bản | Trả lời trung thực theo đúng trạng thái trong `docs/REQUIREMENT_TRACEABILITY_MATRIX.md`/`DEFENSE_QA.md` — không bịa, không demo chức năng chưa tồn tại |
+| Hội đồng hỏi về triển khai thật (production/Docker) | Đây KHÔNG phải nội dung demo live (demo luôn chạy ở môi trường dev — 2 server riêng, xem Mục 3) — trả lời bằng `docs/TRIEN_KHAI.md` (chạy qua `docker compose`, VPS + Nginx + HTTPS, sao lưu DB/uploads) và README Mục 16M/`DEFENSE_QA.md` Mục V; nói rõ Docker build/up chưa được chạy thật trong môi trường phát triển (chỉ code review), không bịa đã verify |

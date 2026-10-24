@@ -128,7 +128,7 @@ async function validateReferences({ department_id, user_id }, ignoreId) {
 }
 
 async function create(payload) {
-  const { lecturer_code, full_name, email, phone, department_id, position, status, user_id } = payload
+  const { lecturer_code, full_name, email, phone, department_id, position, status, user_id, max_students } = payload
 
   if (await isCodeTaken(lecturer_code)) {
     throw new AppError(409, 'Mã giảng viên đã tồn tại.')
@@ -136,9 +136,12 @@ async function create(payload) {
   await validateReferences({ department_id, user_id })
 
   const [result] = await pool.execute(
-    `INSERT INTO lecturers (user_id, lecturer_code, full_name, email, phone, department_id, position, status)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [user_id ?? null, lecturer_code, full_name, email, phone ?? null, department_id, position ?? null, status ?? 'active'],
+    `INSERT INTO lecturers (user_id, lecturer_code, full_name, email, phone, department_id, position, max_students, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [
+      user_id ?? null, lecturer_code, full_name, email, phone ?? null, department_id, position ?? null,
+      max_students ?? 10, status ?? 'active',
+    ],
   )
   return getById(result.insertId)
 }
@@ -149,7 +152,7 @@ async function update(id, payload) {
     throw new AppError(404, 'Không tìm thấy giảng viên.')
   }
 
-  const { lecturer_code, full_name, email, phone, department_id, position, status, user_id } = payload
+  const { lecturer_code, full_name, email, phone, department_id, position, status, user_id, max_students } = payload
 
   if (await isCodeTaken(lecturer_code, id)) {
     throw new AppError(409, 'Mã giảng viên đã tồn tại.')
@@ -158,9 +161,12 @@ async function update(id, payload) {
 
   await pool.execute(
     `UPDATE lecturers SET
-      lecturer_code = ?, full_name = ?, email = ?, phone = ?, department_id = ?, position = ?, status = ?, user_id = ?
+      lecturer_code = ?, full_name = ?, email = ?, phone = ?, department_id = ?, position = ?, max_students = ?, status = ?, user_id = ?
      WHERE id = ?`,
-    [lecturer_code, full_name, email, phone ?? null, department_id, position ?? null, status ?? 'active', user_id ?? null, id],
+    [
+      lecturer_code, full_name, email, phone ?? null, department_id, position ?? null,
+      max_students ?? 10, status ?? 'active', user_id ?? null, id,
+    ],
   )
   return getById(id)
 }

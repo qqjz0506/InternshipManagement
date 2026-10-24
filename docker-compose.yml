@@ -1,0 +1,65 @@
+# Chạy: docker compose --env-file .env.production up -d --build
+# (--env-file bắt buộc — compose dùng biến trong file đó để điền cả vào phần "environment:" dưới
+# đây lẫn thay thế ${...} ngay trong file này. Copy từ .env.production.example trước, xem
+# docs/TRIEN_KHAI.md.)
+services:
+  db:
+    image: mysql:8
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/mysql
+      # MySQL image tự chạy MỌI file .sql/.sh nằm TRỰC TIẾP (không đệ quy) trong thư mục này ở LẦN
+      # KHỞI TẠO ĐẦU TIÊN (volume db_data rỗng) — tự nhặt đúng schema.sql + seed.sql theo thứ tự tên
+      # file (schema.sql trước seed.sql), các file khác trong server/db/ (migrate.js, migrations/,
+      # seed.js, sqlRunner.js, testSetup.js) bị bỏ qua vì không khớp *.sql/*.sh ở cấp này.
+      - ./server/db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      CLIENT_URL: ${CLIENT_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      APP_TIMEZONE: ${APP_TIMEZONE}
+      DEBUG_ERRORS: ${DEBUG_ERRORS}
+      MAIL_ENABLED: ${MAIL_ENABLED}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      MAIL_FROM: ${MAIL_FROM}
+      REMINDER_JOB_ENABLED: ${REMINDER_JOB_ENABLED}
+      # Số hop reverse proxy phía trước (Nginx...) — 1 nếu dùng đúng theo hướng dẫn
+      # docs/TRIEN_KHAI.md (1 Nginx duy nhất đứng trước app). Để trống nếu không qua proxy nào.
+      TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS}
+    ports:
+      - '5000:5000'
+    volumes:
+      # Giữ lại file báo cáo đã upload qua các lần recreate container (server/config/upload.js tự
+      # tạo lại thư mục con nếu chưa có, không cần mkdir tay).
+      - server_uploads:/app/server/uploads
+
+volumes:
+  db_data:
+  server_uploads:

@@ -1,8 +1,77 @@
 const internshipService = require('../services/internshipService')
 const evaluationService = require('../services/evaluationService')
+const documentService = require('../services/documentService')
+const studentService = require('../services/studentService')
+const companyService = require('../services/companyService')
+const departmentService = require('../services/departmentService')
+const internshipPeriodService = require('../services/internshipPeriodService')
+const settingsService = require('../services/settingsService')
 const AppError = require('../utils/AppError')
 const { sendSuccess } = require('../utils/response')
 const { isRequired, isValidId, isValidDate } = require('../utils/validators')
+
+const PDF_CONTENT_TYPE = 'application/pdf'
+
+async function loadDocumentContext(internship) {
+  const student = await studentService.getById(internship.student_id)
+  const [department, company, period, settings] = await Promise.all([
+    departmentService.getById(student.department_id),
+    internship.company_id ? companyService.getById(internship.company_id) : null,
+    internshipPeriodService.getById(internship.period_id),
+    settingsService.get(),
+  ])
+  return { student, department, company, period, settings }
+}
+
+function sendPdf(res, doc, filename) {
+  res.setHeader('Content-Type', PDF_CONTENT_TYPE)
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`)
+  doc.pipe(res)
+  doc.end()
+}
+
+// Giấy giới thiệu: chỉ xuất được khi hồ sơ đã 'approved' trở lên (approved/in_progress/completed) VÀ
+// đã có company_id — scope giống GET /internships/:id (getByIdForUser), Student chỉ tải của chính mình.
+const INTRODUCTION_LETTER_STATUSES = ['approved', 'in_progress', 'completed']
+
+async function getIntroductionLetter(req, res) {
+  validateId(req.params.id)
+  const internship = await internshipService.getByIdForUser(req.params.id, req.user)
+  if (!internship) {
+    throw new AppError(404, 'Internship not found')
+  }
+  if (!INTRODUCTION_LETTER_STATUSES.includes(internship.status) || !internship.company_id) {
+    throw new AppError(409, 'Chỉ xuất được giấy giới thiệu khi hồ sơ thực tập đã được duyệt và đã có doanh nghiệp.')
+  }
+
+  const { student, department, company, period, settings } = await loadDocumentContext(internship)
+  const doc = documentService.buildIntroductionLetterPdf({ internship, student, department, company, period, settings })
+  sendPdf(res, doc, `giay-gioi-thieu-${student.student_code}.pdf`)
+}
+
+// Phiếu kết quả: chỉ xuất được khi hồ sơ đã 'completed' — tại thời điểm đó, final_score/
+// final_classification ĐÃ CHỐT và 2 đánh giá ĐÃ CÔNG BỐ (bất biến 16F, không thể đảo ngược), nên
+// không cần kiểm tra is_published riêng cho Student ở đây — "completed" ĐÃ BAO HÀM "đã công bố".
+async function getResultSheet(req, res) {
+  validateId(req.params.id)
+  const internship = await internshipService.getByIdForUser(req.params.id, req.user)
+  if (!internship) {
+    throw new AppError(404, 'Internship not found')
+  }
+  if (internship.status !== 'completed') {
+    throw new AppError(409, 'Chỉ xuất được phiếu kết quả khi hồ sơ thực tập đã hoàn thành (completed).')
+  }
+
+  const { student, department, company, period, settings } = await loadDocumentContext(internship)
+  const [finalResult, { lecturer: lecturerEval, company: companyEval }] = await Promise.all([
+    evaluationService.computeFinalResult(req.params.id),
+    evaluationService.getPublishedPair(req.params.id),
+  ])
+  const doc = documentService.buildResultSheetPdf({
+    internship, student, department, company, period, lecturerEval, companyEval, finalResult, settings,
+  })
+  sendPdf(res, doc, `phieu-ket-qua-${student.student_code}.pdf`)
+}
 
 function validateId(id) {
   if (!isValidId(id)) {
@@ -107,4 +176,4 @@ async function getFinalResult(req, res) {
   sendSuccess(res, { message: 'Final result retrieved successfully', data: result })
 }
 
-module.exports = { list, getOne, create, update, remove, getFinalResult }
+module.exports = { list, getOne, create, update, remove, getFinalResult, getIntroductionLetter, getResultSheet }

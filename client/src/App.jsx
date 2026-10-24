@@ -9,6 +9,8 @@ import { DepartmentsProvider } from './context/DepartmentsContext'
 import { InternshipPeriodsProvider } from './context/InternshipPeriodsContext'
 import { TopicsProvider } from './context/TopicsContext'
 import { InternshipsProvider } from './context/InternshipsContext'
+import { InternshipPositionsProvider } from './context/InternshipPositionsContext'
+import { PositionApplicationsProvider } from './context/PositionApplicationsContext'
 import { InternshipLogsProvider } from './context/InternshipLogsContext'
 import { ReportsProvider } from './context/ReportsContext'
 import { EvaluationsProvider } from './context/EvaluationsContext'
@@ -31,6 +33,7 @@ import DepartmentsPage from './pages/admin/DepartmentsPage'
 import InternshipPeriodsPage from './pages/admin/InternshipPeriodsPage'
 import TopicsPage from './pages/admin/TopicsPage'
 import InternshipsPage from './pages/admin/InternshipsPage'
+import InternshipPositionsPage from './pages/admin/InternshipPositionsPage'
 import InternshipDetailPage from './pages/admin/InternshipDetailPage'
 import AdminReportsPage from './pages/admin/AdminReportsPage'
 import AdminReportDetailPage from './pages/admin/AdminReportDetailPage'
@@ -44,6 +47,7 @@ import AdminNotificationsPage from './pages/admin/AdminNotificationsPage'
 import StudentDashboardPage from './pages/student/StudentDashboardPage'
 import StudentProfilePage from './pages/student/StudentProfilePage'
 import StudentInternshipPage from './pages/student/StudentInternshipPage'
+import StudentPositionsPage from './pages/student/StudentPositionsPage'
 import StudentProgressPage from './pages/student/StudentProgressPage'
 import StudentLogsPage from './pages/student/StudentLogsPage'
 import StudentReportsPage from './pages/student/StudentReportsPage'
@@ -60,6 +64,7 @@ import LecturerNotificationsPage from './pages/lecturer/LecturerNotificationsPag
 import LecturerProfilePage from './pages/lecturer/LecturerProfilePage'
 import CompanyDashboardPage from './pages/company/CompanyDashboardPage'
 import CompanyStudentsPage from './pages/company/CompanyStudentsPage'
+import CompanyPositionsPage from './pages/company/CompanyPositionsPage'
 import CompanyStudentDetailPage from './pages/company/CompanyStudentDetailPage'
 import CompanyProgressPage from './pages/company/CompanyProgressPage'
 import CompanyLogsPage from './pages/company/CompanyLogsPage'
@@ -108,6 +113,7 @@ function AppRoutes() {
           <Route path="/admin/topics" element={<TopicsPage />} />
           <Route path="/admin/internships" element={<InternshipsPage />} />
           <Route path="/admin/internships/:id" element={<InternshipDetailPage />} />
+          <Route path="/admin/internship-positions" element={<InternshipPositionsPage />} />
           <Route path="/admin/reports" element={<AdminReportsPage />} />
           <Route path="/admin/reports/:id" element={<AdminReportDetailPage />} />
           <Route path="/admin/evaluations" element={<AdminEvaluationsPage />} />
@@ -124,6 +130,7 @@ function AppRoutes() {
           <Route path="/student/dashboard" element={<StudentDashboardPage />} />
           <Route path="/student/profile" element={<StudentProfilePage />} />
           <Route path="/student/internship" element={<StudentInternshipPage />} />
+          <Route path="/student/positions" element={<StudentPositionsPage />} />
           <Route path="/student/progress" element={<StudentProgressPage />} />
           <Route path="/student/logs" element={<StudentLogsPage />} />
           <Route path="/student/reports" element={<StudentReportsPage />} />
@@ -150,6 +157,7 @@ function AppRoutes() {
         <Route element={<AppLayout />}>
           <Route path="/company/dashboard" element={<CompanyDashboardPage />} />
           <Route path="/company/students" element={<CompanyStudentsPage />} />
+          <Route path="/company/positions" element={<CompanyPositionsPage />} />
           <Route path="/company/students/:id" element={<CompanyStudentDetailPage />} />
           <Route path="/company/progress" element={<CompanyProgressPage />} />
           <Route path="/company/logs" element={<CompanyLogsPage />} />
@@ -191,15 +199,19 @@ function AppProviders({ children }) {
                   <InternshipPeriodsProvider>
                     <TopicsProvider>
                       <InternshipsProvider>
-                        <InternshipLogsProvider>
-                          <ReportsProvider>
-                            <EvaluationsProvider>
-                              <NotificationsProvider>
-                              <SettingsProvider>{children}</SettingsProvider>
-                            </NotificationsProvider>
-                            </EvaluationsProvider>
-                          </ReportsProvider>
-                        </InternshipLogsProvider>
+                        <InternshipPositionsProvider>
+                          <PositionApplicationsProvider>
+                            <InternshipLogsProvider>
+                              <ReportsProvider>
+                                <EvaluationsProvider>
+                                  <NotificationsProvider>
+                                  <SettingsProvider>{children}</SettingsProvider>
+                                </NotificationsProvider>
+                                </EvaluationsProvider>
+                              </ReportsProvider>
+                            </InternshipLogsProvider>
+                          </PositionApplicationsProvider>
+                        </InternshipPositionsProvider>
                       </InternshipsProvider>
                     </TopicsProvider>
                   </InternshipPeriodsProvider>

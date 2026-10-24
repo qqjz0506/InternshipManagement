@@ -165,6 +165,27 @@ function assertTopicAssignable(topic, currentUser, studentId) {
   }
 }
 
+// Giới hạn lecturers.max_students (migration 011) — đếm internship 'pending'/'approved'/'in_progress'
+// của giảng viên đó TRONG CÙNG ĐỢT (period_id) — 1 giảng viên có thể hướng dẫn nhiều đợt khác nhau
+// không bị cộng chung. ignoreInternshipId: loại trừ chính hồ sơ đang sửa (tránh tự đếm mình khi giữ
+// nguyên lecturer_id cũ trong 1 request update khác field).
+async function assertLecturerCapacity(lecturerId, periodId, ignoreInternshipId) {
+  const params = [lecturerId, periodId]
+  let query = `SELECT COUNT(*) AS count FROM internships WHERE lecturer_id = ? AND period_id = ? AND status IN ('pending','approved','in_progress')`
+  if (ignoreInternshipId) {
+    query += ' AND id != ?'
+    params.push(ignoreInternshipId)
+  }
+  const [[{ count }]] = await pool.query(query, params)
+  const [[lecturer]] = await pool.execute('SELECT max_students FROM lecturers WHERE id = ?', [lecturerId])
+  if (count >= lecturer.max_students) {
+    throw new AppError(
+      409,
+      `Giảng viên này đã đủ số lượng sinh viên hướng dẫn tối đa trong đợt này (${count}/${lecturer.max_students}).`,
+    )
+  }
+}
+
 function resolveOptionalId(value) {
   return value === undefined || value === null || value === '' ? null : Number(value)
 }
@@ -246,6 +267,7 @@ async function create(payload, currentUser) {
     if (lecturer.status !== 'active') {
       throw new AppError(400, 'Giảng viên này không ở trạng thái hoạt động, không thể gán.')
     }
+    await assertLecturerCapacity(resolvedLecturerId, period_id)
   }
 
   const resolvedTopicId = resolveOptionalId(topic_id)
@@ -397,6 +419,7 @@ async function update(id, payload, currentUser) {
       if (lecturer.status !== 'active') {
         throw new AppError(400, 'Giảng viên này không ở trạng thái hoạt động, không thể gán.')
       }
+      await assertLecturerCapacity(value, existing.period_id, id)
     }
     changes.lecturer_id = value
   }

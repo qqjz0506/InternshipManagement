@@ -19,6 +19,7 @@ import { useInternshipLogs } from '../../context/InternshipLogsContext'
 import { useReports } from '../../context/ReportsContext'
 import { useEvaluations } from '../../context/EvaluationsContext'
 import { useFinalResult } from '../../hooks/useFinalResult'
+import { downloadIntroductionLetter, downloadResultSheet } from '../../utils/internshipDocumentDownload'
 import { STATUS_META } from '../../utils/internshipStatus'
 import { LOG_STATUS_META } from '../../utils/internshipLogStatus'
 import { REPORT_TYPE_LABEL, REPORT_STATUS_META } from '../../utils/reportStatus'
@@ -107,6 +108,22 @@ function LecturerStudentDetailPage() {
     }
   }
 
+  async function handleDownloadIntroductionLetter() {
+    try {
+      await downloadIntroductionLetter(internship.id, student?.student_code)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
+  async function handleDownloadResultSheet() {
+    try {
+      await downloadResultSheet(internship.id, student?.student_code)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
   const logColumns = [
     { key: 'log_date', label: 'Ngày' },
     { key: 'title', label: 'Tiêu đề' },
@@ -158,7 +175,19 @@ function LecturerStudentDetailPage() {
           </Link>
           <h2>{student ? `${student.full_name} (${student.student_code})` : 'Sinh viên'}</h2>
         </div>
-        <Badge tone={STATUS_META[internship.status].tone}>{STATUS_META[internship.status].label}</Badge>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {['approved', 'in_progress', 'completed'].includes(internship.status) && (
+            <Button variant="secondary" className="btn-sm" onClick={handleDownloadIntroductionLetter}>
+              Giấy giới thiệu (PDF)
+            </Button>
+          )}
+          {internship.status === 'completed' && (
+            <Button variant="secondary" className="btn-sm" onClick={handleDownloadResultSheet}>
+              Phiếu kết quả (PDF)
+            </Button>
+          )}
+          <Badge tone={STATUS_META[internship.status].tone}>{STATUS_META[internship.status].label}</Badge>
+        </div>
       </div>
 
       <div className="card-grid">

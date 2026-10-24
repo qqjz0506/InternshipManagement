@@ -31,3 +31,14 @@ export function remove(id) {
 export function getFinalResult(id) {
   return apiClient.get(`/internships/${id}/final-result`)
 }
+
+// Giấy tờ PDF (Mục 16L README) — getBlob() đã có sẵn (dùng chung pattern với export .xlsx/tải báo
+// cáo), không JSON nên không qua request() thường. 409 khi hồ sơ chưa đủ điều kiện (chưa duyệt/chưa
+// có company cho giấy giới thiệu; chưa completed cho phiếu kết quả) — scope 403 giống GET /:id.
+export function getIntroductionLetter(id) {
+  return apiClient.getBlob(`/internships/${id}/documents/introduction-letter.pdf`)
+}
+
+export function getResultSheet(id) {
+  return apiClient.getBlob(`/internships/${id}/documents/result-sheet.pdf`)
+}

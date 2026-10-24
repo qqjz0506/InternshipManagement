@@ -24,7 +24,7 @@ async function update(payload) {
   })
 
   const {
-    systemName, systemDescription, defaultInternshipPeriodId, allowStudentRegistration,
+    systemName, systemDescription, schoolName, facultyName, defaultInternshipPeriodId, allowStudentRegistration,
     lecturerWeight, companyWeight,
   } = payload
 
@@ -33,6 +33,14 @@ async function update(payload) {
   }
   if (systemDescription !== undefined && systemDescription !== null && typeof systemDescription !== 'string') {
     throw new AppError(400, 'systemDescription không hợp lệ.')
+  }
+  // schoolName/facultyName: optional — in lên giấy giới thiệu/phiếu kết quả thực tập (PDF, Mục 16L
+  // README), không bắt buộc như systemName (hệ thống vẫn chạy được nếu Admin chưa cấu hình).
+  if (schoolName !== undefined && schoolName !== null && typeof schoolName !== 'string') {
+    throw new AppError(400, 'schoolName không hợp lệ.')
+  }
+  if (facultyName !== undefined && facultyName !== null && typeof facultyName !== 'string') {
+    throw new AppError(400, 'facultyName không hợp lệ.')
   }
 
   let resolvedPeriodId = null
@@ -69,12 +77,15 @@ async function update(payload) {
 
   await pool.execute(
     `UPDATE settings SET
-      system_name = ?, system_description = ?, default_internship_period_id = ?, allow_student_registration = ?,
+      system_name = ?, system_description = ?, school_name = ?, faculty_name = ?,
+      default_internship_period_id = ?, allow_student_registration = ?,
       lecturer_weight = ?, company_weight = ?
      WHERE id = 1`,
     [
       systemName,
       systemDescription ?? null,
+      schoolName || null,
+      facultyName || null,
       resolvedPeriodId,
       allowStudentRegistration ? 1 : 0,
       resolvedLecturerWeight,

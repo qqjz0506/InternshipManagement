@@ -18,6 +18,8 @@ Hệ thống số hóa toàn bộ quy trình thực tập tốt nghiệp: đăng
 - Thông báo tự động theo từng tài khoản: hệ thống tự sinh thông báo khi có sự kiện nghiệp vụ (đăng ký thực tập, đổi trạng thái hồ sơ, phân công giảng viên/mentor, đề xuất/duyệt đề tài, nộp nhật ký/báo cáo, nhận xét/duyệt, công bố đánh giá...) — không phải event engine/queue thật, chỉ là 1 lệnh ghi đơn giản ngay sau khi nghiệp vụ chính thành công (xem `server/services/notificationService.js`). Badge số thông báo chưa đọc ở Topbar (tự cập nhật mỗi 30 giây khi tab đang mở), đánh dấu từng thông báo hoặc tất cả đã đọc, có trang Thông báo riêng cho cả 4 role (kể cả Admin). Kèm **gửi email** cho mỗi thông báo (tự tắt/bật ở trang Đổi mật khẩu — xem Mục 16I).
 - **Quên mật khẩu tự phục vụ** (không cần Admin can thiệp): gửi link đặt lại mật khẩu qua email, hết hạn sau 30 phút, dùng được đúng 1 lần (xem Mục 16I).
 - **Nhắc việc tự động** (job chạy mỗi ngày 8:00): nhắc Sinh viên/Giảng viên/Người hướng dẫn khi quá hạn ghi nhật ký, sắp/quá hạn nộp báo cáo tổng kết hoặc hoàn tất đánh giá — hiển thị thẻ "Việc cần làm" trên Dashboard từng role, báo cáo tổng kết nộp trễ được đánh dấu riêng (xem Mục 16J).
+- **Vị trí thực tập + Ứng tuyển**: Doanh nghiệp/Admin đăng vị trí (số lượng giới hạn), Sinh viên ứng tuyển (tối đa 3 đơn chờ cùng lúc), Admin/Mentor chấp nhận hoặc từ chối — chấp nhận tự tạo/cập nhật Hồ sơ thực tập, chống vượt chỗ khi nhiều đơn được chấp nhận đồng thời. Giảng viên có giới hạn số sinh viên hướng dẫn tối đa mỗi đợt (xem Mục 16K).
+- **Xuất giấy tờ PDF**: Giấy giới thiệu thực tập (khi hồ sơ đã duyệt + có doanh nghiệp) và Phiếu kết quả thực tập (khi hồ sơ đã hoàn thành — điểm thành phần, điểm tổng kết, xếp loại, nhận xét), có nhúng font tiếng Việt, tải trực tiếp từ trang Hồ sơ thực tập của Student/Admin/Lecturer (xem Mục 16L).
 - Quản lý tài khoản đăng nhập (Admin tạo/sửa, liên kết với hồ sơ Sinh viên/Giảng viên/Người hướng dẫn).
 - Cấu hình hệ thống (tên hệ thống, đợt thực tập mặc định, cho phép/tạm khóa đăng ký thực tập, trọng số tính điểm tổng kết thực tập).
 - Thống kê tổng hợp theo Khoa/Đợt thực tập/Doanh nghiệp.
@@ -104,6 +106,7 @@ InternshipManagement/
 - Node.js (đã phát triển/kiểm thử với Node 24.x)
 - npm
 - XAMPP (hoặc MariaDB/MySQL độc lập) — cần MySQL/MariaDB đang chạy, nghe cổng mặc định `3306`
+- (Chỉ cần khi deploy bằng Docker, không cần cho dev) Docker + Docker Compose plugin — xem Mục 16M, `docs/TRIEN_KHAI.md`
 
 ## 8. Cài đặt
 
@@ -152,6 +155,8 @@ VITE_API_BASE_URL=http://localhost:5000/api
 
 **Không bao giờ commit file `.env` thật** (đã có trong `.gitignore` ở gốc dự án) — chỉ `.env.example` (giá trị mẫu) được lưu trong mã nguồn. `JWT_SECRET` ở `.env.example` chỉ là placeholder, phải thay bằng giá trị ngẫu nhiên thật khi deploy.
 
+**Deploy production (Docker)**: dùng file riêng `.env.production.example` ở GỐC repo (không phải trong `server/`) — copy thành `.env.production` (cũng gitignore), chứa thêm `TRUST_PROXY_HOPS`/`DEBUG_ERRORS` và được cả `docker-compose.yml` lẫn container `app` dùng chung qua `--env-file`. Xem Mục 16M, `docs/TRIEN_KHAI.md`.
+
 ## 10. Khởi tạo cơ sở dữ liệu
 
 ### Cách 1 — chạy trực tiếp qua `mysql` client (dev, lần đầu)
@@ -163,7 +168,7 @@ mysql -u root --default-character-set=utf8mb4 < server/db/schema.sql
 mysql -u root --default-character-set=utf8mb4 < server/db/seed.sql
 ```
 
-Kết quả mong đợi: database `internship_management`, **16 bảng**, **21 foreign key**, dữ liệu mẫu (seed) cho toàn bộ 14 bảng nghiệp vụ kể cả 4 role tài khoản demo (xem Mục 13) — `password_reset_tokens` (Mục 16I) và `reminder_logs` (bảng thứ 15/16, xem Mục 16J) không seed, luôn bắt đầu rỗng. Chi tiết schema: [`docs/DATABASE_DESIGN.md`](docs/DATABASE_DESIGN.md).
+Kết quả mong đợi: database `internship_management`, **18 bảng**, **25 foreign key**, dữ liệu mẫu (seed) cho toàn bộ 14 bảng nghiệp vụ kể cả 4 role tài khoản demo (xem Mục 13) — `password_reset_tokens` (Mục 16I), `reminder_logs` (Mục 16J), `internship_positions`/`position_applications` (bảng thứ 15–18, xem Mục 16K) không seed, luôn bắt đầu rỗng. Chi tiết schema: [`docs/DATABASE_DESIGN.md`](docs/DATABASE_DESIGN.md).
 
 **Database đã tồn tại từ trước** (đã chạy `schema.sql` cũ, thiếu cột mới): chạy thêm các migration bên dưới theo đúng thứ tự:
 
@@ -178,6 +183,10 @@ mysql -u root --default-character-set=utf8mb4 internship_management < server/db/
 mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/008_internship_periods_reminders.sql
 mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/009_reports_is_late.sql
 mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/010_reminder_logs.sql
+mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/011_lecturers_max_students.sql
+mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/012_internship_positions.sql
+mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/013_position_applications.sql
+mysql -u root --default-character-set=utf8mb4 internship_management < server/db/migrations/014_settings_school_faculty.sql
 ```
 
 ### Cách 2 — qua npm script (cross-platform, dùng Node thay cho `mysql` CLI/shell redirection)
@@ -193,7 +202,7 @@ npm run db:seed       # reseed dữ liệu mẫu (TRUNCATE rồi INSERT lại, a
 - `db:migrate` (`server/db/migrate.js`): đọc lần lượt từng file trong `server/db/migrations/`, bỏ qua file đã có trong bảng `schema_migrations` (tự tạo bảng này nếu chưa có), chạy file còn thiếu rồi ghi nhận lại. **Idempotent thật** (đã kiểm chứng, không chỉ "idempotent-ish" như bản mysql CLI thuần ở Cách 1): nếu chạy trên database đã có sẵn cột đó (ví dụ database MỚI tạo từ `schema.sql` hiện tại, đã gộp sẵn thay đổi của `migrations/001-005`, mà quên baseline qua `test:setup`), script tự phát hiện lỗi "Duplicate column name" (mã 1060/1061/1826), coi là "đã áp dụng" và ghi nhận lại — KHÔNG crash giữa chừng, an toàn chạy lại bất kỳ lúc nào trên bất kỳ database nào (cũ hoặc mới).
 - `db:seed` (`server/db/seed.js`): tương đương chạy `seed.sql` nhưng qua Node (không cần `mysql` CLI trong PATH, chạy được cả Windows/macOS/Linux). Áp dụng cho database đang cấu hình theo `NODE_ENV` (`DB_NAME` hoặc `DB_NAME_TEST` — giống `test:setup`/`config/database.js`).
 - Cả 2 script đọc `.env` qua `dotenv`, không cần biến môi trường shell riêng.
-- **Database mới tạo từ `schema.sql` hiện tại (Cách 1) thường KHÔNG cần `db:migrate`** — `schema.sql` đã gộp sẵn toàn bộ thay đổi của `migrations/001-010`. Chạy `db:migrate` vẫn AN TOÀN nếu lỡ chạy (tự phát hiện "đã áp dụng" như trên), chỉ là dư thừa không cần thiết.
+- **Database mới tạo từ `schema.sql` hiện tại (Cách 1) thường KHÔNG cần `db:migrate`** — `schema.sql` đã gộp sẵn toàn bộ thay đổi của `migrations/001-014`. Chạy `db:migrate` vẫn AN TOÀN nếu lỡ chạy (tự phát hiện "đã áp dụng" như trên), chỉ là dư thừa không cần thiết.
 
 ## 11. Chạy Backend
 
@@ -253,13 +262,13 @@ npm test
 
 Test chạy trên **database test riêng** (`DB_NAME_TEST`, mặc định `internship_management_test`) — `npm test` tự set `NODE_ENV=test` (qua `cross-env`, chạy được cả Windows/macOS/Linux), và `server/config/database.js` tự chuyển sang `DB_NAME_TEST` khi thấy `NODE_ENV=test`. Database test được tạo/tái tạo bằng `npm run test:setup` (`server/db/testSetup.js` — build từ `schema.sql`+`seed.sql`, không đụng tới database dev). Test suite **không còn chạy trên database dev thật** — an toàn chạy test bất kỳ lúc nào dù đang code/debug thủ công trên dev.
 
-Kết quả hiện tại: **262/262 PASS** (0 fail, 0 skip), chạy trong khoảng 28–31 giây. Bao phủ: Authentication, RBAC, IDOR/ownership, field injection, business rules (khóa trạng thái, điểm đánh giá, công bố đánh giá, "Business Rules V2" — xem Mục 16B), điểm tổng kết thực tập + trọng số + xếp loại (`tests/evaluationFinalResult.test.js` — xem Mục 16C), bất biến hồ sơ `completed` (`tests/completedInvariants.test.js` — xem Mục 16F), phân trang server-side (`tests/pagination.test.js`), thống kê tổng hợp (`tests/statisticsSummary.test.js`), múi giờ "hôm nay"/"tương lai" (`tests/dateTime.test.js`, `tests/timezoneBusinessRules.test.js` — xem Mục 16D), migration idempotent (`tests/dbMigrate.test.js`), Users invariants, export (kèm cột điểm tổng kết + nộp trễ, `exportService.test.js`), workflow/phân công Internship, field-whitelist Logs/Reports, error handling, Settings, đổi mật khẩu/khóa-mở tài khoản/reset mật khẩu/mật khẩu tạm bắt buộc đổi — chặn cả ở server (`tests/accountSecurity.test.js`), thông báo tự động + gửi email kèm theo (`tests/notifications.test.js`, `tests/mail.test.js`), quên mật khẩu tự phục vụ (`tests/passwordReset.test.js` — xem Mục 16I), upload/tải file báo cáo thật — hợp lệ, sai định dạng, quá dung lượng, ngoài scope bị 403, tên file tiếng Việt không mojibake (`tests/reportUpload.test.js`), nhập danh sách Sinh viên/Giảng viên từ Excel (`tests/importStudents.test.js`, `tests/importLecturers.test.js` — xem Mục 16H), báo cáo nộp trễ + nhắc việc tự động (`tests/reportLateFlag.test.js`, `tests/reminders.test.js`, `tests/reminderJob.test.js` — xem Mục 16J), DB integrity smoke test. Chi tiết: [`docs/PHASE_6B_AUTOMATED_TESTING.md`](docs/PHASE_6B_AUTOMATED_TESTING.md), [`docs/PHASE_7B_SECURITY_AND_REGRESSION.md`](docs/PHASE_7B_SECURITY_AND_REGRESSION.md), [`docs/PHASE_7C_FINAL_PREPARATION.md`](docs/PHASE_7C_FINAL_PREPARATION.md).
+Kết quả hiện tại: **288/288 PASS** (0 fail, 0 skip), chạy trong khoảng 32–35 giây. Bao phủ: Authentication, RBAC, IDOR/ownership, field injection, business rules (khóa trạng thái, điểm đánh giá, công bố đánh giá, "Business Rules V2" — xem Mục 16B), điểm tổng kết thực tập + trọng số + xếp loại (`tests/evaluationFinalResult.test.js` — xem Mục 16C), bất biến hồ sơ `completed` (`tests/completedInvariants.test.js` — xem Mục 16F), phân trang server-side (`tests/pagination.test.js`), thống kê tổng hợp (`tests/statisticsSummary.test.js`), múi giờ "hôm nay"/"tương lai" (`tests/dateTime.test.js`, `tests/timezoneBusinessRules.test.js` — xem Mục 16D), migration idempotent (`tests/dbMigrate.test.js`), Users invariants, export (kèm cột điểm tổng kết + nộp trễ, `exportService.test.js`), workflow/phân công Internship, field-whitelist Logs/Reports, error handling, Settings, đổi mật khẩu/khóa-mở tài khoản/reset mật khẩu/mật khẩu tạm bắt buộc đổi — chặn cả ở server (`tests/accountSecurity.test.js`), thông báo tự động + gửi email kèm theo (`tests/notifications.test.js`, `tests/mail.test.js`), quên mật khẩu tự phục vụ (`tests/passwordReset.test.js` — xem Mục 16I), upload/tải file báo cáo thật — hợp lệ, sai định dạng, quá dung lượng, ngoài scope bị 403, tên file tiếng Việt không mojibake (`tests/reportUpload.test.js`), nhập danh sách Sinh viên/Giảng viên từ Excel (`tests/importStudents.test.js`, `tests/importLecturers.test.js` — xem Mục 16H), báo cáo nộp trễ + nhắc việc tự động (`tests/reportLateFlag.test.js`, `tests/reminders.test.js`, `tests/reminderJob.test.js` — xem Mục 16J), vị trí thực tập + ứng tuyển + giới hạn sinh viên/giảng viên — kể cả race condition vượt slot (`tests/internshipPositions.test.js`, `tests/positionApplications.test.js`, `tests/lecturerCapacity.test.js` — xem Mục 16K), xuất giấy tờ PDF (giấy giới thiệu + phiếu kết quả — đúng content-type/`%PDF`, đúng điều kiện trạng thái, đúng scope, `tests/internshipDocuments.test.js` — xem Mục 16L), DB integrity smoke test. Chi tiết: [`docs/PHASE_6B_AUTOMATED_TESTING.md`](docs/PHASE_6B_AUTOMATED_TESTING.md), [`docs/PHASE_7B_SECURITY_AND_REGRESSION.md`](docs/PHASE_7B_SECURITY_AND_REGRESSION.md), [`docs/PHASE_7C_FINAL_PREPARATION.md`](docs/PHASE_7C_FINAL_PREPARATION.md).
 
 ### Frontend (lint/build + logic thuần)
 
 ```bash
 cd client
-npm run lint     # hiện tại: 42 warning (baseline đã biết, không phải lỗi mới — xem Known Limitations)
+npm run lint     # hiện tại: 45 warning (baseline đã biết, không phải lỗi mới — xem Known Limitations)
 npm run build    # phải 0 lỗi
 npm test         # providerAccess.test.js — test logic role-aware loading, không cần React/jsdom
 ```
@@ -277,7 +286,8 @@ npm run test:e2e
 - `e2e/auth.spec.js`: đăng nhập cả 4 role + 1 ca sai mật khẩu.
 - `e2e/full-workflow.spec.js` (`test.describe.serial`, 8 bước nối tiếp, dùng `student4@example.com` — tài khoản demo chưa có hồ sơ thực tập): Sinh viên đăng ký thực tập → Admin phân công doanh nghiệp/giảng viên + chuyển `in_progress` → Sinh viên ghi nhật ký → Sinh viên nộp báo cáo tổng kết (`.pdf` thật, xem `docs/demo-files/`) → Giảng viên nhận xét nhật ký + duyệt báo cáo + chấm và công bố điểm → Doanh nghiệp chấm và công bố điểm → Admin chuyển `completed`, xem điểm tổng kết thực tập, xuất Excel (verify sự kiện download thật), khóa rồi mở khóa 1 tài khoản → verify badge thông báo của sinh viên tăng (>0) sau các sự kiện trên.
 - `e2e/adminImport.spec.js`: Admin nhập 3 Sinh viên từ file mẫu Excel đã điền sẵn (`docs/demo-files/students-import-demo.xlsx`) qua UI — xem trước (0 dòng lỗi), xác nhận nhập, verify sinh viên mới xuất hiện trong danh sách (xem Mục 16H).
-- Kết quả hiện tại: **14/14 PASS** (~17 giây), đã chạy thật trên Chromium trong chính môi trường phát triển này — không còn là "chưa xác minh được".
+- `e2e/internshipPositions.spec.js`: Mentor đăng vị trí thực tập → Sinh viên ứng tuyển → Mentor chấp nhận → verify hồ sơ thực tập được tự tạo, vị trí tự đóng khi đủ slot (xem Mục 16K).
+- Kết quả hiện tại: **17/17 PASS** (~20 giây), đã chạy thật trên Chromium trong chính môi trường phát triển này — không còn là "chưa xác minh được".
 - **Lưu ý khi chạy xen kẽ với `cd server && npm test`:** cả 2 đều nhắm vào CÙNG 1 database test (`DB_NAME_TEST`). `npm test` (backend) tự dọn dữ liệu nó tạo ra (try/finally từng test) nên không để lại gì; `npm run test:e2e` thì KHÔNG dọn sau khi chạy xong (để lại hồ sơ thực tập vừa tạo ở trạng thái `completed`) — nếu chạy `npm test` NGAY SAU `npm run test:e2e` mà không `test:setup` lại, vài test baseline COUNT(*) (`dbIntegrity.test.js`, `statisticsSummary.test.js`) sẽ fail vì lệch baseline. Luôn chạy `cd server && npm run test:setup` trước khi chuyển từ `test:e2e` sang `npm test` (hoặc ngược lại không vấn đề gì, vì `test:e2e` tự `test:setup` lại mỗi lần).
 
 ## 16. Quy tắc bảo mật và phân quyền
@@ -415,6 +425,47 @@ Chi tiết đầy đủ + bằng chứng test: `docs/REQUIREMENT_TRACEABILITY_MA
 
 Chi tiết đầy đủ + bằng chứng test: `docs/REQUIREMENT_TRACEABILITY_MATRIX.md` REQ-089–093, `server/tests/reportLateFlag.test.js`, `server/tests/reminders.test.js`, `server/tests/reminderJob.test.js`.
 
+## 16K. Vị trí thực tập + Ứng tuyển + Giới hạn hướng dẫn
+
+2 bảng mới: `internship_positions` (vị trí do Doanh nghiệp/Admin đăng — `company_id`, `period_id`, `title`, `description`, `requirements`, `slots`, `status` `open`/`closed`, migration `012`) và `position_applications` (đơn ứng tuyển — `position_id`, `student_id`, `status` `applied`/`accepted`/`rejected`/`withdrawn`, `note`, `UNIQUE(position_id, student_id)`, migration `013`).
+
+- **`server/services/internshipPositionService.js`** — Admin tạo vị trí cho công ty bất kỳ; Company Mentor tạo vị trí CHỈ cho công ty mình (backend tự ép `company_id`, không tin giá trị client gửi — IDOR protection; sửa vị trí công ty khác bị 403). `company_id`/`period_id` immutable sau khi tạo. Student chỉ thấy vị trí `'open'` của đợt chưa `'closed'`. Giảm `slots` xuống dưới số đơn đã `accepted` bị reject 400.
+- **`server/services/positionApplicationService.js`** — Student ứng tuyển (`apply`), rút đơn (`withdraw`, chỉ khi còn `'applied'`), Admin/Mentor từ chối (`reject`)/chấp nhận (`accept`):
+  - Chặn ứng tuyển khi: vị trí/đợt đã đóng; hệ thống tạm khóa đăng ký (`allow_student_registration=0`); đã có hồ sơ thực tập `approved`/`in_progress`/`completed` khác TRONG ĐỢT đó; đã có **≥3 đơn đang `'applied'`** (giới hạn toàn cục, không tính riêng theo đợt).
+  - Ứng tuyển lại vị trí đã rút/bị từ chối = `UPDATE` lại đúng dòng cũ (không `INSERT` mới — `UNIQUE(position_id, student_id)` không cho phép 2 dòng cho cùng cặp này).
+  - **Chấp nhận = hành động duyệt** — Hồ sơ thực tập được tạo/cập nhật đi THẲNG vào trạng thái `'approved'` (bỏ qua `'pending'`), viết trực tiếp trong transaction của `accept()` (không gọi lại `internshipService.create()` vì hàm đó luôn ép `'pending'`). Mentor chấp nhận → `company_mentor_id` = đúng hồ sơ mentor đang đăng nhập; Admin chấp nhận → để `NULL` (Admin gán sau qua `AssignCompanyModal` có sẵn, vì `internship_positions` không có cột mentor riêng).
+  - **Chống vượt slot khi nhiều request chấp nhận đồng thời** (`SELECT ... FOR UPDATE` khóa hàng `internship_positions` trước khi đếm `accepted`, trong 1 transaction) — đúng 1 request thắng nếu vừa đủ chỗ cuối, các request khác tự 409 "hết chỗ". Đủ slot → vị trí tự `'closed'`. Chấp nhận 1 đơn → tự rút (`'withdrawn'`) mọi đơn `'applied'` KHÁC của cùng sinh viên đó.
+- **`lecturers.max_students`** (migration `011`, mặc định 10) — `internshipService.assertLecturerCapacity()` đếm hồ sơ `pending`/`approved`/`in_progress` của giảng viên đó **trong cùng đợt** (không cộng chung giữa các đợt khác nhau), chặn gán thêm khi đã đủ (409 kèm số liệu `x/y`). Áp dụng cả khi tạo mới VÀ khi đổi `lecturer_id` qua `AssignLecturerModal.jsx` (hiển thị "đang hướng dẫn x/y" — tính client-side từ dữ liệu đã tải, server vẫn là nơi chặn thật).
+- **Client**: trang "Vị trí thực tập" riêng cho Admin (`/admin/internship-positions`), Company Mentor (`/company/positions` — chỉ quản lý vị trí công ty mình), Student (`/student/positions` — xem vị trí mở + "Đơn ứng tuyển của tôi").
+
+Chi tiết đầy đủ + bằng chứng test: `docs/REQUIREMENT_TRACEABILITY_MATRIX.md` REQ-094–098, `server/tests/internshipPositions.test.js`, `server/tests/positionApplications.test.js` (bao gồm race condition `Promise.all` 2 request chấp nhận đồng thời), `server/tests/lecturerCapacity.test.js`, `e2e/internshipPositions.spec.js`.
+
+## 16L. Xuất giấy tờ PDF (Giấy giới thiệu + Phiếu kết quả thực tập)
+
+Dùng `pdfkit` (`npm install pdfkit`, server/) — nhúng font **Be Vietnam Pro** (Regular + Bold, giấy phép SIL Open Font License 1.1, tải từ [Google Fonts](https://github.com/google/fonts/tree/main/ofl/bevietnampro), xem `server/assets/fonts/OFL.txt`) vì font mặc định của `pdfkit` (Helvetica) không có glyph tiếng Việt có dấu.
+
+- **`settings.school_name`/`settings.faculty_name`** (migration `014`, cả 2 optional/`NULL`) — tên trường/khoa in lên đầu 2 loại giấy tờ, Admin cấu hình ở `/admin/settings`. Để trống → PDF tự hiện dòng chấm trống thay thế (giữ đúng hình thức văn bản hành chính giấy thật), không hiện "null"/trống xấu.
+- **`GET /api/internships/:id/documents/introduction-letter.pdf`** — chỉ xuất được khi hồ sơ đã **`approved` trở lên** (`approved`/`in_progress`/`completed`) VÀ **đã có `company_id`** (409 nếu chưa đủ điều kiện). Nội dung: tên trường/khoa, số giấy, thông tin sinh viên, doanh nghiệp, thời gian thực tập, chỗ ký.
+- **`GET /api/internships/:id/documents/result-sheet.pdf`** — chỉ xuất được khi hồ sơ đã **`completed`** (409 nếu chưa). Nội dung: điểm 4 thành phần + điểm tổng của TỪNG đánh giá (Giảng viên, Doanh nghiệp), điểm tổng kết đã CHỐT + xếp loại (Mục 16C), nhận xét của cả 2 phía.
+  - **Student chỉ tải được phiếu kết quả khi đánh giá đã công bố** — nhưng vì hồ sơ `completed` CHỈ đạt được khi cả 2 đánh giá đã công bố (Business Rules V2) VÀ không thể bị bỏ công bố lại sau đó (bất biến Mục 16F), điều kiện `status === 'completed'` tự động BAO HÀM "đã công bố" cho MỌI role — không cần kiểm tra `is_published` riêng.
+- **Scope** giống hệt `GET /internships/:id` (`internshipService.getByIdForUser`) — Student chỉ tải hồ sơ của chính mình, Lecturer/Company Mentor chỉ hồ sơ mình phụ trách, Admin không giới hạn. Tên file tải về luôn kèm mã sinh viên (`giay-gioi-thieu-{student_code}.pdf`, `phieu-ket-qua-{student_code}.pdf`).
+- **Client**: nút tải PDF ở `StudentInternshipPage.jsx`, `InternshipDetailPage.jsx` (Admin), `LecturerStudentDetailPage.jsx` — hiện/ẩn theo đúng điều kiện trạng thái ở trên (chỉ là UX, backend vẫn luôn tự kiểm tra lại — gọi API trực tiếp khi chưa đủ điều kiện vẫn nhận 409).
+
+Chi tiết đầy đủ + bằng chứng test: `docs/REQUIREMENT_TRACEABILITY_MATRIX.md` REQ-099–101, `server/tests/internshipDocuments.test.js`.
+
+## 16M. Triển khai production (Docker) + kiểm tra cấu hình an toàn
+
+> Hướng dẫn chạy/deploy đầy đủ: [`docs/TRIEN_KHAI.md`](docs/TRIEN_KHAI.md). Mục này chỉ ghi lại các quyết định thiết kế + cách verify.
+
+- **Backend tự phục vụ bản build của client khi `NODE_ENV=production`** — `server/app.js` thêm `express.static(client/dist)` + route `*` fallback về `index.html` cho mọi path KHÔNG bắt đầu bằng `/api` (route này tự `next()` nếu là `/api/*`, để API không khớp route nào vẫn ra đúng 404 JSON qua `notFoundHandler`, không bị "ăn" nhầm thành HTML). Dev (`npm run dev` ở cả 2 thư mục) không đổi — `client/dist` không tồn tại lúc dev nên nhánh này không chạy tới.
+- **`server/config/productionChecks.js`** — `assertProductionConfig()` được gọi NGAY ĐẦU `server.js` (trước khi `require('./app')`), chỉ có hiệu lực khi `NODE_ENV=production`: server **từ chối khởi động** (`process.exit(1)`) nếu thiếu `JWT_SECRET`/`JWT_SECRET` ngắn hơn 32 ký tự, thiếu `CLIENT_URL`, hoặc `DEBUG_ERRORS=true`. Logic kiểm tra tách thành hàm thuần `validateProductionConfig(env)` (không tự exit, chỉ trả về danh sách lỗi) để unit-test được mà không cần giết process thật — xem `server/tests/productionConfig.test.js`.
+- **`trust proxy`** — set qua biến môi trường mới `TRUST_PROXY_HOPS` (số hop, KHÔNG dùng `app.set('trust proxy', true)` — `express-rate-limit` khuyến cáo không tin tưởng mọi proxy vì `X-Forwarded-For` có thể bị giả mạo). Mặc định không set (dev không qua proxy nào, hành vi `loginLimiter`/`passwordResetLimiter` không đổi). Khi deploy sau Nginx (xem `docs/TRIEN_KHAI.md`), set `TRUST_PROXY_HOPS=1` để rate limiter đọc đúng IP client thật.
+- **CORS** đã giới hạn đúng 1 origin (`CLIENT_URL`) từ trước (Mục 16) — không đổi, chỉ thêm bắt buộc có giá trị trong production qua `assertProductionConfig()`.
+- **Docker**: `Dockerfile` (multi-stage: build client bằng Vite rồi copy `dist` vào image server) + `docker-compose.yml` (`mysql:8` tự khởi tạo từ `schema.sql`+`seed.sql` lần đầu, volume riêng cho DB và cho `server/uploads`) + `.env.production.example` (copy thành `.env.production`, không commit). Script tiện: `npm run docker:up`/`docker:down`/`docker:logs` ở root.
+- **Minh bạch**: môi trường phát triển dùng để viết code này KHÔNG có Docker cài sẵn — `Dockerfile`/`docker-compose.yml` đã được review kỹ (cú pháp, đường dẫn, biến môi trường, đối chiếu file thật trong repo) nhưng **chưa tự chạy `docker build`/`docker compose up` thật để xác nhận**. Phần có thể tự động hóa được (static serving + SPA fallback, kiểm tra cấu hình production) đã có automated test chạy thật (`productionStaticServing.test.js`, `productionConfig.test.js`); phần phụ thuộc Docker daemon thì chỉ code-review (cùng nguyên tắc minh bạch đã áp dụng cho `loginLimiter`/`reminderJob` — xem Mục 18).
+
+Chi tiết đầy đủ + bằng chứng test: `docs/REQUIREMENT_TRACEABILITY_MATRIX.md` REQ-102–106, `server/tests/productionConfig.test.js`, `server/tests/productionStaticServing.test.js`, `docs/TRIEN_KHAI.md`.
+
 ## 17. Tài liệu dự án
 
 | Tài liệu | Nội dung |
@@ -428,27 +479,29 @@ Chi tiết đầy đủ + bằng chứng test: `docs/REQUIREMENT_TRACEABILITY_MA
 | [`docs/PHASE_6C_DOCUMENTATION.md`](docs/PHASE_6C_DOCUMENTATION.md) | Phase tạo ra README/tài liệu này |
 | [`docs/REQUIREMENT_TRACEABILITY_MATRIX.md`](docs/REQUIREMENT_TRACEABILITY_MATRIX.md) | Ma trận truy vết yêu cầu — trạng thái bằng chứng từng REQ |
 | [`docs/PHASE_7C_FINAL_PREPARATION.md`](docs/PHASE_7C_FINAL_PREPARATION.md) | Chuẩn bị demo/bảo vệ — kèm `FINAL_DEMO_SCRIPT.md`, `DEMO_READINESS_CHECKLIST.md`, `DEFENSE_QA.md`, `DEFENSE_PRESENTATION_OUTLINE.md` |
+| [`docs/TRIEN_KHAI.md`](docs/TRIEN_KHAI.md) | Triển khai production: Docker Compose, VPS + Nginx + HTTPS, sao lưu DB/uploads |
 
 ## 18. Known Limitations
 
-- **Browser E2E đã tự động hóa bằng Playwright** (`npm run test:e2e`, xem Mục 15) — 14/14 PASS, bao phủ luồng chính 4 role + nhập Excel. Chưa bao phủ: edge case lỗi hiếm (mất mạng giữa chừng, race condition 2 tab cùng thao tác), responsive/mobile viewport, và các nhánh phụ ít dùng (ví dụ từ chối đề tài, hủy hồ sơ) — chỉ smoke test luồng happy-path chính, không phải full regression suite UI.
+- **Browser E2E đã tự động hóa bằng Playwright** (`npm run test:e2e`, xem Mục 15) — 17/17 PASS, bao phủ luồng chính 4 role + nhập Excel + vị trí thực tập. Chưa bao phủ: edge case lỗi hiếm (mất mạng giữa chừng, race condition 2 tab cùng thao tác), responsive/mobile viewport, và các nhánh phụ ít dùng (ví dụ từ chối đề tài, hủy hồ sơ) — chỉ smoke test luồng happy-path chính, không phải full regression suite UI.
 - **Nhập Excel chỉ đọc theo VỊ TRÍ cột** (không theo tên header) — Admin PHẢI giữ đúng thứ tự cột của file mẫu, đổi thứ tự cột sẽ làm dữ liệu bị đọc lệch field (không có cảnh báo riêng cho trường hợp này ngoài các lỗi validate format thông thường). File tài khoản tạo mới (email + mật khẩu tạm) chỉ lưu tạm trong bộ nhớ process (TTL 5 phút, tải được đúng 1 lần) — nếu server restart giữa lúc đó, Admin phải nhập lại và tạo tài khoản lại từ đầu.
 - **Job nhắc việc tự động (`server/jobs/reminderJob.js`) mặc định KHÔNG tự chạy** (`REMINDER_JOB_ENABLED` phải set `'true'` tường minh) — scheduler tự viết (không `node-cron`) kiểm tra giờ mỗi 15 phút, nên "chạy đúng 8:00:00" có thể trễ tới 15 phút trong trường hợp xấu nhất; không ảnh hưởng tính đúng đắn (chống trùng dựa UNIQUE constraint DB, không dựa thời điểm chính xác), chỉ ảnh hưởng độ trễ gửi. Admin không nhận `notify()` cá nhân từ job (chỉ xem tổng hợp trên Dashboard) — quyết định phạm vi có chủ đích, xem Mục 16J.
 - **Email (thông báo + quên mật khẩu) KHÔNG có retry/hàng đợi, cùng nguyên tắc với Notifications bên dưới** — mặc định (`MAIL_ENABLED` không set) chỉ ghi vào `server/logs/mail-outbox.log`, không gửi SMTP thật; phải tự cấu hình `.env` (xem README Mục 16I) mới gửi thật được. Không có cơ chế xác nhận đã đọc/đã bounce.
 - **Notifications tự động nhưng KHÔNG có retry/hàng đợi** — `notificationService.notify()` chỉ là 1 `INSERT` đơn giản chạy ngay sau khi nghiệp vụ chính thành công; nếu ghi thông báo lỗi (DB tạm gián đoạn...), lỗi đó bị `console.error` và bỏ qua êm (không làm fail nghiệp vụ chính, nhưng thông báo đó sẽ KHÔNG được gửi lại) — đây là quyết định phạm vi có chủ đích ("đơn giản, không cần event engine/queue"), không phải race-condition chưa xử lý.
 - **Upload file báo cáo lưu trực tiếp trên đĩa server** (`server/uploads/reports/`, qua `multer`) — không dùng object storage (S3...), chỉ phù hợp 1 server instance duy nhất (không scale ngang được nếu không thêm storage dùng chung). Chỉ nhận `.pdf`/`.doc`/`.docx`, tối đa 10MB — xem `server/config/upload.js`.
 - **Automated backend test chạy trên database test riêng** (`DB_NAME_TEST`, tạo qua `npm run test:setup` — xem Mục 15), tách biệt khỏi database dev; mọi test có ghi dữ liệu vẫn tự dọn dẹp trong cùng lần chạy (xem `docs/PHASE_6B_AUTOMATED_TESTING.md` Mục 4) để chạy lại nhiều lần không cần `test:setup` lại. Database test này chạy trên cùng MySQL/MariaDB instance local với dev (không phải service/container cô lập riêng).
-- **Lint frontend có baseline 42 warning đã biết** (chủ yếu `react(set-state-in-effect)` và `react(only-export-components)`, từ pattern đồng bộ state cục bộ với prop/context bất đồng bộ — `useFinalResult.js` và `useRemindersOverview.js` mỗi hook thêm 1 warning cùng loại) — không phải lỗi mới, không che giấu, chỉ là baseline đã xác lập qua nhiều phase.
+- **Lint frontend có baseline 45 warning đã biết** (chủ yếu `react(set-state-in-effect)` và `react(only-export-components)`, từ pattern đồng bộ state cục bộ với prop/context bất đồng bộ — mỗi Context/FormModal mới theo đúng mẫu đã có (`InternshipPositionsContext.jsx`, `PositionApplicationsContext.jsx`, `PositionFormModal.jsx`...) thêm 1 warning cùng loại) — không phải lỗi mới, không che giấu, chỉ là baseline đã xác lập qua nhiều phase.
 - **Export (.xlsx) có UI ở Admin, Lecturer, Company Mentor** — backend đã hỗ trợ đúng scope cho cả 4 role (verify qua test), nhưng Student hiện chưa có nút export trên UI (không thuộc yêu cầu hiện tại; API vẫn dùng được nếu tự gọi).
 - Chưa có CSRF/refresh token/HTTPS — xem Mục 16. Rate limiting hiện chỉ áp dụng cho `POST /api/auth/login`.
 - **Rate limiting không có automated test cho hành vi chặn thật** (chặn sau 10 lần/15 phút) — vì middleware tự tắt khi `NODE_ENV=test` (đúng chủ đích, tránh chặn chính test suite), nên chỉ xác minh được "không chặn khi test" qua test, hành vi chặn thật khi `NODE_ENV!=test` xác minh bằng code review (xem `server/middleware/rateLimiter.js`).
+- **Docker/Docker Compose chưa được chạy thật trong môi trường phát triển** (không có Docker daemon sẵn) — `Dockerfile`/`docker-compose.yml` (xem Mục 16M, `docs/TRIEN_KHAI.md`) chỉ được review kỹ bằng mắt (cú pháp, đường dẫn, biến môi trường), CHƯA tự `docker build`/`docker compose up` để xác nhận build thành công end-to-end. Phần logic tách được khỏi Docker (static serving production, kiểm tra cấu hình `assertProductionConfig`) đã có automated test chạy thật.
 
 ## 19. Trạng thái dự án
 
 ```
-Backend:  16/16 bảng, 21/21 foreign key, 262/262 automated test PASS (chạy trên DB test riêng)
-Frontend: build PASS (0 lỗi), lint 42 warning (baseline đã biết)
-Browser:  14/14 Playwright E2E PASS (npm run test:e2e — Chromium thật, luồng chính 4 role + nhập Excel)
+Backend:  18/18 bảng, 25/25 foreign key, 301/301 automated test PASS (chạy trên DB test riêng)
+Frontend: build PASS (0 lỗi), lint 45 warning (baseline đã biết)
+Browser:  17/17 Playwright E2E PASS (npm run test:e2e — Chromium thật, luồng chính 4 role + nhập Excel + vị trí thực tập)
 ```
 
 Toàn bộ chức năng CRUD, RBAC, ownership/scope, business rule, và export (.xlsx) đã được implement và kiểm chứng qua HTTP thật + automated test. Giới hạn còn lại được ghi nhận minh bạch ở Mục 18 — không có chức năng nào được mô tả "hoàn chỉnh" nếu chưa thực sự kiểm chứng được qua code/test thật.

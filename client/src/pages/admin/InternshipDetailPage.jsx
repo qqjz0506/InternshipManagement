@@ -14,6 +14,7 @@ import { useInternshipPeriods } from '../../context/InternshipPeriodsContext'
 import { useTopics } from '../../context/TopicsContext'
 import { useCompanyMentors } from '../../context/CompanyMentorsContext'
 import { useFinalResult } from '../../hooks/useFinalResult'
+import { downloadIntroductionLetter, downloadResultSheet } from '../../utils/internshipDocumentDownload'
 import { STATUS_META, ALLOWED_TRANSITIONS } from '../../utils/internshipStatus'
 import './InternshipDetailPage.css'
 
@@ -27,7 +28,7 @@ const TABS = [
 function InternshipDetailPage() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { getById, isLoading, isMutating, updateInternship, deleteInternship } = useInternships()
+  const { internships, getById, isLoading, isMutating, updateInternship, deleteInternship } = useInternships()
   const { items: students } = useStudents()
   const { items: lecturers } = useLecturers()
   const { items: companies } = useCompanies()
@@ -71,6 +72,18 @@ function InternshipDetailPage() {
 
   const allowedNextStatuses = ALLOWED_TRANSITIONS[internship.status]
   const canEditProgress = !['completed', 'cancelled', 'rejected'].includes(internship.status)
+
+  // "Đang hướng dẫn x/y" (Mục 16K README) — đếm số hồ sơ pending/approved/in_progress của từng
+  // giảng viên TRONG CÙNG ĐỢT của hồ sơ đang xem, từ dữ liệu InternshipsContext đã tải sẵn (chỉ
+  // hiển thị tham khảo, server vẫn là nguồn chặn thật — xem internshipService.assertLecturerCapacity).
+  const lecturerCounts = internships
+    .filter((item) => item.period_id === internship.period_id && ['pending', 'approved', 'in_progress'].includes(item.status))
+    .reduce((acc, item) => {
+      if (item.lecturer_id) {
+        acc[item.lecturer_id] = (acc[item.lecturer_id] ?? 0) + 1
+      }
+      return acc
+    }, {})
 
   async function handleStatusChange() {
     if (!nextStatus || isMutating) {
@@ -180,6 +193,22 @@ function InternshipDetailPage() {
     navigate('/admin/internships', { replace: true })
   }
 
+  async function handleDownloadIntroductionLetter() {
+    try {
+      await downloadIntroductionLetter(internship.id, student?.student_code)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
+  async function handleDownloadResultSheet() {
+    try {
+      await downloadResultSheet(internship.id, student?.student_code)
+    } catch (err) {
+      window.alert(err.message)
+    }
+  }
+
   return (
     <div className="internship-detail">
       <div className="detail-header">
@@ -191,6 +220,16 @@ function InternshipDetailPage() {
         </div>
         <div className="detail-header-actions">
           <Badge tone={STATUS_META[internship.status].tone}>{STATUS_META[internship.status].label}</Badge>
+          {['approved', 'in_progress', 'completed'].includes(internship.status) && (
+            <Button variant="secondary" className="btn-sm" onClick={handleDownloadIntroductionLetter}>
+              Giấy giới thiệu (PDF)
+            </Button>
+          )}
+          {internship.status === 'completed' && (
+            <Button variant="secondary" className="btn-sm" onClick={handleDownloadResultSheet}>
+              Phiếu kết quả (PDF)
+            </Button>
+          )}
           {internship.status === 'pending' && (
             <Button variant="danger" className="btn-sm" disabled={isMutating} onClick={handleDelete}>
               Xóa hồ sơ
@@ -380,6 +419,7 @@ function InternshipDetailPage() {
         lecturers={lecturers}
         currentLecturerId={internship.lecturer_id}
         studentDepartmentId={student?.department_id}
+        lecturerCounts={lecturerCounts}
         submitError={lecturerError}
         isSubmitting={isMutating}
       />
