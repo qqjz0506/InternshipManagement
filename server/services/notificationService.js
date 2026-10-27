@@ -2,6 +2,7 @@ const { pool } = require('../config/database')
 const AppError = require('../utils/AppError')
 const mailService = require('./mailService')
 const settingsService = require('./settingsService')
+const { escapeHtml } = require('../utils/escapeHtml')
 
 const TYPE_VALUES = ['internship', 'assignment', 'report', 'reminder', 'evaluation', 'log']
 
@@ -116,15 +117,22 @@ async function markAllAsRead(currentUser) {
 // "Bất đồng bộ, không chờ" áp dụng ở mức NGHIỆP VỤ: việc TẠO thông báo (INSERT ở trên) không phụ
 // thuộc kết quả gửi email — lỗi gửi email (SMTP sai cấu hình, mất mạng...) không bao giờ làm fail
 // notify() hay nghiệp vụ chính đã gọi notify() (try/catch nuốt lỗi, giống hệt nguyên tắc đã áp dụng
-// cho chính việc ghi notification ở trên). notify() VẪN await hàm này (khác với việc KHÔNG await lúc
-// gọi `sendMail` bên trong `mailService` khi gửi SMTP thật) — để hành vi gửi/không gửi theo
-// `email_notifications` xác định được ngay, test đọc outbox không cần sleep/polling không
-// deterministic. Dùng `pool` (không dùng `conn` dù notify() đang chạy trong 1 transaction) — gửi
-// email không phải 1 phần của transaction đó.
+// cho chính việc ghi notification ở trên). Dùng `pool` (không dùng `conn` dù notify() đang chạy
+// trong 1 transaction) — gửi email không phải 1 phần của transaction đó.
+//
+// await hay không await sendNotificationEmail() ở notify() PHỤ THUỘC mailService.shouldSendReal():
+// ở chế độ outbox (demo/test — mặc định) việc "gửi" chỉ là 1 lần ghi file ĐỒNG BỘ, rất nhanh — vẫn
+// await để hành vi gửi/không gửi xác định được NGAY (test đọc outbox không cần sleep/polling không
+// deterministic). Khi gửi SMTP THẬT (MAIL_ENABLED=true, production) KHÔNG await — 1 SMTP server
+// chậm/treo không được làm chậm response của request đang gọi notify() (chuẩn bị triển khai thật —
+// trước đây luôn await bất kể thật/outbox, chấp nhận trễ response khi gửi thật, không phù hợp
+// production).
 async function sendNotificationEmail(userId, title, content) {
-  const [rows] = await pool.execute('SELECT email, email_notifications FROM users WHERE id = ?', [userId])
+  const [rows] = await pool.execute('SELECT email, email_notifications, status FROM users WHERE id = ?', [userId])
   const user = rows[0]
-  if (!user || !user.email_notifications) {
+  // Tài khoản 'locked' không nhận email — nhất quán với login() chặn hoàn toàn tài khoản locked
+  // (không có lý do gửi thông báo cho 1 tài khoản không đăng nhập được).
+  if (!user || !user.email_notifications || user.status === 'locked') {
     return
   }
 
@@ -133,7 +141,10 @@ async function sendNotificationEmail(userId, title, content) {
   const link = process.env.CLIENT_URL
   const subject = `[${systemName}] ${title}`
   const text = `${content ?? title}\n\nĐăng nhập để xem chi tiết: ${link}`
-  const html = `<p>${content ?? title}</p><p><a href="${link}">Đăng nhập để xem chi tiết</a></p>`
+  // title/content có thể bắt nguồn từ input người dùng (ví dụ tiêu đề vị trí thực tập do Company
+  // Mentor tự đặt, xem positionApplicationService) — PHẢI escape trước khi chèn vào HTML, email
+  // client render HTML thẳng, không có lớp bảo vệ nào khác (xem server/utils/escapeHtml.js).
+  const html = `<p>${escapeHtml(content ?? title)}</p><p><a href="${escapeHtml(link)}">Đăng nhập để xem chi tiết</a></p>`
   await mailService.sendMail({ to: user.email, subject, text, html })
 }
 
@@ -159,10 +170,16 @@ async function notify({ userId, type, title, content }, conn) {
     return
   }
 
-  try {
-    await sendNotificationEmail(userId, title, content)
-  } catch (error) {
-    console.error('notify(): gửi email thất bại (không làm fail nghiệp vụ chính):', error)
+  if (mailService.shouldSendReal()) {
+    sendNotificationEmail(userId, title, content).catch((error) => {
+      console.error('notify(): gửi email thất bại (không làm fail nghiệp vụ chính):', error)
+    })
+  } else {
+    try {
+      await sendNotificationEmail(userId, title, content)
+    } catch (error) {
+      console.error('notify(): gửi email thất bại (không làm fail nghiệp vụ chính):', error)
+    }
   }
 }
 

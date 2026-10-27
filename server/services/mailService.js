@@ -58,4 +58,4 @@ function sendMail({ to, subject, html, text }) {
     })
 }
 
-module.exports = { sendMail, OUTBOX_PATH }
+module.exports = { sendMail, OUTBOX_PATH, shouldSendReal }

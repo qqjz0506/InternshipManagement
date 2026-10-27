@@ -4,7 +4,16 @@
 
 export const TOKEN_STORAGE_KEY = 'itm_access_token'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+// Mặc định '/api' (đường dẫn TƯƠNG ĐỐI, cùng origin) — đúng cho bản production thật (server/app.js
+// tự phục vụ client/dist + API trên CÙNG 1 server/origin, xem README Mục 16M). Dev override qua
+// client/.env (VITE_API_BASE_URL=http://localhost:5000/api, 2 server riêng cổng 5173/5000).
+// Tách thành hàm thuần nhận `env` để test được dưới Node thường — import.meta.env chỉ tồn tại khi
+// chạy qua Vite (dev/build), dưới `node --test` nó luôn là undefined (?. tránh crash khi đó).
+export function resolveApiBaseUrl(env) {
+  return env?.VITE_API_BASE_URL || '/api'
+}
+
+const API_BASE_URL = resolveApiBaseUrl(import.meta.env)
 
 export function getToken() {
   return localStorage.getItem(TOKEN_STORAGE_KEY)

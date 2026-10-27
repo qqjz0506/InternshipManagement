@@ -10,6 +10,12 @@ WORKDIR /app/client
 COPY client/package.json client/package-lock.json ./
 RUN npm ci
 COPY client/ ./
+# '/api' khớp đúng default mới của client/src/api/apiClient.js (đường dẫn tương đối, cùng origin —
+# server/app.js phục vụ cả client/dist lẫn /api/* trên CÙNG 1 server khi NODE_ENV=production). Khai
+# ARG để build-arg ngoài có thể override nếu triển khai tách origin (API/CDN riêng) — mặc định không
+# cần set gì thêm. client/.env (dev, bị .dockerignore loại khỏi build context) không ảnh hưởng ở đây.
+ARG VITE_API_BASE_URL=/api
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 RUN npm run build
 
 # ---- Stage 2: server runtime (Express phục vụ luôn client/dist khi NODE_ENV=production) ----

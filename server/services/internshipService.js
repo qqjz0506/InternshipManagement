@@ -141,6 +141,37 @@ async function getLecturerById(id) {
   return rows[0] ?? null
 }
 
+// Trả slot khi hồ sơ 'cancelled' bắt nguồn từ 1 đơn ứng tuyển đã 'accepted'
+// (positionApplicationService.accept) — nếu không, đơn vẫn coi là accepted và vị trí vẫn 'closed' dù
+// hồ sơ thật đã hủy, "mất" slot vĩnh viễn (không ai ứng tuyển lại được dù còn chỗ thật). Best-effort:
+// lỗi ở đây KHÔNG được làm fail việc hủy hồ sơ đã thành công (cùng nguyên tắc dung sai lỗi phụ đã áp
+// dụng cho notify()/gửi email).
+async function releaseSlotForCancelledInternship(studentId, periodId) {
+  const [[acceptedApplication]] = await pool.execute(
+    `SELECT a.id AS application_id, p.id AS position_id, p.slots, p.status AS position_status
+     FROM position_applications a
+     JOIN internship_positions p ON p.id = a.position_id
+     WHERE a.student_id = ? AND a.status = 'accepted' AND p.period_id = ?
+     ORDER BY a.id DESC LIMIT 1`,
+    [studentId, periodId],
+  )
+  if (!acceptedApplication) {
+    return
+  }
+
+  await pool.execute("UPDATE position_applications SET status = 'withdrawn' WHERE id = ?", [acceptedApplication.application_id])
+
+  if (acceptedApplication.position_status === 'closed') {
+    const [[{ acceptedCount }]] = await pool.query(
+      "SELECT COUNT(*) AS acceptedCount FROM position_applications WHERE position_id = ? AND status = 'accepted'",
+      [acceptedApplication.position_id],
+    )
+    if (acceptedCount < acceptedApplication.slots) {
+      await pool.execute("UPDATE internship_positions SET status = 'open' WHERE id = ?", [acceptedApplication.position_id])
+    }
+  }
+}
+
 async function getTopicById(id) {
   const [rows] = await pool.execute('SELECT * FROM topics WHERE id = ?', [id])
   return rows[0] ?? null
@@ -602,6 +633,16 @@ async function update(id, payload, currentUser) {
       title: 'Hồ sơ thực tập cập nhật trạng thái',
       content: `Hồ sơ thực tập #${id} của bạn đã chuyển sang trạng thái "${STATUS_LABEL_VI[changes.status] ?? changes.status}".`,
     })
+  }
+
+  // Trả slot: hồ sơ vừa hủy có thể bắt nguồn từ 1 đơn ứng tuyển đã accepted — xem
+  // releaseSlotForCancelledInternship() ở trên.
+  if (changes.status === 'cancelled') {
+    try {
+      await releaseSlotForCancelledInternship(existing.student_id, existing.period_id)
+    } catch (error) {
+      console.error('[internshipService] Lỗi khi trả slot cho hồ sơ vừa hủy:', error)
+    }
   }
 
   // Thông báo: vừa phân công Giảng viên mới -> báo Sinh viên + Giảng viên đó.

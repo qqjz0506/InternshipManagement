@@ -1,0 +1,2392 @@
+﻿=== REVIEW RUN 2026-10-27 22:27:06 ===
+
+========== ENV ==========
+v24.18.0
+11.16.0
+INFO: Could not find files for the given pattern(s).
+---- exit code: 1 ----
+
+========== TEST DB SETUP ==========
+
+> internship-management-server@1.0.0 test:setup
+> node db/testSetup.js
+
+[test:setup] X├│a v├á tß║ío lß║íi database "internship_management_test"...
+[test:setup] ─É├ú ├íp dß╗Ñng schema.sql.
+[test:setup] ─É├ú ├íp dß╗Ñng seed.sql.
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 001_users_status.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 002_reports_file_upload.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 003_settings_weights.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 004_must_change_password.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 005_internship_final_score.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 006_email_notifications.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 007_password_reset_tokens.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 008_internship_periods_reminders.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 009_reports_is_late.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 010_reminder_logs.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 011_lecturers_max_students.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 012_internship_positions.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 013_position_applications.sql
+[migrate] Baseline (kh├┤ng chß║íy, chß╗ë ghi nhß║¡n ─æ├ú ├íp dß╗Ñng): 014_settings_school_faculty.sql
+[test:setup] ─É├ú baseline 14 migration (nß╗Öi dung ─æ├ú c├│ sß║╡n trong schema.sql).
+[test:setup] Database test "internship_management_test" ─æ├ú sß║╡n s├áng.
+---- exit code: 0 ----
+
+========== SERVER npm test ==========
+
+> internship-management-server@1.0.0 test
+> cross-env NODE_ENV=test node --test --test-concurrency=1 tests/auth.test.js tests/rbac.test.js tests/idor.test.js tests/fieldInjection.test.js tests/businessRules.test.js tests/users.test.js tests/crudSmoke.test.js tests/security.test.js tests/errorHandling.test.js tests/internshipWorkflow.test.js tests/internshipLogsAuthorization.test.js tests/reportsAuthorization.test.js tests/studentSelfEdit.test.js tests/internshipAdminLifecycle.test.js tests/settingsAuthorization.test.js tests/businessRulesV2.test.js tests/accountSecurity.test.js tests/notifications.test.js tests/reportUpload.test.js tests/evaluationFinalResult.test.js tests/pagination.test.js tests/statisticsSummary.test.js tests/dbMigrate.test.js tests/dateTime.test.js tests/timezoneBusinessRules.test.js tests/completedInvariants.test.js tests/mail.test.js tests/passwordReset.test.js tests/reportLateFlag.test.js tests/reminders.test.js tests/reminderJob.test.js tests/internshipPositions.test.js tests/positionApplications.test.js tests/positionApplicationsGuards.test.js tests/lecturerCapacity.test.js tests/internshipDocuments.test.js tests/productionConfig.test.js tests/productionStaticServing.test.js tests/createAdmin.test.js tests/emailEscaping.test.js tests/notifyAsync.test.js tests/dbIntegrity.test.js services/exportService.test.js tests/importStudents.test.js tests/importLecturers.test.js
+
+Γ£ö internship export: Admin sees all 12 seed internships with correct header (20.5151ms)
+Γ£ö internship export: Student chß╗ë thß║Ñy ─æ├║ng hß╗ô s╞í cß╗ºa ch├¡nh m├¼nh (2.5063ms)
+Γ£ö internship export: filter scope-intersected trß║ú rß╗ùng (kh├┤ng leak) nß║┐u kh├┤ng khß╗¢p scope (1.2705ms)
+Γ£ö evaluation export: Student KH├öNG ─æ╞░ß╗úc thß║Ñy evaluation ch╞░a c├┤ng bß╗æ (kß╗â cß║ú cß╗ºa ch├¡nh m├¼nh) (10.2872ms)
+Γ£ö evaluation export: Lecturer chß╗ë thß║Ñy evaluation evaluator_role=lecturer thuß╗Öc internship m├¼nh phß╗Ñ tr├ích (5.2764ms)
+Γ£ö workbook roundtrip: buffer ghi ra phß║úi ─æß╗ìc lß║íi ─æ╞░ß╗úc bß║▒ng ExcelJS (file integrity) (33.5732ms)
+Γ£ö evaluation export: cß╗Öt ─Éiß╗âm tß╗òng kß║┐t thß╗▒c tß║¡p + Xß║┐p loß║íi ΓÇö ─æ├║ng theo evaluationService.computeFinalResult, bß╗Å trß╗æng khi ch╞░a ─æß╗º 2 ─æ├ính gi├í c├┤ng bß╗æ (15.426ms)
+AppError: Mß║¡t khß║⌐u hiß╗çn tß║íi kh├┤ng ─æ├║ng.
+    at Object.changePassword (D:\InternshipManagement\server\services\authService.js:70:11)
+    at async changePassword (D:\InternshipManagement\server\controllers\authController.js:49:3) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Change password: sai mß║¡t khß║⌐u hiß╗çn tß║íi -> 401, kh├┤ng ─æß╗òi (204.1062ms)
+AppError: Mß║¡t khß║⌐u mß╗¢i phß║úi c├│ tß╗æi thiß╗âu 8 k├╜ tß╗▒, bao gß╗ôm cß║ú chß╗» v├á sß╗æ.
+    at validateChangePasswordPayload (D:\InternshipManagement\server\controllers\authController.js:32:11)
+    at changePassword (D:\InternshipManagement\server\controllers\authController.js:48:3)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Mß║¡t khß║⌐u mß╗¢i phß║úi c├│ tß╗æi thiß╗âu 8 k├╜ tß╗▒, bao gß╗ôm cß║ú chß╗» v├á sß╗æ.
+    at validateChangePasswordPayload (D:\InternshipManagement\server\controllers\authController.js:32:11)
+    at changePassword (D:\InternshipManagement\server\controllers\authController.js:48:3)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Mß║¡t khß║⌐u mß╗¢i phß║úi c├│ tß╗æi thiß╗âu 8 k├╜ tß╗▒, bao gß╗ôm cß║ú chß╗» v├á sß╗æ.
+    at validateChangePasswordPayload (D:\InternshipManagement\server\controllers\authController.js:32:11)
+    at changePassword (D:\InternshipManagement\server\controllers\authController.js:48:3)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Change password: mß║¡t khß║⌐u mß╗¢i yß║┐u (ngß║»n/thiß║┐u chß╗» hoß║╖c sß╗æ) -> 400 (48.2738ms)
+AppError: Mß║¡t khß║⌐u mß╗¢i phß║úi kh├íc mß║¡t khß║⌐u hiß╗çn tß║íi.
+    at Object.changePassword (D:\InternshipManagement\server\services\authService.js:73:11)
+    at async changePassword (D:\InternshipManagement\server\controllers\authController.js:49:3) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Change password: mß║¡t khß║⌐u mß╗¢i giß╗æng mß║¡t khß║⌐u hiß╗çn tß║íi -> 400 (61.221ms)
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Change password: ─æß╗òi th├ánh c├┤ng, ─æ─âng nhß║¡p lß║íi bß║▒ng mß║¡t khß║⌐u mß╗¢i, rß╗ôi kh├┤i phß╗Ñc mß║¡t khß║⌐u gß╗æc (376.8234ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Admin reset-password: sinh mß║¡t khß║⌐u tß║ím, user ─æ─âng nhß║¡p ─æ╞░ß╗úc bß║▒ng mß║¡t khß║⌐u ─æ├│ (219.5437ms)
+AppError: Bß║ín ─æang d├╣ng mß║¡t khß║⌐u tß║ím ΓÇö vui l├▓ng ─æß╗òi mß║¡t khß║⌐u tr╞░ß╗¢c khi tiß║┐p tß╗Ñc sß╗¡ dß╗Ñng hß╗ç thß╗æng.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:53:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: 'MUST_CHANGE_PASSWORD'
+}
+AppError: Bß║ín ─æang d├╣ng mß║¡t khß║⌐u tß║ím ΓÇö vui l├▓ng ─æß╗òi mß║¡t khß║⌐u tr╞░ß╗¢c khi tiß║┐p tß╗Ñc sß╗¡ dß╗Ñng hß╗ç thß╗æng.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:53:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: 'MUST_CHANGE_PASSWORD'
+}
+Γ£ö Admin reset-password: bß║¡t must_change_password=true; ─æß╗òi mß║¡t khß║⌐u th├ánh c├┤ng th├¼ tß╗▒ tß║»t lß║íi (397.1385ms)
+AppError: T├ái khoß║ún ─æ├ú bß╗ï kh├│a.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:48:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: T├ái khoß║ún ─æ├ú bß╗ï kh├│a.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:46:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Lock account: ─æ─âng nhß║¡p bß╗ï chß║╖n (403); token c┼⌐ (─æ├ú cß║Ñp tr╞░ß╗¢c ─æ├│) c┼⌐ng bß╗ï chß║╖n ngay; mß╗ƒ lß║íi th├¼ d├╣ng ─æ╞░ß╗úc b├¼nh th╞░ß╗¥ng (307.8952ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Set status: Student kh├┤ng c├│ quyß╗ün gß╗ìi (403 route-level) (1.9224ms)
+AppError: Kh├┤ng thß╗â tß╗▒ kh├│a ch├¡nh t├ái khoß║ún ─æang ─æ─âng nhß║¡p.
+    at Object.setStatus (D:\InternshipManagement\server\services\userService.js:246:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async setStatus (D:\InternshipManagement\server\controllers\userController.js:99:16) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Set status: Admin kh├┤ng thß╗â tß╗▒ kh├│a ch├¡nh m├¼nh (403), kh├┤ng ─æß╗òi (14.5806ms)
+Γ£ö Set status: kh├┤ng kh├│a ─æ╞░ß╗úc admin cuß╗æi c├╣ng ─æang active (409) (77.9046ms)
+Γ£ö Security headers: helmet gß║»n header bß║úo mß║¡t c╞í bß║ún v├áo mß╗ìi response (14.1716ms)
+PayloadTooLargeError: request entity too large
+    at readStream (D:\InternshipManagement\server\node_modules\raw-body\index.js:163:17)
+    at getRawBody (D:\InternshipManagement\server\node_modules\raw-body\index.js:116:12)
+    at read (D:\InternshipManagement\server\node_modules\body-parser\lib\read.js:79:3)
+    at jsonParser (D:\InternshipManagement\server\node_modules\body-parser\lib\types\json.js:142:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at cors (D:\InternshipManagement\server\node_modules\cors\lib\index.js:188:7)
+    at D:\InternshipManagement\server\node_modules\cors\lib\index.js:224:17
+    at originCallback (D:\InternshipManagement\server\node_modules\cors\lib\index.js:214:15)
+    at D:\InternshipManagement\server\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (D:\InternshipManagement\server\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (D:\InternshipManagement\server\node_modules\cors\lib\index.js:204:7)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5) {
+  expected: 1048709,
+  length: 1048709,
+  limit: 1048576,
+  type: 'entity.too.large'
+}
+Γ£ö Body size limit: payload > 1MB bß╗ï chß║╖n, kh├┤ng crash server (15.4076ms)
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Rate limit: bß╗ï tß║»t khi NODE_ENV=test (kh├┤ng chß║╖n test suite ─æ─âng nhß║¡p nhiß╗üu lß║ºn) (664.3426ms)
+Γ£ö A1. Valid login returns token + safe user object (no password/password_hash) (90.4227ms)
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö A2. Wrong password -> 401 (50.0592ms)
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:37:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö A3. Unknown email -> 401 (2.6303ms)
+AppError: Vui l├▓ng nhß║¡p email.
+    at validateLoginPayload (D:\InternshipManagement\server\controllers\authController.js:12:11)
+    at login (D:\InternshipManagement\server\controllers\authController.js:37:3)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at D:\InternshipManagement\server\node_modules\express-rate-limit\dist\index.cjs:922:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async D:\InternshipManagement\server\node_modules\express-rate-limit\dist\index.cjs:879:5 {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö A4. Missing credentials -> 400 (3.0911ms)
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö A5. GET /auth/me: valid token 200, invalid token 401, no token 401 (91.9021ms)
+AppError: Kh├┤ng thß╗â sß╗¡a nß╗Öi dung nhß║¡t k├╜ ─æ├ú ─æ╞░ß╗úc giß║úng vi├¬n nhß║¡n x├⌐t ("reviewed").
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:204:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Business rule: Log ─æ├ú reviewed -> edit content bß╗ï chß║╖n (409) (356.6994ms)
+AppError: Kh├┤ng thß╗â x├│a nhß║¡t k├╜ ─æ├ú ─æ╞░ß╗úc giß║úng vi├¬n nhß║¡n x├⌐t ("reviewed").
+    at Object.remove (D:\InternshipManagement\server\services\internshipLogService.js:283:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\internshipLogController.js:73:3) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Business rule: Log ─æ├ú reviewed -> delete bß╗ï chß║╖n (409) (14.2694ms)
+AppError: Kh├┤ng thß╗â chuyß╗ân nhß║¡t k├╜ ─æ├ú "reviewed" trß╗ƒ lß║íi "submitted".
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:226:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Business rule: Log reviewed -> submitted (one-way) bß╗ï chß║╖n ngay cß║ú vß╗¢i Admin (14.1808ms)
+AppError: submitted_at do hß╗ç thß╗æng tß╗▒ sinh, kh├┤ng ─æ╞░ß╗úc gß╗¡i khi tß║ío b├ío c├ío.
+    at Object.create (D:\InternshipManagement\server\services\reportService.js:145:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\reportController.js:77:20) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Business rule: submitted_at do server tß╗▒ sinh, client gß╗¡i k├¿m -> 400, kh├┤ng tß║ío report (8.4748ms)
+AppError: overall_score do hß╗ç thß╗æng tß╗▒ t├¡nh tß╗½ 4 ─æiß╗âm th├ánh phß║ºn, kh├┤ng ─æ╞░ß╗úc gß╗¡i khi tß║ío ─æ├ính gi├í.
+    at Object.create (D:\InternshipManagement\server\services\evaluationService.js:175:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\evaluationController.js:55:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Business rule: ─æiß╗âm ─æ├ính gi├í ngo├ái khoß║úng 0-10 -> 400, kh├┤ng tß║ío row (8.4214ms)
+AppError: Hß╗ô s╞í n├áy ─æ├ú c├│ ─æ├ính gi├í tß╗½ "company".
+    at Object.create (D:\InternshipManagement\server\services\evaluationService.js:166:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\evaluationController.js:55:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Business rule: unique (internship_id, evaluator_role) ΓÇö tß║ío tr├╣ng -> 409, cleanup (31.7309ms)
+AppError: ─É├ính gi├í ─æ├ú c├┤ng bß╗æ ΓÇö kh├┤ng thß╗â sß╗¡a ─æiß╗âm/nhß║¡n x├⌐t.
+    at Object.update (D:\InternshipManagement\server\services\evaluationService.js:259:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\evaluationController.js:62:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Business rule: evaluation ─æ├ú c├┤ng bß╗æ -> kh├┤ng sß╗¡a ─æ╞░ß╗úc ─æiß╗âm/nhß║¡n x├⌐t (409) (15.32ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Business rule: Student kh├┤ng c├│ quyß╗ün publish/unpublish evaluation (403, route-level) (13.1595ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün bß╗Å c├┤ng bß╗æ ─æ├ính gi├í ─æ├ú c├┤ng bß╗æ ΓÇö chß╗ë Admin ─æ╞░ß╗úc ph├⌐p.
+    at Object.update (D:\InternshipManagement\server\services\evaluationService.js:252:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\evaluationController.js:62:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Business rule: Lecturer publish l├á one-way ΓÇö publish ─æ╞░ß╗úc, unpublish bß╗ï chß║╖n (64.194ms)
+AppError: Hß╗ç thß╗æng ─æang tß║ím kh├│a ─æ─âng k├╜ thß╗▒c tß║¡p mß╗¢i. Vui l├▓ng li├¬n hß╗ç Admin.
+    at Object.create (D:\InternshipManagement\server\services\internshipService.js:264:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipController.js:149:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Rule 1: allow_student_registration=0 chß║╖n Student tß║ío hß╗ô s╞í (403), Admin vß║½n tß║ío ─æ╞░ß╗úc (313.3063ms)
+AppError: ─Éß╗út thß╗▒c tß║¡p n├áy ─æ├ú ─æ├│ng, kh├┤ng thß╗â ─æ─âng k├╜ hß╗ô s╞í thß╗▒c tß║¡p mß╗¢i.
+    at Object.create (D:\InternshipManagement\server\services\internshipService.js:259:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipController.js:149:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 1: ─æß╗út thß╗▒c tß║¡p ─æ├ú "closed" chß║╖n ─æ─âng k├╜ mß╗¢i, ├íp dß╗Ñng cß║ú Admin (409) (15.3592ms)
+AppError: Hß╗ô s╞í sinh vi├¬n cß╗ºa bß║ín ─æang ß╗ƒ trß║íng th├íi kh├┤ng hoß║ít ─æß╗Öng, kh├┤ng thß╗â ─æ─âng k├╜ thß╗▒c tß║¡p.
+    at Object.create (D:\InternshipManagement\server\services\internshipService.js:268:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipController.js:149:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Rule 1: hß╗ô s╞í sinh vi├¬n status="inactive" chß║╖n Student tß╗▒ ─æ─âng k├╜ (403) (15.6276ms)
+AppError: Kh├┤ng thß╗â g├ín ─æß╗ü t├ái ─æ├ú bß╗ï tß╗½ chß╗æi.
+    at assertTopicAssignable (D:\InternshipManagement\server\services\internshipService.js:195:11)
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:466:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 2: Admin kh├┤ng g├ín ─æ╞░ß╗úc ─æß╗ü t├ái "rejected" (400), kh├┤ng ghi DB (12.2867ms)
+AppError: Bß║ín chß╗ë ─æ╞░ß╗úc chß╗ìn ─æß╗ü t├ái ─æ├ú duyß╗çt, hoß║╖c ─æß╗ü t├ái ─æang ─æß╗ü xuß║Ñt do ch├¡nh m├¼nh ─æß╗ü xuß║Ñt.
+    at assertTopicAssignable (D:\InternshipManagement\server\services\internshipService.js:187:13)
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:466:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Bß║ín chß╗ë ─æ╞░ß╗úc chß╗ìn ─æß╗ü t├ái ─æ├ú duyß╗çt, hoß║╖c ─æß╗ü t├ái ─æang ─æß╗ü xuß║Ñt do ch├¡nh m├¼nh ─æß╗ü xuß║Ñt.
+    at assertTopicAssignable (D:\InternshipManagement\server\services\internshipService.js:187:13)
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:466:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 2: Student chß╗ë chß╗ìn ─æ╞░ß╗úc ─æß╗ü t├ái "approved" hoß║╖c "proposed" do ch├¡nh m├¼nh ─æß╗ü xuß║Ñt (77.9195ms)
+AppError: Doanh nghiß╗çp n├áy kh├┤ng ß╗ƒ trß║íng th├íi hoß║ít ─æß╗Öng, kh├┤ng thß╗â g├ín.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:434:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Giß║úng vi├¬n n├áy kh├┤ng ß╗ƒ trß║íng th├íi hoß║ít ─æß╗Öng, kh├┤ng thß╗â g├ín.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:451:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Ng╞░ß╗¥i h╞░ß╗¢ng dß║½n n├áy kh├┤ng ß╗ƒ trß║íng th├íi hoß║ít ─æß╗Öng, kh├┤ng thß╗â g├ín.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:486:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 3: g├ín company/lecturer/mentor kh├┤ng "active" -> 400, kh├┤ng ghi DB (61.6142ms)
+AppError: Phß║úi ph├ón c├┤ng ─æß╗º Giß║úng vi├¬n, Doanh nghiß╗çp v├á Ng╞░ß╗¥i h╞░ß╗¢ng dß║½n tr╞░ß╗¢c khi chuyß╗ân sang "in_progress".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:525:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 4a: approved -> in_progress khi ch╞░a ─æß╗º ph├ón c├┤ng -> 409 (32.9948ms)
+AppError: Phß║úi c├│ ├¡t nhß║Ñt 1 b├ío c├ío tß╗òng kß║┐t (report_type="final") ─æ├ú ─æ╞░ß╗úc duyß╗çt tr╞░ß╗¢c khi chuyß╗ân sang "completed".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:544:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 4b: in_progress -> completed khi thiß║┐u b├ío c├ío/─æ├ính gi├í -> 409 (internships.id=1) (2.1699ms)
+AppError: Phß║úi c├│ ├¡t nhß║Ñt 1 b├ío c├ío tß╗òng kß║┐t (report_type="final") ─æ├ú ─æ╞░ß╗úc duyß╗çt tr╞░ß╗¢c khi chuyß╗ân sang "completed".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:544:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+AppError: Phß║úi c├│ ─æß╗º ─æ├ính gi├í ─É├â C├öNG Bß╗É tß╗½ cß║ú Giß║úng vi├¬n v├á Doanh nghiß╗çp tr╞░ß╗¢c khi chuyß╗ân sang "completed".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:554:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+AppError: Kh├┤ng thß╗â x├│a ─æ├ính gi├í cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.remove (D:\InternshipManagement\server\services\evaluationService.js:324:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\evaluationController.js:68:3) {
+  statusCode: 409,
+  code: undefined
+}
+AppError: Kh├┤ng thß╗â x├│a ─æ├ính gi├í cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.remove (D:\InternshipManagement\server\services\evaluationService.js:324:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\evaluationController.js:68:3) {
+  statusCode: 409,
+  code: undefined
+}
+AppError: Kh├┤ng thß╗â x├│a b├ío c├ío tß╗òng kß║┐t ─æ├ú duyß╗çt cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.remove (D:\InternshipManagement\server\services\reportService.js:329:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\reportController.js:104:3) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 4b: ho├án th├ánh ─æß╗º b├ío c├ío final+approved v├á 2 ─æ├ính gi├í ─É├â C├öNG Bß╗É -> completed th├ánh c├┤ng (200) (261.2689ms)
+AppError: Ng├áy bß║»t ─æß║ºu phß║úi nß║▒m trong khoß║úng thß╗¥i gian cß╗ºa ─æß╗út thß╗▒c tß║¡p.
+    at Object.create (D:\InternshipManagement\server\services\internshipService.js:336:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipController.js:149:22) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Ng├áy kß║┐t th├║c phß║úi nß║▒m trong khoß║úng thß╗¥i gian cß╗ºa ─æß╗út thß╗▒c tß║¡p.
+    at Object.create (D:\InternshipManagement\server\services\internshipService.js:339:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipController.js:149:22) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Ng├áy bß║»t ─æß║ºu phß║úi nß║▒m trong khoß║úng thß╗¥i gian cß╗ºa ─æß╗út thß╗▒c tß║¡p.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:609:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 5a: start_date/end_date ngo├ái khoß║úng cß╗ºa ─æß╗út -> 400, kh├┤ng ghi DB (45.9403ms)
+AppError: log_date phß║úi nß║▒m trong khoß║úng thß╗¥i gian thß╗▒c tß║¡p.
+    at validateLogDate (D:\InternshipManagement\server\services\internshipLogService.js:28:11)
+    at Object.create (D:\InternshipManagement\server\services\internshipLogService.js:118:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipLogController.js:60:15) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: log_date phß║úi nß║▒m trong khoß║úng thß╗¥i gian thß╗▒c tß║¡p.
+    at validateLogDate (D:\InternshipManagement\server\services\internshipLogService.js:25:11)
+    at Object.create (D:\InternshipManagement\server\services\internshipLogService.js:118:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipLogController.js:60:15) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: log_date phß║úi nß║▒m trong khoß║úng thß╗¥i gian thß╗▒c tß║¡p.
+    at validateLogDate (D:\InternshipManagement\server\services\internshipLogService.js:28:11)
+    at Object.create (D:\InternshipManagement\server\services\internshipLogService.js:118:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipLogController.js:60:15) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: log_date kh├┤ng ─æ╞░ß╗úc ß╗ƒ t╞░╞íng lai.
+    at validateLogDate (D:\InternshipManagement\server\services\internshipLogService.js:22:11)
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:209:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 5b: log_date ß╗ƒ t╞░╞íng lai hoß║╖c ngo├ái khoß║úng thß╗▒c tß║¡p -> 400, kh├┤ng ghi DB (64.025ms)
+AppError: Chß╗ë ─æ╞░ß╗úc nß╗Öp b├ío c├ío khi hß╗ô s╞í thß╗▒c tß║¡p ─æang "in_progress" hoß║╖c ─æ├ú "completed".
+    at Object.create (D:\InternshipManagement\server\services\reportService.js:136:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\reportController.js:77:20) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 6a: nß╗Öp b├ío c├ío khi internship ch╞░a in_progress/completed -> 409, kh├┤ng ghi DB (3.6413ms)
+AppError: Hß╗ô s╞í n├áy ─æ├ú c├│ b├ío c├ío tß╗òng kß║┐t ─æang xß╗¡ l├╜ hoß║╖c ─æ├ú ─æ╞░ß╗úc duyß╗çt ΓÇö kh├┤ng thß╗â nß╗Öp th├¬m bß║ún mß╗¢i.
+    at Object.create (D:\InternshipManagement\server\services\reportService.js:142:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\reportController.js:77:20) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 6b: tß║ío b├ío c├ío "final" lß║ºn 2 khi bß║ún ─æß║ºu ch╞░a bß╗ï rejected -> 409, cleanup (57.0465ms)
+AppError: Khi nß╗Öp lß║íi b├ío c├ío, bß║ín chß╗ë ─æ╞░ß╗úc thay file mß╗¢i: status.
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:229:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Vui l├▓ng chß╗ìn file mß╗¢i ─æß╗â nß╗Öp lß║íi b├ío c├ío.
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:232:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 6c: Student nß╗Öp lß║íi b├ío c├ío "rejected" ΓÇö bß║»t buß╗Öc k├¿m file mß╗¢i, tß╗▒ reset vß╗ü submitted (93.3631ms)
+AppError: Hß╗ô s╞í n├áy ─æ├ú c├│ b├ío c├ío tß╗òng kß║┐t kh├íc ─æang xß╗¡ l├╜ hoß║╖c ─æ├ú ─æ╞░ß╗úc duyß╗çt ΓÇö kh├┤ng thß╗â nß╗Öp lß║íi bß║ún n├áy.
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:222:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 6d: nß╗Öp lß║íi b├ío c├ío "final" ─æ├ú rejected -> 409 nß║┐u ─É├â C├ô b├ío c├ío final KH├üC ─æang active (67.141ms)
+AppError: overall_score do hß╗ç thß╗æng tß╗▒ t├¡nh tß╗½ 4 ─æiß╗âm th├ánh phß║ºn, kh├┤ng ─æ╞░ß╗úc gß╗¡i khi tß║ío ─æ├ính gi├í.
+    at Object.create (D:\InternshipManagement\server\services\evaluationService.js:175:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\evaluationController.js:55:22) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: overall_score do hß╗ç thß╗æng tß╗▒ t├¡nh, kh├┤ng ─æ╞░ß╗úc gß╗¡i khi cß║¡p nhß║¡t ─æ├ính gi├í.
+    at Object.update (D:\InternshipManagement\server\services\evaluationService.js:222:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\evaluationController.js:62:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Rule 7: overall_score tß╗▒ t├¡nh = trung b├¼nh 4 ─æiß╗âm th├ánh phß║ºn, reject nß║┐u client gß╗¡i k├¿m (56.5628ms)
+Γ£ö Rule 8: Student tß╗▒ sß╗¡a email -> users.email ─æß╗ông bß╗Ö theo, kh├┤i phß╗Ñc lß║íi gi├í trß╗ï c┼⌐ (36.5858ms)
+AppError: Email n├áy ─æ├ú ─æ╞░ß╗úc d├╣ng cho mß╗Öt t├ái khoß║ún kh├íc.
+    at Object.update (D:\InternshipManagement\server\services\studentService.js:205:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\studentController.js:94:19) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Rule 8: Student ─æß╗òi email tr├╣ng vß╗¢i email ─æ├ú d├╣ng ß╗ƒ bß║úng users -> 409, kh├┤ng ─æß╗òi (38.9754ms)
+Γ£ö Completed: chuyß╗ân sang completed phß║úi CHß╗ÉT NGAY final_score/final_classification trong response (290.9336ms)
+AppError: Kh├┤ng thß╗â bß╗Å c├┤ng bß╗æ ─æ├ính gi├í cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.update (D:\InternshipManagement\server\services\evaluationService.js:232:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\evaluationController.js:62:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Completed: KH├öNG cho bß╗Å c├┤ng bß╗æ ─æ├ính gi├í (409), kß╗â cß║ú Admin (152.347ms)
+AppError: Kh├┤ng thß╗â x├│a ─æ├ính gi├í cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.remove (D:\InternshipManagement\server\services\evaluationService.js:324:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\evaluationController.js:68:3) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Completed: KH├öNG cho x├│a ─æ├ính gi├í (409), kß╗â cß║ú Admin (170.1255ms)
+AppError: Kh├┤ng thß╗â ─æß╗òi trß║íng th├íi b├ío c├ío tß╗òng kß║┐t ─æ├ú duyß╗çt cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:269:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Completed: KH├öNG cho ─æß╗òi status b├ío c├ío tß╗òng kß║┐t ─æ├ú duyß╗çt (409), kß╗â cß║ú Admin (169.5897ms)
+AppError: Kh├┤ng thß╗â x├│a b├ío c├ío tß╗òng kß║┐t ─æ├ú duyß╗çt cß╗ºa hß╗ô s╞í ─æ├ú ho├án th├ánh (completed).
+    at Object.remove (D:\InternshipManagement\server\services\reportService.js:329:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\reportController.js:104:3) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Completed: KH├öNG cho x├│a b├ío c├ío tß╗òng kß║┐t ─æ├ú duyß╗çt (409), kß╗â cß║ú Admin (187.4776ms)
+AppError: Kh├┤ng thß╗â gß╗í doanh nghiß╗çp khi hß╗ô s╞í ─æang ß╗ƒ trß║íng th├íi "completed" ΓÇö chß╗ë ─æ╞░ß╗úc ─æß╗òi sang doanh nghiß╗çp kh├íc.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:426:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+AppError: Kh├┤ng thß╗â gß╗í giß║úng vi├¬n khi hß╗ô s╞í ─æang ß╗ƒ trß║íng th├íi "completed" ΓÇö chß╗ë ─æ╞░ß╗úc ─æß╗òi sang giß║úng vi├¬n kh├íc.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:443:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+AppError: Kh├┤ng thß╗â gß╗í ng╞░ß╗¥i h╞░ß╗¢ng dß║½n khi hß╗ô s╞í ─æang ß╗ƒ trß║íng th├íi "completed" ΓÇö chß╗ë ─æ╞░ß╗úc ─æß╗òi sang ng╞░ß╗¥i h╞░ß╗¢ng dß║½n kh├íc.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:478:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Completed: KH├öNG cho gß╗í (null) company_id/lecturer_id/company_mentor_id (409 mß╗ùi field) (217.8725ms)
+Γ£ö Completed: ─æß╗òi trß╗ìng sß╗æ Settings SAU KHI ho├án th├ánh KH├öNG l├ám ─æß╗òi ─æiß╗âm ─æ├ú chß╗æt (202.9918ms)
+AppError: Kh├┤ng thß╗â gß╗í giß║úng vi├¬n khi hß╗ô s╞í ─æang ß╗ƒ trß║íng th├íi "in_progress" ΓÇö chß╗ë ─æ╞░ß╗úc ─æß╗òi sang giß║úng vi├¬n kh├íc.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:443:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö In_progress (CH╞»A completed): KH├öNG cho gß╗í null, nh╞░ng ─É╞»ß╗óC ─æß╗òi sang ng╞░ß╗¥i kh├íc (97.1222ms)
+Γ£ö ensureDefaultSettings: DB test (seed ─æ├ú c├│ settings id=1) -> idempotent, kh├┤ng ─æß╗òi dß╗» liß╗çu hiß╗çn c├│ (23.1709ms)
+Γ£ö createAdminUser: email/password hß╗úp lß╗ç -> tß║ío user role=admin, must_change_password=1 (62.9645ms)
+Γ£ö createAdminUser: ADMIN_EMAIL kh├┤ng hß╗úp lß╗ç -> throw, kh├┤ng tß║ío user (3.2586ms)
+Γ£ö createAdminUser: ADMIN_PASSWORD yß║┐u -> throw, kh├┤ng tß║ío user (5.08ms)
+Γ£ö createAdminUser: email ─æ├ú tß╗ôn tß║íi -> throw, kh├┤ng tß║ío th├¬m user tr├╣ng (47.7274ms)
+Γ£ö bootstrapProduction: end-to-end (settings + baseline migrations + tß║ío admin) -> kh├┤ng throw, admin tß║ío ─æ├║ng (54.2862ms)
+Γ£ö CRUD smoke: GET /departments -> 200 + array (104.55ms)
+Γ£ö CRUD smoke: GET /students -> 200 + array (13.3426ms)
+Γ£ö CRUD smoke: GET /lecturers -> 200 + array (3.1284ms)
+Γ£ö CRUD smoke: GET /companies -> 200 + array (3.4483ms)
+Γ£ö CRUD smoke: GET /company-mentors -> 200 + array (7.4064ms)
+Γ£ö CRUD smoke: GET /internship-periods -> 200 + array (2.4951ms)
+Γ£ö CRUD smoke: GET /topics -> 200 + array (12.4228ms)
+Γ£ö CRUD smoke: GET /internships -> 200 + array (2.8333ms)
+Γ£ö CRUD smoke: GET /internship-logs -> 200 + array (12.614ms)
+Γ£ö CRUD smoke: GET /reports -> 200 + array (15.0588ms)
+Γ£ö CRUD smoke: GET /evaluations -> 200 + array (15.3439ms)
+Γ£ö CRUD smoke: GET /notifications -> 200 + array (15.2612ms)
+Γ£ö CRUD smoke: GET /users -> 200 + array (14.3591ms)
+Γ£ö CRUD smoke: GET /settings -> 200 + object ─æ╞ín (kh├┤ng phß║úi array) (15.1027ms)
+Γ£ö CRUD smoke: GET /departments/:id -> 200, shape ─æ├║ng field c╞í bß║ún (31.1332ms)
+AppError: Department not found
+    at getOne (D:\InternshipManagement\server\controllers\departmentController.js:31:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 404,
+  code: undefined
+}
+Γ£ö CRUD smoke: GET /departments/:id nonexistent -> 404 (1.8357ms)
+Γ£ö todayDateString: 01:00 s├íng giß╗¥ Viß╗çt Nam vß║½n l├á NG├ÇY ─É├ô, kh├┤ng bß╗ï l├╣i vß╗ü ng├áy UTC h├┤m tr╞░ß╗¢c (10.1164ms)
+Γ£ö todayDateString: ranh giß╗¢i nß╗¡a ─æ├¬m giß╗¥ Viß╗çt Nam ΓÇö 23:59 v├á 00:00 h├┤m sau phß║úi kh├íc ng├áy (0.2442ms)
+Γ£ö todayDateString: kh├┤ng truyß╗ün `now` -> d├╣ng Date hß╗ç thß╗æng hiß╗çn tß║íi (mock global clock ß╗ƒ ─æ├║ng mß╗æc 01:00 VN) (0.46ms)
+Γ£ö getAppTimezone: ─æß╗ìc tß╗½ APP_TIMEZONE, mß║╖c ─æß╗ïnh Asia/Ho_Chi_Minh nß║┐u ch╞░a set (0.2272ms)
+Γ£ö DB integrity: ─æ├║ng 18 bß║úng (20.2095ms)
+Γ£ö DB integrity: ─æ├║ng 25 foreign keys (1.0564ms)
+Γ£ö DB integrity: users = 10 (baseline) (1.3541ms)
+Γ£ö DB integrity: departments = 4 (baseline) (1.5097ms)
+Γ£ö DB integrity: internship_periods = 3 (baseline) (10.8736ms)
+Γ£ö DB integrity: students = 14 (baseline) (0.7424ms)
+Γ£ö DB integrity: lecturers = 10 (baseline) (0.5325ms)
+Γ£ö DB integrity: companies = 10 (baseline) (0.4549ms)
+Γ£ö DB integrity: company_mentors = 7 (baseline) (0.4706ms)
+Γ£ö DB integrity: topics = 10 (baseline) (1.0481ms)
+Γ£ö DB integrity: internships = 12 (baseline) (0.4436ms)
+Γ£ö DB integrity: internship_logs = 3 (baseline) (0.4649ms)
+Γ£ö DB integrity: reports = 4 (baseline) (0.2504ms)
+Γ£ö DB integrity: evaluations = 6 (baseline) (0.2538ms)
+Γ£ö DB integrity: notifications = 13 (baseline) (0.4336ms)
+Γ£ö DB integrity: settings = 1 (baseline) (0.3388ms)
+Γ£ö DB integrity: password_reset_tokens = 0 (baseline) (0.1784ms)
+Γ£ö DB integrity: reminder_logs = 0 (baseline) (0.3784ms)
+Γ£ö DB integrity: internship_positions = 0 (baseline) (0.4733ms)
+Γ£ö DB integrity: position_applications = 0 (baseline) (0.5414ms)
+Γ£ö DB integrity: kh├┤ng c├│ orphan FK (students/lecturers/internships -> bß║úng tham chiß║┐u) (2.2204ms)
+Γ£ö DB integrity: kh├┤ng c├│ user bß╗ï link ch├⌐o nhiß╗üu loß║íi profile (0.6132ms)
+Γ£ö DB integrity: kh├┤ng c├│ duplicate evaluation per (internship_id, evaluator_role) (0.8331ms)
+Γ£ö migrate: DB test (─æ├ú baseline qua test:setup) -> kh├┤ng c├▓n migration pending (20.5691ms)
+[migrate] ─Éang ├íp dß╗Ñng: 001_users_status.sql
+[migrate] Bß╗Å qua (─æ├ú ├íp dß╗Ñng tß╗½ tr╞░ß╗¢c, ph├ít hiß╗çn qua lß╗ùi "Duplicate column name 'status'"): 001_users_status.sql
+Γ£ö migrate: gß╗í 1 migration khß╗Åi schema_migrations rß╗ôi chß║íy lß║íi -> KH├öNG crash (tß╗▒ ph├ít hiß╗çn "─æ├ú ├íp dß╗Ñng" qua lß╗ùi duplicate column), ghi nhß║¡n lß║íi ─æ├║ng (20.0422ms)
+Γ£ö Ti├¬u ─æß╗ü vß╗ï tr├¡ chß╗⌐a HTML -> email outbox phß║úi escape, KH├öNG chß╗⌐a thß║╗ HTML sß╗æng (267.9395ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Error handling: 401 (thiß║┐u token) ΓÇö giß╗» ─æ├║ng status/message, kh├┤ng lß╗Ö stack trace (mß║╖c ─æß╗ïnh, kh├┤ng cß║ºn set NODE_ENV) (33.4443ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Error handling: 403 (RBAC) ΓÇö message nghiß╗çp vß╗Ñ giß╗» nguy├¬n, kh├┤ng lß╗Ö stack trace (92.8357ms)
+SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+    at parse (D:\InternshipManagement\server\node_modules\body-parser\lib\types\json.js:96:19)
+    at D:\InternshipManagement\server\node_modules\body-parser\lib\read.js:128:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:227:14)
+    at invokeCallback (D:\InternshipManagement\server\node_modules\raw-body\index.js:238:16)
+    at done (D:\InternshipManagement\server\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (D:\InternshipManagement\server\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:509:28)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  expose: true,
+  statusCode: 400,
+  status: 400,
+  body: '{invalid json',
+  type: 'entity.parse.failed'
+}
+Γ£ö Error handling: lß╗ùi KH├öNG l╞░ß╗¥ng tr╞░ß╗¢c (JSON malformed, kh├┤ng phß║úi AppError) -> message chung, KH├öNG lß╗Ö message gß╗æc cß╗ºa parser (2.4479ms)
+AppError: Vui l├▓ng nhß║¡p email.
+    at validateLoginPayload (D:\InternshipManagement\server\controllers\authController.js:12:11)
+    at login (D:\InternshipManagement\server\controllers\authController.js:37:3)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at D:\InternshipManagement\server\node_modules\express-rate-limit\dist\index.cjs:922:9
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async D:\InternshipManagement\server\node_modules\express-rate-limit\dist\index.cjs:879:5 {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Error handling: AppError nghiß╗çp vß╗Ñ (400 validate) vß║½n giß╗» ─æ├║ng message cß╗Ñ thß╗â (kh├┤ng bß╗ï ─æß╗òi th├ánh message chung) (1.7672ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Error handling: DEBUG_ERRORS=true (bß║¡t t╞░ß╗¥ng minh) mß╗¢i trß║ú k├¿m stack ΓÇö x├íc nhß║¡n cß╗¥ hoß║ít ─æß╗Öng ─æ├║ng, KH├öNG phß║úi mß║╖c ─æß╗ïnh (9.5408ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Error handling: sau khi tß║»t lß║íi DEBUG_ERRORS, h├ánh vi trß╗ƒ lß║íi an to├án mß║╖c ─æß╗ïnh (14.8555ms)
+Γ£ö Final result: cß║ú 2 ─æ├ính gi├í c├┤ng bß╗æ vß╗¢i ─æiß╗âm Bß║░NG NHAU -> final score = ─æiß╗âm ─æ├│ (bß║Ñt kß╗â trß╗ìng sß╗æ hiß╗çn tß║íi) (231.1414ms)
+Γ£ö Final result: c├┤ng thß╗⌐c ├íp dß╗Ñng ─É├ÜNG trß╗ìng sß╗æ hiß╗çn tß║íi (kh├┤ng phß║úi trung b├¼nh th╞░ß╗¥ng) khi 2 ─æiß╗âm kh├íc nhau (12.182ms)
+Γ£ö Final result: chß╗ë 1 ─æ├ính gi├í c├┤ng bß╗æ -> data = null, kß╗â cß║ú khi Admin xem (internships.id=1) (2.6828ms)
+Γ£ö Final result: sinh vi├¬n xem hß╗ô s╞í CH├ìNH M├îNH nh╞░ng ch╞░a ─æß╗º 2 ─æ├ính gi├í c├┤ng bß╗æ -> data = null (kh├┤ng lß╗ùi) (14.7128ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\internshipService.js:103:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getFinalResult (D:\InternshipManagement\server\controllers\internshipController.js:171:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Final result: sinh vi├¬n xem hß╗ô s╞í cß╗ºa ng╞░ß╗¥i kh├íc -> 403 (IDOR-style, mirror GET /internships/:id) (4.1647ms)
+Γ£ö Final result: sinh vi├¬n thß║Ñy ─æ├║ng ─æiß╗âm tß╗òng kß║┐t cß╗ºa ch├¡nh m├¼nh NGAY SAU KHI cß║ú 2 ─æ├ính gi├í ─æ╞░ß╗úc c├┤ng bß╗æ (182.6164ms)
+Γ£ö Xß║┐p loß║íi: ─æiß╗âm tß╗òng kß║┐t = 9 -> "Xuß║Ñt sß║»c" (139.221ms)
+Γ£ö Xß║┐p loß║íi: ─æiß╗âm tß╗òng kß║┐t = 8 -> "Giß╗Åi" (124.1485ms)
+Γ£ö Xß║┐p loß║íi: ─æiß╗âm tß╗òng kß║┐t = 6.5 -> "Kh├í" (140.1776ms)
+Γ£ö Xß║┐p loß║íi: ─æiß╗âm tß╗òng kß║┐t = 5 -> "Trung b├¼nh" (94.4005ms)
+Γ£ö Xß║┐p loß║íi: ─æiß╗âm tß╗òng kß║┐t = 4.9 -> "Kh├┤ng ─æß║ít" (121.9532ms)
+AppError: Tß╗òng trß╗ìng sß╗æ Giß║úng vi├¬n v├á Doanh nghiß╗çp phß║úi bß║▒ng 100.
+    at Object.update (D:\InternshipManagement\server\services\settingsService.js:75:11)
+    at update (D:\InternshipManagement\server\controllers\settingsController.js:10:42)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Settings: lecturerWeight + companyWeight != 100 -> 400, kh├┤ng ─æß╗òi DB (44.6536ms)
+AppError: Trß╗ìng sß╗æ phß║úi l├á sß╗æ nguy├¬n kh├┤ng ├óm.
+    at Object.update (D:\InternshipManagement\server\services\settingsService.js:72:11)
+    at update (D:\InternshipManagement\server\controllers\settingsController.js:10:42)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: Vui l├▓ng nhß║¡p ─æß║ºy ─æß╗º trß╗ìng sß╗æ Giß║úng vi├¬n v├á Doanh nghiß╗çp.
+    at Object.update (D:\InternshipManagement\server\services\settingsService.js:62:11)
+    at update (D:\InternshipManagement\server\controllers\settingsController.js:10:42)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Settings: trß╗ìng sß╗æ ├óm hoß║╖c thiß║┐u field -> 400 (30.8741ms)
+Γ£ö Settings: lecturerWeight + companyWeight = 100 (hß╗úp lß╗ç, kh├íc gi├í trß╗ï gß╗æc) -> 200, kh├┤i phß╗Ñc lß║íi gi├í trß╗ï c┼⌐ (32.6337ms)
+AppError: student_id l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t hß╗ô s╞í thß╗▒c tß║¡p.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:415:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Field injection: PUT /internships/:id vß╗¢i student_id -> 400, KH├öNG ghi DB (159.7387ms)
+AppError: period_id l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t hß╗ô s╞í thß╗▒c tß║¡p.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:418:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Field injection: PUT /internships/:id vß╗¢i period_id -> 400 (9.3751ms)
+AppError: internship_id l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t ─æ├ính gi├í.
+    at Object.update (D:\InternshipManagement\server\services\evaluationService.js:216:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\evaluationController.js:62:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Field injection: PUT /evaluations/:id vß╗¢i internship_id -> 400 (16.4096ms)
+AppError: evaluator_role l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t ─æ├ính gi├í.
+    at Object.update (D:\InternshipManagement\server\services\evaluationService.js:219:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\evaluationController.js:62:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Field injection: PUT /evaluations/:id vß╗¢i evaluator_role -> 400 (2.6005ms)
+AppError: Giß║úng vi├¬n kh├┤ng ─æ╞░ß╗úc sß╗¡a field: topic_name.
+    at validateLecturerStatusPayload (D:\InternshipManagement\server\controllers\topicController.js:53:11)
+    at update (D:\InternshipManagement\server\controllers\topicController.js:102:5)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3 {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Field injection: Lecturer PUT /topics/:id vß╗¢i field ngo├ái status -> 403, status ─æi k├¿m bß╗ï tß╗½ chß╗æi lu├┤n (12.1354ms)
+AppError: Giß║úng vi├¬n chß╗ë ─æ╞░ß╗úc ─æß╗òi trß║íng th├íi th├ánh: approved, rejected.
+    at validateLecturerStatusPayload (D:\InternshipManagement\server\controllers\topicController.js:56:11)
+    at update (D:\InternshipManagement\server\controllers\topicController.js:102:5)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3 {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Field injection: Lecturer PUT /topics/:id vß╗¢i status ngo├ái approved/rejected -> 400 (15.5272ms)
+Γ£ö IDOR: Student A own internship list non-empty, kh├┤ng chß╗⌐a internship cß╗ºa Student B (508.3099ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\internshipService.js:103:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getOne (D:\InternshipManagement\server\controllers\internshipController.js:140:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö IDOR: Student A GET trß╗▒c tiß║┐p internship cß╗ºa Student B theo ID -> 403 (3.5624ms)
+Γ£ö IDOR: query-param bypass ΓÇö Student A gß╗¡i ?student_id=<StudentB> vß║½n chß╗ë thß║Ñy ─æ├║ng cß╗ºa m├¼nh (10.8727ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\internshipService.js:103:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getOne (D:\InternshipManagement\server\controllers\internshipController.js:140:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö IDOR: Lecturer A/B isolation tr├¬n /internships (32.9312ms)
+Γ£ö IDOR: Company Mentor A/B isolation tr├¬n /internships (27.8044ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.assertOwnInternshipById (D:\InternshipManagement\server\services\scopeService.js:93:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.getByIdForUser (D:\InternshipManagement\server\services\internshipLogService.js:82:3)
+    at async getOne (D:\InternshipManagement\server\controllers\internshipLogController.js:51:15) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö IDOR: Student A kh├┤ng ─æß╗ìc ─æ╞░ß╗úc log cß╗ºa Student B (log ─æ├ú reviewed) (17.4513ms)
+Γ£ö IDOR: evaluation ch╞░a c├┤ng bß╗æ KH├öNG xuß║Ñt hiß╗çn trong list cß╗ºa ch├¡nh Student (Student B) (24.0589ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün xem ─æ├ính gi├í n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\evaluationService.js:107:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getOne (D:\InternshipManagement\server\controllers\evaluationController.js:46:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö IDOR: Student A GET trß╗▒c tiß║┐p evaluation ch╞░a c├┤ng bß╗æ cß╗ºa Student B -> 403 (4.9025ms)
+Γ£ö IDOR: Notifications ΓÇö Student A kh├┤ng thß║Ñy notification cß╗ºa Student B qua query override (30.4154ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö GET /imports/templates/lecturers.xlsx ΓÇö Admin tß║úi ─æ╞░ß╗úc, sai role bß╗ï 403 (283.8692ms)
+Γ£ö Preview + Commit file hß╗úp lß╗ç -> ghi ─æ├║ng sß╗æ d├▓ng (47.8382ms)
+Γ£ö Preview b├ío ─æ├║ng lß╗ùi: thiß║┐u hß╗ì t├¬n, email sai, m├ú khoa kh├┤ng tß╗ôn tß║íi, tr├╣ng trong file, tr├╣ng DB (22.8005ms)
+Γ£ö Commit rollback to├án bß╗Ö khi file c├▓n d├▓ng lß╗ùi (14.7369ms)
+AppError: File v╞░ß╗út qu├í giß╗¢i hß║ín 1000 d├▓ng/lß║ºn nhß║¡p (hiß╗çn c├│ 1001 d├▓ng).
+    at readDataRows (D:\InternshipManagement\server\services\importHelpers.js:65:11)
+    at async parseAndValidate (D:\InternshipManagement\server\services\lecturerImportService.js:125:16)
+    at async previewLecturers (D:\InternshipManagement\server\controllers\importController.js:33:18) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö V╞░ß╗út 1000 d├▓ng -> 400 (74.4268ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Kh├┤ng phß║úi Admin -> 403 (15.7053ms)
+Γ£ö Commit vß╗¢i "Tß║ío lu├┤n t├ái khoß║ún" -> must_change_password=1, ─æ─âng nhß║¡p ─æ╞░ß╗úc bß║▒ng mß║¡t khß║⌐u tß║ím (139.1218ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö GET /imports/templates/students.xlsx ΓÇö Admin tß║úi ─æ╞░ß╗úc, sai role bß╗ï 403 (277.3983ms)
+Γ£ö Preview + Commit file hß╗úp lß╗ç -> ghi ─æ├║ng sß╗æ d├▓ng, kh├┤ng tß║ío t├ái khoß║ún khi kh├┤ng chß╗ìn (51.4591ms)
+Γ£ö Preview b├ío ─æ├║ng lß╗ùi: thiß║┐u hß╗ì t├¬n, email sai, m├ú khoa kh├┤ng tß╗ôn tß║íi, tr├╣ng trong file (21.3588ms)
+Γ£ö Tr├╣ng m├ú sinh vi├¬n/email ─æ├ú c├│ trong DB (seed) -> preview b├ío lß╗ùi (15.2436ms)
+Γ£ö Commit rollback to├án bß╗Ö khi file c├▓n d├▓ng lß╗ùi ΓÇö kh├┤ng ghi d├▓ng hß╗úp lß╗ç ─æi k├¿m (15.7108ms)
+AppError: File v╞░ß╗út qu├í giß╗¢i hß║ín 1000 d├▓ng/lß║ºn nhß║¡p (hiß╗çn c├│ 1001 d├▓ng).
+    at readDataRows (D:\InternshipManagement\server\services\importHelpers.js:65:11)
+    at async parseAndValidate (D:\InternshipManagement\server\services\studentImportService.js:158:16)
+    at async previewStudents (D:\InternshipManagement\server\controllers\importController.js:28:18) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö V╞░ß╗út 1000 d├▓ng -> 400, kh├┤ng ghi g├¼ (91.8843ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Kh├┤ng phß║úi Admin -> 403 tr├¬n preview/commit (14.5284ms)
+AppError: Kh├┤ng t├¼m thß║Ñy file t├ái khoß║ún hoß║╖c file ─æ├ú ─æ╞░ß╗úc tß║úi tr╞░ß╗¢c ─æ├│.
+    at downloadAccountsFile (D:\InternshipManagement\server\controllers\importController.js:70:11)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12) {
+  statusCode: 404,
+  code: undefined
+}
+Γ£ö Commit vß╗¢i "Tß║ío lu├┤n t├ái khoß║ún" -> must_change_password=1, tß║úi file t├ái khoß║ún ─æ├║ng 1 lß║ºn, ─æ─âng nhß║¡p ─æ╞░ß╗úc bß║▒ng mß║¡t khß║⌐u tß║ím (137.6198ms)
+AppError: Chß╗ë c├│ thß╗â x├│a hß╗ô s╞í thß╗▒c tß║¡p ─æang ß╗ƒ trß║íng th├íi "pending".
+    at Object.remove (D:\InternshipManagement\server\services\internshipService.js:700:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async remove (D:\InternshipManagement\server\controllers\internshipController.js:162:3) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Internships: DELETE khi status != pending -> 409, kh├┤ng x├│a (146.0059ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Internships: Student kh├┤ng c├│ quyß╗ün DELETE (403 route-level) (13.1565ms)
+Γ£ö Internships: Admin tß║ío hß╗ô s╞í thß╗▒c tß║¡p cho sinh vi├¬n kh├íc (bypass scope) -> 201 pending, rß╗ôi x├│a khi c├▓n pending -> 200 (49.8775ms)
+Γ£ö GET introduction-letter.pdf: hß╗ô s╞í in_progress + c├│ company -> 200, ─æ├║ng content-type + %PDF (392.0962ms)
+AppError: Chß╗ë xuß║Ñt ─æ╞░ß╗úc giß║Ñy giß╗¢i thiß╗çu khi hß╗ô s╞í thß╗▒c tß║¡p ─æ├ú ─æ╞░ß╗úc duyß╗çt v├á ─æ├ú c├│ doanh nghiß╗çp.
+    at getIntroductionLetter (D:\InternshipManagement\server\controllers\internshipController.js:44:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö GET introduction-letter.pdf: hß╗ô s╞í pending/ch╞░a c├│ company -> 409 (9.5553ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\internshipService.js:103:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getIntroductionLetter (D:\InternshipManagement\server\controllers\internshipController.js:39:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö GET introduction-letter.pdf: Student kh├íc KH├öNG tß║úi ─æ╞░ß╗úc giß║Ñy giß╗¢i thiß╗çu cß╗ºa hß╗ô s╞í kh├┤ng phß║úi cß╗ºa m├¼nh -> 403 (15.3947ms)
+Γ£ö GET result-sheet.pdf: hß╗ô s╞í completed -> 200, ─æ├║ng content-type + %PDF (Admin) (35.7614ms)
+Γ£ö GET result-sheet.pdf: ch├¡nh Student sß╗ƒ hß╗»u hß╗ô s╞í completed -> 200 (24.8512ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\internshipService.js:103:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getResultSheet (D:\InternshipManagement\server\controllers\internshipController.js:57:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö GET result-sheet.pdf: Student kh├íc KH├öNG tß║úi ─æ╞░ß╗úc phiß║┐u kß║┐t quß║ú cß╗ºa ng╞░ß╗¥i kh├íc -> 403 (3.2021ms)
+AppError: Chß╗ë xuß║Ñt ─æ╞░ß╗úc phiß║┐u kß║┐t quß║ú khi hß╗ô s╞í thß╗▒c tß║¡p ─æ├ú ho├án th├ánh (completed).
+    at getResultSheet (D:\InternshipManagement\server\controllers\internshipController.js:62:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö GET result-sheet.pdf: hß╗ô s╞í CH╞»A completed (in_progress) -> 409 (12.4086ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö GET documents: thiß║┐u token -> 401 (13.5844ms)
+AppError: log_date phß║úi nß║▒m trong khoß║úng thß╗¥i gian thß╗▒c tß║¡p.
+    at validateLogDate (D:\InternshipManagement\server\services\internshipLogService.js:28:11)
+    at Object.create (D:\InternshipManagement\server\services\internshipLogService.js:118:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipLogController.js:60:15) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Logs: Student tß║ío log vß╗¢i lecturer_comment k├¿m theo -> 400, kh├┤ng tß║ío row (327.5989ms)
+AppError: Chß╗ë ─æ╞░ß╗úc ghi nhß║¡t k├╜ khi hß╗ô s╞í thß╗▒c tß║¡p ─æang ß╗ƒ trß║íng th├íi "in_progress".
+    at Object.create (D:\InternshipManagement\server\services\internshipLogService.js:115:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipLogController.js:60:15) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Logs: tß║ío log khi internship KH├öNG ß╗ƒ trß║íng th├íi in_progress -> 409 (├íp dß╗Ñng cß║ú Admin) (17.7216ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün sß╗¡a nhß║¡t k├╜ n├áy.
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:184:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Logs: Lecturer A kh├┤ng sß╗¡a ─æ╞░ß╗úc log thuß╗Öc internship do Lecturer B phß╗Ñ tr├ích (403) (16.9781ms)
+AppError: Bß║ín kh├┤ng ─æ╞░ß╗úc sß╗¡a field: content.
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:197:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Logs: Lecturer sß╗¡a field ngo├ái whitelist (lecturer_comment, status) -> 403 (14.2005ms)
+AppError: Bß║ín kh├┤ng ─æ╞░ß╗úc sß╗¡a field: lecturer_comment.
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:197:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Logs: Company Mentor sß╗¡a field ngo├ái whitelist (chß╗ë company_comment) -> 403 (15.6247ms)
+AppError: internship_id l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t nhß║¡t k├╜.
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:177:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Logs: Student kh├┤ng sß╗¡a ─æ╞░ß╗úc field nß╗Öi dung ngo├ái whitelist cß╗ºa ch├¡nh m├¼nh (vd. gß╗¡i internship_id) -> 400 (14.8887ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.assertOwnInternshipById (D:\InternshipManagement\server\services\scopeService.js:93:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.getByIdForUser (D:\InternshipManagement\server\services\internshipLogService.js:82:3)
+    at async getOne (D:\InternshipManagement\server\controllers\internshipLogController.js:51:15) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün sß╗¡a nhß║¡t k├╜ n├áy.
+    at Object.update (D:\InternshipManagement\server\services\internshipLogService.js:184:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipLogController.js:67:15) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Logs: Student A kh├┤ng ─æß╗ìc/sß╗¡a ─æ╞░ß╗úc log cß╗ºa Student B qua gß╗ìi API trß╗▒c tiß║┐p (403, kh├┤ng bypass bß║▒ng URL) (30.9057ms)
+Γ£ö Logs: Lecturer A nhß║¡n x├⌐t hß╗úp lß╗ç log thuß╗Öc phß║ím vi m├¼nh (200), kh├┤i phß╗Ñc lß║íi gi├í trß╗ï c┼⌐ (49.371ms)
+Γ£ö Logs: Student A ghi nhß║¡t k├╜ mß╗¢i hß╗úp lß╗ç cho internship ─æang in_progress cß╗ºa ch├¡nh m├¼nh (201), x├│a lß║íi sau test (26.267ms)
+Γ£ö Admin tß║ío vß╗ï tr├¡ thß╗▒c tß║¡p cho c├┤ng ty bß║Ñt kß╗│ -> 201 (266.3842ms)
+Γ£ö Company Mentor tß║ío vß╗ï tr├¡ KH├öNG gß╗¡i company_id -> tß╗▒ ├⌐p company_id cß╗ºa ch├¡nh m├¼nh (12.4369ms)
+AppError: Kh├┤ng ─æ╞░ß╗úc tß║ío vß╗ï tr├¡ thß╗▒c tß║¡p cho c├┤ng ty kh├íc.
+    at Object.create (D:\InternshipManagement\server\services\internshipPositionService.js:107:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\internshipPositionController.js:50:20) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Company Mentor cß╗æ gß╗¡i company_id KH├üC c├┤ng ty m├¼nh -> 403 (12.4834ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Student kh├┤ng ─æ╞░ß╗úc tß║ío vß╗ï tr├¡ thß╗▒c tß║¡p -> 403 (15.077ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün quß║ún l├╜ vß╗ï tr├¡ thß╗▒c tß║¡p n├áy.
+    at assertOwnCompanyOrAdmin (D:\InternshipManagement\server\services\internshipPositionService.js:84:9)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.update (D:\InternshipManagement\server\services\internshipPositionService.js:149:3)
+    at async update (D:\InternshipManagement\server\controllers\internshipPositionController.js:56:20) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö IDOR: Mentor c├┤ng ty kh├íc KH├öNG sß╗¡a ─æ╞░ß╗úc vß╗ï tr├¡ cß╗ºa company_id=1 (15.6516ms)
+Γ£ö Student chß╗ë thß║Ñy vß╗ï tr├¡ "open" cß╗ºa ─æß╗út KH├öNG closed (30.7017ms)
+AppError: Kh├┤ng thß╗â giß║úm slots xuß╗æng d╞░ß╗¢i sß╗æ ─æ├ú nhß║¡n (2).
+    at Object.update (D:\InternshipManagement\server\services\internshipPositionService.js:175:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipPositionController.js:56:20) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Giß║úm slots xuß╗æng d╞░ß╗¢i sß╗æ ─æ├ú accepted (2 ─æ├ú nhß║¡n, giß║úm vß╗ü 1) -> 400 (32.5627ms)
+AppError: Kh├┤ng thß╗â chuyß╗ân trß║íng th├íi tß╗½ "pending" sang "in_progress".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:512:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Workflow: transition kh├┤ng hß╗úp lß╗ç (pending -> in_progress, bß╗Å qua approved) -> 409 (217.4151ms)
+AppError: Kh├┤ng thß╗â chuyß╗ân trß║íng th├íi tß╗½ "completed" sang "in_progress".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:512:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Workflow: completed l├á trß║íng th├íi cuß╗æi ΓÇö kh├┤ng chuyß╗ân sang bß║Ñt kß╗│ trß║íng th├íi n├áo kh├íc, kß╗â cß║ú Admin (3.1621ms)
+Γ£ö Workflow: round-trip hß╗úp lß╗ç pending -> rejected -> pending (─æ├║ng ALLOWED_TRANSITIONS thß║¡t) (25.8458ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Workflow: Lecturer/Company Mentor kh├┤ng c├│ quyß╗ün PUT /internships (403 route-level) (2.3393ms)
+AppError: Bß║ín kh├┤ng ─æ╞░ß╗úc tß╗▒ sß╗¡a field: status.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:405:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Workflow: Student kh├┤ng ─æ╞░ß╗úc tß╗▒ ─æß╗òi status (ngo├ái 3 field whitelist company_id/company_mentor_id/topic_id) (11.9668ms)
+AppError: Kh├┤ng thß╗â sß╗¡a hß╗ô s╞í khi ─æang ß╗ƒ trß║íng th├íi "in_progress".
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:408:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Workflow: Student bß╗ï kh├│a sß╗¡a company/mentor/topic khi internship kh├┤ng c├▓n ß╗ƒ pending/approved (15.166ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün sß╗¡a hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:401:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Workflow: Student kh├┤ng sß╗¡a ─æ╞░ß╗úc internship cß╗ºa ng╞░ß╗¥i kh├íc (403, kh├┤ng phß║úi 404 ΓÇö kh├┤ng lß╗Ö tß╗ôn tß║íi) (15.7709ms)
+AppError: Ng╞░ß╗¥i h╞░ß╗¢ng dß║½n kh├┤ng thuß╗Öc doanh nghiß╗çp ─æ├ú chß╗ìn cho hß╗ô s╞í n├áy.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:490:15)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Assignment: company_mentor kh├┤ng thuß╗Öc company ─æ├ú chß╗ìn -> 400, kh├┤ng ghi DB (30.7618ms)
+AppError: Ng╞░ß╗¥i h╞░ß╗¢ng dß║½n hiß╗çn tß║íi kh├┤ng thuß╗Öc doanh nghiß╗çp mß╗¢i ΓÇö vui l├▓ng gß╗¡i k├¿m company_mentor_id khi ─æß╗òi doanh nghiß╗çp.
+    at Object.update (D:\InternshipManagement\server\services\internshipService.js:498:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Assignment: ─æß╗òi company_id m├á kh├┤ng gß╗¡i company_mentor_id mß╗¢i -> 400 nß║┐u mentor hiß╗çn tß║íi kh├┤ng c├▓n thuß╗Öc company mß╗¢i (29.9979ms)
+Γ£ö Assignment: g├ín company+mentor hß╗úp lß╗ç (mentor thuß╗Öc ─æ├║ng company) -> 200, kh├┤i phß╗Ñc lß║íi null (48.1743ms)
+AppError: Giß║úng vi├¬n n├áy ─æ├ú ─æß╗º sß╗æ l╞░ß╗úng sinh vi├¬n h╞░ß╗¢ng dß║½n tß╗æi ─æa trong ─æß╗út n├áy (1/1).
+    at assertLecturerCapacity (D:\InternshipManagement\server\services\internshipService.js:213:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.update (D:\InternshipManagement\server\services\internshipService.js:453:7)
+    at async update (D:\InternshipManagement\server\controllers\internshipController.js:156:22) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Giß╗¢i hß║ín lecturers.max_students: ─æß║╖t = 1, g├ín internship thß╗⌐ 2 trong C├ÖNG ─æß╗út -> 409 (160.8713ms)
+Γ£ö Giß╗» nguy├¬n lecturer_id c┼⌐ (re-assign ch├¡nh n├│) kh├┤ng bß╗ï ─æß║┐m 2 lß║ºn (ignoreInternshipId) (19.0343ms)
+Γ£ö notify() gß╗¡i email tß╗¢i Admin khi Sinh vi├¬n tß╗▒ ─æ─âng k├╜ (email_notifications=1 mß║╖c ─æß╗ïnh) (201.3881ms)
+Γ£ö Tß║»t email_notifications -> kh├┤ng gß╗¡i email, nh╞░ng notification vß║½n ─æ╞░ß╗úc tß║ío trong DB (89.8484ms)
+AppError: emailNotifications phß║úi l├á boolean.
+    at setEmailNotifications (D:\InternshipManagement\server\controllers\authController.js:74:11)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö PUT /auth/email-notifications: thiß║┐u/sai kiß╗âu field -> 400 (13.6223ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün xem th├┤ng b├ío n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\notificationService.js:36:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getOne (D:\InternshipManagement\server\controllers\notificationController.js:32:24) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Notifications: Giß║úng vi├¬n nhß║¡n x├⌐t nhß║¡t k├╜ -> Sinh vi├¬n nhß║¡n th├┤ng b├ío (log), Sinh vi├¬n kh├íc kh├┤ng ─æß╗ìc ─æ╞░ß╗úc (445.3512ms)
+Γ£ö Notifications: Sinh vi├¬n tß╗▒ ─æ─âng k├╜ thß╗▒c tß║¡p -> mß╗ìi Admin nhß║¡n th├┤ng b├ío (internship) (46.5208ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün xem th├┤ng b├ío n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\notificationService.js:36:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getOne (D:\InternshipManagement\server\controllers\notificationController.js:32:24) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Notifications: Ph├ón c├┤ng giß║úng vi├¬n mß╗¢i -> cß║ú Sinh vi├¬n v├á Giß║úng vi├¬n nhß║¡n th├┤ng b├ío (assignment) (93.696ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün xem th├┤ng b├ío n├áy.
+    at Object.getByIdForUser (D:\InternshipManagement\server\services\notificationService.js:36:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async getOne (D:\InternshipManagement\server\controllers\notificationController.js:32:24) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Notifications: ─É├ính gi├í ─æ╞░ß╗úc c├┤ng bß╗æ -> Sinh vi├¬n nhß║¡n th├┤ng b├ío (evaluation), Sinh vi├¬n kh├íc kh├┤ng ─æß╗ìc ─æ╞░ß╗úc (138.5453ms)
+Γ£ö Notifications: PUT /notifications/read-all chß╗ë ─æ├ính dß║Ñu ─æ├ú ─æß╗ìc th├┤ng b├ío cß╗ºa CH├ìNH M├îNH (16.7979ms)
+Γ£ö notify(): "gß╗¡i email thß║¡t" chß║¡m (mock 2s) -> API vß║½n trß║ú vß╗ü nhanh, kh├┤ng chß╗¥ gß╗¡i xong (171.4528ms)
+Γ£ö Pagination /students: kh├┤ng truyß╗ün page -> giß╗» nguy├¬n h├ánh vi c┼⌐ (trß║ú to├án bß╗Ö, kh├┤ng c├│ total/page/pageSize) (161.0631ms)
+Γ£ö Pagination /students: truyß╗ün page -> trß║ú 1 trang + { total, page, pageSize } khß╗¢p ─æ├║ng tß╗òng sß╗æ d├▓ng kh├┤ng ph├ón trang (8.4011ms)
+Γ£ö Pagination /students: pageSize v╞░ß╗út qu├í 100 bß╗ï chß║╖n (clamp vß╗ü 100), kh├┤ng trß║ú nhiß╗üu h╞ín 100 d├▓ng/trang (18.5447ms)
+Γ£ö Pagination /students: trang 2 kh├┤ng tr├╣ng dß╗» liß╗çu vß╗¢i trang 1 (khi ─æß╗º dß╗» liß╗çu) (17.6166ms)
+Γ£ö Pagination /internships: kh├┤ng truyß╗ün page -> giß╗» nguy├¬n h├ánh vi c┼⌐ (trß║ú to├án bß╗Ö, kh├┤ng c├│ total/page/pageSize) (14.577ms)
+Γ£ö Pagination /internships: truyß╗ün page -> trß║ú 1 trang + { total, page, pageSize } khß╗¢p ─æ├║ng tß╗òng sß╗æ d├▓ng kh├┤ng ph├ón trang (16.9563ms)
+Γ£ö Pagination /internships: pageSize v╞░ß╗út qu├í 100 bß╗ï chß║╖n (clamp vß╗ü 100), kh├┤ng trß║ú nhiß╗üu h╞ín 100 d├▓ng/trang (2.0545ms)
+Γ£ö Pagination /internships: trang 2 kh├┤ng tr├╣ng dß╗» liß╗çu vß╗¢i trang 1 (khi ─æß╗º dß╗» liß╗çu) (10.3904ms)
+Γ£ö Pagination /reports: kh├┤ng truyß╗ün page -> giß╗» nguy├¬n h├ánh vi c┼⌐ (trß║ú to├án bß╗Ö, kh├┤ng c├│ total/page/pageSize) (17.1531ms)
+Γ£ö Pagination /reports: truyß╗ün page -> trß║ú 1 trang + { total, page, pageSize } khß╗¢p ─æ├║ng tß╗òng sß╗æ d├▓ng kh├┤ng ph├ón trang (30.1088ms)
+Γ£ö Pagination /reports: pageSize v╞░ß╗út qu├í 100 bß╗ï chß║╖n (clamp vß╗ü 100), kh├┤ng trß║ú nhiß╗üu h╞ín 100 d├▓ng/trang (15.8025ms)
+Γ£ö Pagination /reports: trang 2 kh├┤ng tr├╣ng dß╗» liß╗çu vß╗¢i trang 1 (khi ─æß╗º dß╗» liß╗çu) (31.8864ms)
+Γ£ö Pagination /internship-logs: kh├┤ng truyß╗ün page -> giß╗» nguy├¬n h├ánh vi c┼⌐ (trß║ú to├án bß╗Ö, kh├┤ng c├│ total/page/pageSize) (18.3696ms)
+Γ£ö Pagination /internship-logs: truyß╗ün page -> trß║ú 1 trang + { total, page, pageSize } khß╗¢p ─æ├║ng tß╗òng sß╗æ d├▓ng kh├┤ng ph├ón trang (12.0266ms)
+Γ£ö Pagination /internship-logs: pageSize v╞░ß╗út qu├í 100 bß╗ï chß║╖n (clamp vß╗ü 100), kh├┤ng trß║ú nhiß╗üu h╞ín 100 d├▓ng/trang (1.5149ms)
+Γ£ö Pagination /internship-logs: trang 2 kh├┤ng tr├╣ng dß╗» liß╗çu vß╗¢i trang 1 (khi ─æß╗º dß╗» liß╗çu) (28.7861ms)
+Γ£ö Pagination /students: Student chß╗ë thß║Ñy ─æ├║ng 1 hß╗ô s╞í cß╗ºa ch├¡nh m├¼nh (total=1) d├╣ c├│ page (4.7357ms)
+Γ£ö Pagination /internships: Student chß╗ë thß║Ñy ─æ├║ng hß╗ô s╞í thß╗▒c tß║¡p cß╗ºa ch├¡nh m├¼nh d├╣ c├│ page (12.4532ms)
+Γ£ö POST /auth/forgot-password: c├╣ng message cho email tß╗ôn tß║íi v├á kh├┤ng tß╗ôn tß║íi (chß╗æng d├▓ t├ái khoß║ún) (124.3847ms)
+AppError: ─É╞░ß╗¥ng link ─æß║╖t lß║íi mß║¡t khß║⌐u kh├┤ng hß╗úp lß╗ç hoß║╖c ─æ├ú hß║┐t hß║ín.
+    at findValidToken (D:\InternshipManagement\server\services\passwordResetService.js:70:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.resetPassword (D:\InternshipManagement\server\services\passwordResetService.js:76:18)
+    at async resetPassword (D:\InternshipManagement\server\controllers\authController.js:68:3) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö POST /auth/forgot-password + reset-password: luß╗ông th├ánh c├┤ng, ─æ─âng nhß║¡p ─æ╞░ß╗úc mß║¡t khß║⌐u mß╗¢i (157.1392ms)
+AppError: ─É╞░ß╗¥ng link ─æß║╖t lß║íi mß║¡t khß║⌐u kh├┤ng hß╗úp lß╗ç hoß║╖c ─æ├ú hß║┐t hß║ín.
+    at findValidToken (D:\InternshipManagement\server\services\passwordResetService.js:70:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.resetPassword (D:\InternshipManagement\server\services\passwordResetService.js:76:18)
+    at async resetPassword (D:\InternshipManagement\server\controllers\authController.js:68:3) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö POST /auth/reset-password: token sai ─æß╗ïnh dß║íng/kh├┤ng tß╗ôn tß║íi -> 400 (4.1729ms)
+AppError: ─É╞░ß╗¥ng link ─æß║╖t lß║íi mß║¡t khß║⌐u kh├┤ng hß╗úp lß╗ç hoß║╖c ─æ├ú hß║┐t hß║ín.
+    at findValidToken (D:\InternshipManagement\server\services\passwordResetService.js:70:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.resetPassword (D:\InternshipManagement\server\services\passwordResetService.js:76:18)
+    at async resetPassword (D:\InternshipManagement\server\controllers\authController.js:68:3) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö POST /auth/reset-password: token ─æ├ú hß║┐t hß║ín -> 400 (32.1392ms)
+Γ£ö T├ái khoß║ún locked: forgot-password vß║½n trß║ú message chung nh╞░ng KH├öNG tß║ío token/gß╗¡i email (25.9646ms)
+Γ£ö PUT /auth/change-password vß║½n hoß║ít ─æß╗Öng b├¼nh th╞░ß╗¥ng (kh├┤ng bß╗ï ß║únh h╞░ß╗ƒng bß╗ƒi t├¡nh n─âng mß╗¢i) (49.4034ms)
+Γ£ö Student ß╗⌐ng tuyß╗ân vß╗ï tr├¡ open -> 201, status=applied (449.1769ms)
+Γ£ö R├║t ─æ╞ín rß╗ôi ß╗⌐ng tuyß╗ân lß║íi C├ÖNG vß╗ï tr├¡ -> UPDATE lß║íi ─æ├║ng d├▓ng c┼⌐, kh├┤ng tß║ío d├▓ng mß╗¢i (68.4379ms)
+AppError: Bß║ín ─æang c├│ 3 ─æ╞ín chß╗¥ xß╗¡ l├╜ ΓÇö tß╗æi ─æa 3 ─æ╞ín c├╣ng l├║c.
+    at Object.apply (D:\InternshipManagement\server\services\positionApplicationService.js:111:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async apply (D:\InternshipManagement\server\controllers\positionApplicationController.js:22:23) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Tß╗æi ─æa 3 ─æ╞ín ─æang chß╗¥ c├╣ng l├║c -> ─æ╞ín thß╗⌐ 4 bß╗ï 409 (115.3081ms)
+AppError: Bß║ín ─æ├ú c├│ hß╗ô s╞í thß╗▒c tß║¡p (─æ├ú duyß╗çt hoß║╖c ─æang thß╗▒c hiß╗çn) trong ─æß╗út n├áy, kh├┤ng thß╗â ß╗⌐ng tuyß╗ân vß╗ï tr├¡ kh├íc.
+    at Object.apply (D:\InternshipManagement\server\services\positionApplicationService.js:103:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async apply (D:\InternshipManagement\server\controllers\positionApplicationController.js:22:23) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö ─É├ú c├│ internship approved trong ─æß╗út -> kh├┤ng ß╗⌐ng tuyß╗ân ─æ╞░ß╗úc vß╗ï tr├¡ kh├íc trong ─æß╗út ─æ├│ (32.8162ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Admin/Mentor tß╗½ chß╗æi ─æ╞ín -> status=rejected, Student kh├┤ng tß╗▒ tß╗½ chß╗æi ─æ╞░ß╗úc (63.8961ms)
+Γ£ö Mentor chß║Ñp nhß║¡n ─æ╞ín -> tß║ío internship approved, position tß╗▒ ─æ├│ng khi ─æß╗º slot, auto r├║t c├íc ─æ╞ín kh├íc (84.1072ms)
+AppError: Vß╗ï tr├¡ thß╗▒c tß║¡p n├áy ─æ├ú ─æ├│ng.
+    at Object.accept (D:\InternshipManagement\server\services\positionApplicationService.js:254:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async accept (D:\InternshipManagement\server\controllers\positionApplicationController.js:40:23) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö Race condition: 2 request accept ─æß╗ông thß╗¥i cho vß╗ï tr├¡ 1 slot -> ─æ├║ng 1 th├ánh c├┤ng, 1 bß╗ï 409 hß║┐t chß╗ù (55.7622ms)
+AppError: Sinh vi├¬n ─æ├ú c├│ hß╗ô s╞í thß╗▒c tß║¡p ß╗ƒ trß║íng th├íi "approved" trong ─æß╗út n├áy ΓÇö kh├┤ng thß╗â chß║Ñp nhß║¡n ─æ╞ín ß╗⌐ng tuyß╗ân n├áy qua ─æ╞░ß╗¥ng tß╗▒ ─æß╗Öng, Admin cß║ºn xß╗¡ l├╜ trß╗▒c tiß║┐p hß╗ô s╞í ─æ├│ tr╞░ß╗¢c.
+    at Object.accept (D:\InternshipManagement\server\services\positionApplicationService.js:296:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async accept (D:\InternshipManagement\server\controllers\positionApplicationController.js:40:23) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö accept(): hß╗ô s╞í ─æ├ú approved tß╗½ 1 accept tr╞░ß╗¢c ─æ├│ -> accept ─æ╞ín kh├íc (kh├íc vß╗ï tr├¡, c├╣ng sinh vi├¬n+─æß╗út) bß╗ï 409, KH├öNG ghi ─æ├¿ company/mentor (446.8714ms)
+AppError: ─Éß╗út thß╗▒c tß║¡p cß╗ºa vß╗ï tr├¡ n├áy ─æ├ú ─æ├│ng, kh├┤ng thß╗â chß║Ñp nhß║¡n ─æ╞ín ß╗⌐ng tuyß╗ân.
+    at Object.accept (D:\InternshipManagement\server\services\positionApplicationService.js:261:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async accept (D:\InternshipManagement\server\controllers\positionApplicationController.js:40:23) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö accept(): ─æß╗út ─æ├ú ─æ├│ng ngay l├║c chß║Ñp nhß║¡n -> 409, kh├┤ng tß║ío hß╗ô s╞í (47.3292ms)
+AppError: Doanh nghiß╗çp cß╗ºa vß╗ï tr├¡ n├áy ─æang ß╗ƒ trß║íng th├íi kh├┤ng hoß║ít ─æß╗Öng, kh├┤ng thß╗â chß║Ñp nhß║¡n ─æ╞ín ß╗⌐ng tuyß╗ân.
+    at Object.accept (D:\InternshipManagement\server\services\positionApplicationService.js:265:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async accept (D:\InternshipManagement\server\controllers\positionApplicationController.js:40:23) {
+  statusCode: 409,
+  code: undefined
+}
+Γ£ö accept(): doanh nghiß╗çp cß╗ºa vß╗ï tr├¡ ─æang inactive -> 409, kh├┤ng tß║ío hß╗ô s╞í (45.9733ms)
+AppError: Hß╗ô s╞í Ng╞░ß╗¥i h╞░ß╗¢ng dß║½n cß╗ºa bß║ín ─æang ß╗ƒ trß║íng th├íi kh├┤ng hoß║ít ─æß╗Öng, kh├┤ng thß╗â chß║Ñp nhß║¡n ─æ╞ín ß╗⌐ng tuyß╗ân.
+    at Object.accept (D:\InternshipManagement\server\services\positionApplicationService.js:237:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async accept (D:\InternshipManagement\server\controllers\positionApplicationController.js:40:23) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö accept(): mentor (company_mentor) ─æang inactive -> 403, kh├┤ng tß║ío hß╗ô s╞í (33.7277ms)
+Γ£ö accept(): chß╗ë r├║t c├íc ─æ╞ín applied KH├üC trong C├ÖNG ─æß╗út ΓÇö ─æ╞ín applied ß╗ƒ ─æß╗út kh├íc kh├┤ng bß╗ï ─æß╗Ñng (78.1851ms)
+Γ£ö internshipService.update(): chuyß╗ân "cancelled" -> trß║ú slot (─æ╞ín accepted -> withdrawn, vß╗ï tr├¡ closed -> mß╗ƒ lß║íi open nß║┐u c├▓n chß╗ù) (80.5928ms)
+Γ£ö validateProductionConfig: kh├┤ng phß║úi production -> lu├┤n [] d├╣ thiß║┐u g├¼ (0.7809ms)
+Γ£ö validateProductionConfig: production + ─æß╗º cß║Ñu h├¼nh hß╗úp lß╗ç -> [] (0.0705ms)
+Γ£ö validateProductionConfig: thiß║┐u JWT_SECRET -> c├│ lß╗ùi (0.0971ms)
+Γ£ö validateProductionConfig: JWT_SECRET ngß║»n h╞ín 32 k├╜ tß╗▒ -> c├│ lß╗ùi (0.0718ms)
+Γ£ö validateProductionConfig: JWT_SECRET ─æ├║ng 32 k├╜ tß╗▒ -> kh├┤ng lß╗ùi JWT_SECRET (0.0652ms)
+Γ£ö validateProductionConfig: thiß║┐u CLIENT_URL -> c├│ lß╗ùi (0.6503ms)
+Γ£ö validateProductionConfig: DEBUG_ERRORS=true -> c├│ lß╗ùi (0.0809ms)
+Γ£ö validateProductionConfig: thiß║┐u ─æß╗ông thß╗¥i cß║ú 3 -> ─æß╗º 3 lß╗ùi (0.0821ms)
+Γ£ö assertProductionConfig: hß╗úp lß╗ç -> kh├┤ng throw (0.1703ms)
+Γ£ö assertProductionConfig: kh├┤ng hß╗úp lß╗ç -> throw k├¿m message liß╗çt k├¬ lß╗ùi (0.4954ms)
+Γ£ö production: route client-side bß║Ñt kß╗│ (kh├┤ng phß║úi /api) -> trß║ú vß╗ü index.html (SPA fallback) (27.4846ms)
+Γ£ö production: /api/* kh├┤ng khß╗¢p route n├áo -> vß║½n 404 JSON nh╞░ c┼⌐ (fallback KH├öNG "─ân" mß║Ñt) (4.8816ms)
+Γ£ö production: /api/health vß║½n hoß║ít ─æß╗Öng b├¼nh th╞░ß╗¥ng (route API thß║¡t kh├┤ng bß╗ï static/fallback che) (9.6032ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö RBAC: GET /users is Admin-only (bß║»t buß╗Öc theo ─æß╗ü b├ái) (330.1201ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö RBAC: POST /departments l├á Admin-only mutation (15.7555ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö RBAC: POST /internships cho ph├⌐p Admin/Student, KH├öNG cho Lecturer/Company Mentor (31.703ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö RBAC: POST /evaluations KH├öNG cho Student (chß╗ë admin/lecturer/company_mentor) (15.9743ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:365:14)
+    at param (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:376:14)
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:421:3)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö RBAC: DELETE /topics/:id chß╗ë Admin (32.1892ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö RBAC: no token / invalid token -> 401 tr├¬n 1 endpoint ─æß║íi diß╗çn mß╗ùi domain ch├¡nh (121.2671ms)
+Γ£ö computeAllIssues: ch╞░a qu├í hß║ín (now=2025-03-15, 5 ng├áy tß╗½ log cuß╗æi, c├▓n 10 ng├áy tß╗¢i deadline) (40.1716ms)
+Γ£ö computeAllIssues: qu├í hß║ín nhß║¡t k├╜ + sß║»p hß║┐t hß║ín b├ío c├ío final/─æ├ính gi├í (now=2025-03-21) (2.2857ms)
+Γ£ö runReminderJob: gß╗¡i ─æ├║ng notify cho Student/Lecturer/Company Mentor, KH├öNG gß╗¡i tr├╣ng khi chß║íy 2 lß║ºn (73.4142ms)
+Γ£ö GET /reminders/overview ΓÇö Student: chß╗ë thß║Ñy vß║Ñn ─æß╗ü cß╗ºa ch├¡nh m├¼nh, c├│ log_overdue (234.0251ms)
+Γ£ö GET /reminders/overview ΓÇö Lecturer: danh s├ích SV m├¼nh phß╗Ñ tr├ích, ─æ├║ng m├ú SV 21110001 (17.2307ms)
+Γ£ö GET /reminders/overview ΓÇö Admin: tß╗òng hß╗úp theo ─æß╗út, period_id=2 c├│ logOverdueCount >= 1 (15.0605ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö GET /reminders/overview ΓÇö thiß║┐u token -> 401 (14.0038ms)
+Γ£ö Nß╗Öp b├ío c├ío final SAU final_report_deadline cß╗ºa ─æß╗út -> is_late=true (183.3224ms)
+Γ£ö Nß╗Öp b├ío c├ío final TR╞»ß╗ÜC final_report_deadline cß╗ºa ─æß╗út -> is_late=false (47.4976ms)
+Γ£ö Nß╗Öp b├ío c├ío weekly KH├öNG t├¡nh is_late d├╣ ─æ├ú qua final_report_deadline (32.0181ms)
+AppError: is_late do hß╗ç thß╗æng tß╗▒ t├¡nh, kh├┤ng ─æ╞░ß╗úc gß╗¡i khi tß║ío b├ío c├ío.
+    at Object.create (D:\InternshipManagement\server\services\reportService.js:157:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\reportController.js:77:20) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Client gß╗¡i k├¿m is_late khi tß║ío b├ío c├ío -> 400 (do hß╗ç thß╗æng tß╗▒ t├¡nh) (16.8184ms)
+Γ£ö Upload hß╗úp lß╗ç (.pdf) -> 201, l╞░u ─æ├║ng stored_file_name/file_size/mime_type, tß║úi xuß╗æng th├ánh c├┤ng (296.9461ms)
+Γ£ö Tß║úi xuß╗æng thß║¡t qua fetch trß╗▒c tiß║┐p -> 200, ─æ├║ng Content-Disposition t├¬n gß╗æc, ─æ├║ng nß╗Öi dung (61.2871ms)
+Γ£ö Upload t├¬n file tiß║┐ng Viß╗çt c├│ dß║Ñu -> KH├öNG bß╗ï mojibake (file_name l╞░u ─æ├║ng, Content-Disposition tß║úi vß╗ü ─æ├║ng t├¬n) (45.8949ms)
+AppError: Chß╗ë chß║Ñp nhß║¡n file .pdf, .doc, .docx.
+    at fileFilter (D:\InternshipManagement\server\config\upload.js:36:8)
+    at wrappedFileFilter (D:\InternshipManagement\server\node_modules\multer\index.js:134:7)
+    at Multipart.<anonymous> (D:\InternshipManagement\server\node_modules\multer\lib\make-middleware.js:344:7)
+    at Multipart.emit (node:events:509:28)
+    at HeaderParser.cb (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (D:\InternshipManagement\server\node_modules\streamsearch\lib\sbmh.js:219:14)
+    at SBMH.push (D:\InternshipManagement\server\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at IncomingMessage.ondata (node:internal/streams/readable:1012:24)
+    at IncomingMessage.emit (node:events:509:28)
+    at Readable.read (node:internal/streams/readable:784:10) {
+  statusCode: 400,
+  code: undefined,
+  storageErrors: []
+}
+Γ£ö Sai ─æß╗ïnh dß║íng (.txt khai mimetype text/plain) -> 400, kh├┤ng tß║ío report, kh├┤ng ─æß╗â lß║íi file (15.9727ms)
+AppError: Chß╗ë chß║Ñp nhß║¡n file .pdf, .doc, .docx.
+    at fileFilter (D:\InternshipManagement\server\config\upload.js:36:8)
+    at wrappedFileFilter (D:\InternshipManagement\server\node_modules\multer\index.js:134:7)
+    at Multipart.<anonymous> (D:\InternshipManagement\server\node_modules\multer\lib\make-middleware.js:344:7)
+    at Multipart.emit (node:events:509:28)
+    at HeaderParser.cb (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:358:14)
+    at HeaderParser.push (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:162:20)
+    at SBMH.ssCb [as _cb] (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:394:37)
+    at feed (D:\InternshipManagement\server\node_modules\streamsearch\lib\sbmh.js:219:14)
+    at SBMH.push (D:\InternshipManagement\server\node_modules\streamsearch\lib\sbmh.js:104:16)
+    at Multipart._write (D:\InternshipManagement\server\node_modules\busboy\lib\types\multipart.js:567:19)
+    at writeOrBuffer (node:internal/streams/writable:570:12)
+    at _write (node:internal/streams/writable:499:10)
+    at Writable.write (node:internal/streams/writable:508:10)
+    at IncomingMessage.ondata (node:internal/streams/readable:1012:24)
+    at IncomingMessage.emit (node:events:509:28)
+    at Readable.read (node:internal/streams/readable:784:10) {
+  statusCode: 400,
+  code: undefined,
+  storageErrors: []
+}
+Γ£ö File .pdf giß║ú mß║ío bß║▒ng c├ích khai mimetype sai (application/x-msdownload) -> 400 (15.1766ms)
+AppError: File v╞░ß╗út qu├í dung l╞░ß╗úng cho ph├⌐p (tß╗æi ─æa 10MB).
+    at D:\InternshipManagement\server\config\upload.js:61:12
+    at AsyncResource.runInAsyncScope (node:async_hooks:227:14)
+    at next (D:\InternshipManagement\server\node_modules\multer\lib\make-middleware.js:73:16)
+    at done (D:\InternshipManagement\server\node_modules\multer\lib\make-middleware.js:168:7)
+    at D:\InternshipManagement\server\node_modules\multer\lib\make-middleware.js:199:11
+    at D:\InternshipManagement\server\node_modules\multer\lib\remove-uploaded-files.js:20:9
+    at FSReqCallback.oncomplete (node:fs:185:23) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Qu├í dung l╞░ß╗úng (>10MB) -> 400, kh├┤ng tß║ío report (57.4138ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün truy cß║¡p hß╗ô s╞í thß╗▒c tß║¡p n├áy.
+    at Object.assertOwnInternshipById (D:\InternshipManagement\server\services\scopeService.js:93:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Object.getByIdForUser (D:\InternshipManagement\server\services\reportService.js:95:3)
+    at async download (D:\InternshipManagement\server\controllers\reportController.js:113:18) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Download: ng╞░ß╗¥i ngo├ái scope (Student kh├íc) bß╗ï 403, kh├┤ng lß╗Ö nß╗Öi dung (37.0782ms)
+AppError: B├ío c├ío n├áy ch╞░a c├│ file ─æ├¡nh k├¿m.
+    at download (D:\InternshipManagement\server\controllers\reportController.js:118:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 404,
+  code: undefined
+}
+Γ£ö Download: report seed c┼⌐ ch╞░a c├│ file ─æ├¡nh k├¿m -> 404 (kh├íc 403 scope) (14.1718ms)
+AppError: Thiß║┐u access token.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:24:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Download: kh├┤ng y├¬u cß║ºu token -> 401 (kh├┤ng serve static, lu├┤n qua requireAuth) (1.3891ms)
+AppError: internship_id l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t b├ío c├ío.
+    at D:\InternshipManagement\server\services\reportService.js:245:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:243:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: report_type l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t b├ío c├ío.
+    at D:\InternshipManagement\server\services\reportService.js:245:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:243:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: file_name l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t b├ío c├ío.
+    at D:\InternshipManagement\server\services\reportService.js:245:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:243:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: submitted_at l├á immutable ΓÇö kh├┤ng ─æ╞░ß╗úc gß╗¡i field n├áy khi cß║¡p nhß║¡t b├ío c├ío.
+    at D:\InternshipManagement\server\services\reportService.js:245:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:243:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Reports: internship_id/report_type/file_name/submitted_at ─æß╗üu immutable khi PUT -> 400 mß╗ùi field (403.5202ms)
+AppError: Sinh vi├¬n chß╗ë ─æ╞░ß╗úc nß╗Öp lß║íi b├ío c├ío khi b├ío c├ío ─æang ß╗ƒ trß║íng th├íi "rejected".
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:213:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Reports: Student kh├┤ng PUT ─æ╞░ß╗úc field ngo├ái file_name, d├╣ l├á b├ío c├ío cß╗ºa ch├¡nh m├¼nh (403) (16.929ms)
+AppError: Bß║ín kh├┤ng ─æ╞░ß╗úc sß╗¡a field: company_comment.
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:259:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Reports: Lecturer sß╗¡a field ngo├ái whitelist (status, reviewer_comment) -> 403 (15.9261ms)
+AppError: Bß║ín kh├┤ng ─æ╞░ß╗úc sß╗¡a field: reviewer_comment.
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:259:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Reports: Company Mentor sß╗¡a field ngo├ái whitelist (chß╗ë company_comment) -> 403 (16.2147ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün sß╗¡a b├ío c├ío n├áy.
+    at Object.update (D:\InternshipManagement\server\services\reportService.js:254:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\reportController.js:92:20) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Reports: Lecturer B kh├┤ng sß╗¡a ─æ╞░ß╗úc b├ío c├ío thuß╗Öc phß║ím vi Lecturer A (403, cross-scope) (14.5618ms)
+Γ£ö Reports: Lecturer A duyß╗çt hß╗úp lß╗ç b├ío c├ío thuß╗Öc phß║ím vi m├¼nh (200), kh├┤i phß╗Ñc lß║íi gi├í trß╗ï c┼⌐ (36.9372ms)
+Γ£ö Security: SQL injection string trong ?search= kh├┤ng crash v├á kh├┤ng bypass scope (190.7691ms)
+Γ£ö Security: injection + query-param override c├╣ng l├║c (Student) vß║½n kh├┤ng crash, kh├┤ng v╞░ß╗út scope (14.2745ms)
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:646:15
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:265:14) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Security: JWT k├╜ bß║▒ng secret SAI (role=admin giß║ú) phß║úi bß╗ï tß╗½ chß╗æi (401) (2.8657ms)
+AppError: Access token kh├┤ng hß╗úp lß╗ç.
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:36:11
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at router.handle (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:175:3)
+    at router (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:328:13)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Security: token hß╗úp lß╗ç nh╞░ng bß╗ï sß╗¡a 1 k├╜ tß╗▒ trong signature -> 401 (11.5397ms)
+AppError: Email hoß║╖c mß║¡t khß║⌐u kh├┤ng ch├¡nh x├íc.
+    at Object.login (D:\InternshipManagement\server\services\authService.js:42:11)
+    at async login (D:\InternshipManagement\server\controllers\authController.js:39:33) {
+  statusCode: 401,
+  code: undefined
+}
+Γ£ö Security: login thß║Ñt bß║íi kh├┤ng bao giß╗¥ trß║ú password/password_hash trong body (62.8433ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Settings: Student kh├┤ng c├│ quyß╗ün PUT (403 route-level), kh├┤ng ─æß╗òi DB (186.0814ms)
+AppError: id kh├┤ng ─æ╞░ß╗úc ph├⌐p sß╗¡a qua API (immutable / display-only).
+    at D:\InternshipManagement\server\services\settingsService.js:22:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\settingsService.js:20:20)
+    at update (D:\InternshipManagement\server\controllers\settingsController.js:10:42)
+    at wrapped (D:\InternshipManagement\server\utils\asyncHandler.js:3:21)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:14:5)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3 {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Settings: Admin gß╗¡i field immutable (id) -> 400, kh├┤ng ─æß╗òi DB (30.6481ms)
+Γ£ö Settings: Admin sß╗¡a allowStudentRegistration (200), kh├┤i phß╗Ñc lß║íi gi├í trß╗ï c┼⌐ (47.6418ms)
+Γ£ö Statistics summary: Admin gß╗ìi kh├┤ng filter -> KPI khß╗¢p ─æ├║ng baseline (12 internships/14 students/4 reports/6 evaluations) (272.7099ms)
+Γ£ö Statistics summary: filter theo period_id khß╗¢p ─æ├║ng COUNT(*) trß╗▒c tiß║┐p (kh├┤ng tin sß╗æ liß╗çu cß╗⌐ng) (16.2784ms)
+Γ£ö Statistics summary: filter theo department_id ΓÇö total_students theo khoa KH├öNG ─æß╗òi, chß╗ë registered/in_progress/completed ─æß╗òi (32.4849ms)
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+AppError: Bß║ín kh├┤ng c├│ quyß╗ün thß╗▒c hiß╗çn h├ánh ─æß╗Öng n├áy.
+    at roleGuard (D:\InternshipManagement\server\middleware\authorizationMiddleware.js:12:13)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:149:13)
+    at Route.dispatch (D:\InternshipManagement\server\node_modules\express\lib\router\route.js:119:3)
+    at Layer.handle [as handle_request] (D:\InternshipManagement\server\node_modules\express\lib\router\layer.js:95:5)
+    at D:\InternshipManagement\server\node_modules\express\lib\router\index.js:284:15
+    at router.process_params (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:346:12)
+    at next (D:\InternshipManagement\server\node_modules\express\lib\router\index.js:280:10)
+    at D:\InternshipManagement\server\middleware\authMiddleware.js:61:3
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Statistics summary: Student/Lecturer kh├┤ng c├│ quyß╗ün gß╗ìi (403) (11.0249ms)
+Γ£ö Students: Student tß╗▒ sß╗¡a field li├¬n hß╗ç cß╗ºa ch├¡nh m├¼nh (phone) -> 200, kh├┤i phß╗Ñc lß║íi gi├í trß╗ï c┼⌐ (143.2284ms)
+AppError: Bß║ín kh├┤ng ─æ╞░ß╗úc tß╗▒ sß╗¡a field: full_name.
+    at Object.update (D:\InternshipManagement\server\services\studentService.js:197:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\studentController.js:94:19) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Students: Student gß╗¡i field ngo├ái whitelist (full_name) -> 403, kh├┤ng ghi DB (28.798ms)
+AppError: Bß║ín chß╗ë ─æ╞░ß╗úc sß╗¡a hß╗ô s╞í cß╗ºa ch├¡nh m├¼nh.
+    at Object.update (D:\InternshipManagement\server\services\studentService.js:193:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\studentController.js:94:19) {
+  statusCode: 403,
+  code: undefined
+}
+Γ£ö Students: Student A kh├┤ng sß╗¡a ─æ╞░ß╗úc hß╗ô s╞í cß╗ºa Student B (403, kh├┤ng bypass bß║▒ng URL) (3.8792ms)
+Γ£ö Timezone: ghi nhß║¡t k├╜ vß╗¢i log_date = h├┤m nay giß╗¥ Viß╗çt Nam l├║c 01:00 s├íng -> KH├öNG bß╗ï chß║╖n "t╞░╞íng lai" (201) (283.0428ms)
+Γ£ö Timezone: nß╗Öp b├ío c├ío l├║c 01:00 s├íng giß╗¥ Viß╗çt Nam -> submitted_at ghi ─æ├║ng ng├áy Viß╗çt Nam (kh├┤ng l├╣i 1 ng├áy theo UTC) (98.4532ms)
+Γ£ö Timezone: c├┤ng bß╗æ ─æ├ính gi├í l├║c 01:00 s├íng giß╗¥ Viß╗çt Nam -> published_at ghi ─æ├║ng ng├áy Viß╗çt Nam (118.2954ms)
+AppError: Vai tr├▓ admin kh├┤ng ─æ╞░ß╗úc li├¬n kß║┐t hß╗ô s╞í nghiß╗çp vß╗Ñ.
+    at Object.create (D:\InternshipManagement\server\services\userService.js:100:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async create (D:\InternshipManagement\server\controllers\userController.js:73:16) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Users: role/profile matching ΓÇö role=admin + profile_id -> 400, kh├┤ng tß║ío user (187.4562ms)
+Γ£ö Users: create hß╗úp lß╗ç + link profile -> password kh├┤ng xuß║Ñt hiß╗çn trong response (74.6342ms)
+AppError: role kh├┤ng ─æ╞░ß╗úc ph├⌐p sß╗¡a qua API (immutable).
+    at D:\InternshipManagement\server\services\userService.js:159:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\userService.js:157:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\userController.js:80:16) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: profile_id kh├┤ng ─æ╞░ß╗úc ph├⌐p sß╗¡a qua API (immutable).
+    at D:\InternshipManagement\server\services\userService.js:159:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\userService.js:157:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\userController.js:80:16) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: password_hash kh├┤ng ─æ╞░ß╗úc ph├⌐p sß╗¡a qua API (immutable).
+    at D:\InternshipManagement\server\services\userService.js:159:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\userService.js:157:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\userController.js:80:16) {
+  statusCode: 400,
+  code: undefined
+}
+AppError: id kh├┤ng ─æ╞░ß╗úc ph├⌐p sß╗¡a qua API (immutable).
+    at D:\InternshipManagement\server\services\userService.js:159:13
+    at Array.forEach (<anonymous>)
+    at Object.update (D:\InternshipManagement\server\services\userService.js:157:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async update (D:\InternshipManagement\server\controllers\userController.js:80:16) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Users: update ΓÇö role/profile_id/password_hash/id l├á immutable (400 mß╗ùi field) (45.4232ms)
+Γ£ö Users: list/detail kh├┤ng bao giß╗¥ chß╗⌐a password/password_hash (14.9243ms)
+AppError: T├ái khoß║ún n├áy c├│ vai tr├▓ "student", kh├┤ng thß╗â li├¬n kß║┐t vß╗¢i hß╗ô s╞í loß║íi "lecturer".
+    at assertUserCanLinkProfileType (D:\InternshipManagement\server\services\userService.js:73:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async validateReferences (D:\InternshipManagement\server\services\lecturerService.js:126:5)
+    at async Object.update (D:\InternshipManagement\server\services\lecturerService.js:160:3)
+    at async update (D:\InternshipManagement\server\controllers\lecturerController.js:73:20) {
+  statusCode: 400,
+  code: undefined
+}
+Γ£ö Users: cross-profile uniqueness ΓÇö user vß╗½a tß║ío (role=student) kh├┤ng thß╗â bß╗ï link l├ám lecturer (34.2143ms)
+Γä╣ tests 315
+Γä╣ suites 0
+Γä╣ pass 315
+Γä╣ fail 0
+Γä╣ cancelled 0
+Γä╣ skipped 0
+Γä╣ todo 0
+Γä╣ duration_ms 40536.6667
+---- exit code: 0 ----
+
+========== REVIEW FINDINGS (test xac nhan loi) ==========

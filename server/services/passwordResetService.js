@@ -5,6 +5,7 @@ const AppError = require('../utils/AppError')
 const mailService = require('./mailService')
 const settingsService = require('./settingsService')
 const { toSafeUser } = require('./authService')
+const { escapeHtml } = require('../utils/escapeHtml')
 
 const BCRYPT_COST = 10
 const TOKEN_TTL_MS = 30 * 60 * 1000 // 30 phút
@@ -16,8 +17,13 @@ function hashToken(token) {
 function buildResetEmail(systemName, resetLink) {
   const subject = `[${systemName}] Yêu cầu đặt lại mật khẩu`
   const text = `Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản ${systemName}. Nhấn vào đường link sau để đặt mật khẩu mới (hết hạn sau 30 phút): ${resetLink}\n\nNếu bạn không yêu cầu điều này, hãy bỏ qua email này — mật khẩu hiện tại của bạn vẫn an toàn.`
-  const html = `<p>Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản <strong>${systemName}</strong>.</p>
-<p><a href="${resetLink}">Nhấn vào đây để đặt mật khẩu mới</a> (đường link hết hạn sau 30 phút).</p>
+  // systemName (settings.system_name, Admin cấu hình) và resetLink đều phải escape trước khi chèn
+  // vào HTML — phòng thủ theo chiều sâu, dù 2 giá trị này hiện không do người dùng ẨN DANH điều
+  // khiển trực tiếp (xem server/utils/escapeHtml.js).
+  const safeSystemName = escapeHtml(systemName)
+  const safeResetLink = escapeHtml(resetLink)
+  const html = `<p>Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu cho tài khoản <strong>${safeSystemName}</strong>.</p>
+<p><a href="${safeResetLink}">Nhấn vào đây để đặt mật khẩu mới</a> (đường link hết hạn sau 30 phút).</p>
 <p>Nếu bạn không yêu cầu điều này, hãy bỏ qua email này — mật khẩu hiện tại của bạn vẫn an toàn.</p>`
   return { subject, text, html }
 }

@@ -226,11 +226,18 @@ async function accept(id, currentUser) {
     throw new AppError(403, 'Sinh viên không được chấp nhận đơn ứng tuyển.')
   }
 
-  // Mentor chấp nhận -> company_mentor_id của internship = ĐÚNG hồ sơ mentor đang đăng nhập. Admin
-  // chấp nhận -> không có mentor cụ thể nào được suy ra, để NULL (Admin gán sau qua AssignCompanyModal
-  // có sẵn) — internship_positions không có cột mentor riêng theo đúng thiết kế đã chốt.
-  const mentorIdForInternship =
-    currentUser.role === 'company_mentor' ? (await scopeService.getCompanyMentorProfile(currentUser.id))?.id ?? null : null
+  // Mentor chấp nhận -> company_mentor_id của internship = ĐÚNG hồ sơ mentor đang đăng nhập (và
+  // chính mentor đó PHẢI đang 'active' — mentor bị khóa không được tạo thêm hồ sơ mới). Admin chấp
+  // nhận -> không có mentor cụ thể nào được suy ra, để NULL (Admin gán sau qua AssignCompanyModal có
+  // sẵn) — internship_positions không có cột mentor riêng theo đúng thiết kế đã chốt.
+  let mentorProfile = null
+  if (currentUser.role === 'company_mentor') {
+    mentorProfile = await scopeService.getCompanyMentorProfile(currentUser.id)
+    if (mentorProfile?.status !== 'active') {
+      throw new AppError(403, 'Hồ sơ Người hướng dẫn của bạn đang ở trạng thái không hoạt động, không thể chấp nhận đơn ứng tuyển.')
+    }
+  }
+  const mentorIdForInternship = mentorProfile?.id ?? null
 
   const connection = await pool.getConnection()
   try {
@@ -245,6 +252,17 @@ async function accept(id, currentUser) {
     }
     if (position.status !== 'open') {
       throw new AppError(409, 'Vị trí thực tập này đã đóng.')
+    }
+
+    // Re-check ngay lúc chấp nhận (có thể đã đổi từ lúc sinh viên ứng tuyển tới giờ) — đợt đã đóng,
+    // doanh nghiệp/mentor không còn hoạt động thì không được tạo/cập nhật hồ sơ thực tập mới.
+    const [[period]] = await connection.execute('SELECT status FROM internship_periods WHERE id = ?', [position.period_id])
+    if (!period || period.status === 'closed') {
+      throw new AppError(409, 'Đợt thực tập của vị trí này đã đóng, không thể chấp nhận đơn ứng tuyển.')
+    }
+    const [[company]] = await connection.execute('SELECT status FROM companies WHERE id = ?', [position.company_id])
+    if (!company || company.status !== 'active') {
+      throw new AppError(409, 'Doanh nghiệp của vị trí này đang ở trạng thái không hoạt động, không thể chấp nhận đơn ứng tuyển.')
     }
 
     const [[freshApplication]] = await connection.execute(
@@ -263,6 +281,24 @@ async function accept(id, currentUser) {
       throw new AppError(409, `Vị trí này đã hết chỗ (${acceptedCount}/${position.slots}).`)
     }
 
+    const [[existingInternship]] = await connection.execute(
+      'SELECT * FROM internships WHERE student_id = ? AND period_id = ? FOR UPDATE',
+      [application.student_id, position.period_id],
+    )
+    // Chỉ hồ sơ CHƯA từng xử lý (status 'pending' — sinh viên tự đăng ký trước đó, hoặc chưa có hồ
+    // sơ nào) mới được accept() tự "nâng cấp" lên approved + gán company/mentor. Hồ sơ đã
+    // approved/in_progress/completed KHÔNG được ghi đè (tránh làm hỏng hồ sơ đang/đã xử lý qua
+    // đường khác — đây là bug đã sửa, trước đây vẫn ghi đè company_id/mentor dù giữ nguyên status).
+    // Hồ sơ rejected/cancelled CŨNG không tự "hồi sinh" — UNIQUE(student_id, period_id) nghĩa là
+    // không thể tạo hồ sơ mới cho cùng đợt, nên nếu thật sự cần dùng lại, Admin phải tự đổi status
+    // hồ sơ đó trước (quyết định có chủ đích).
+    if (existingInternship && existingInternship.status !== 'pending') {
+      throw new AppError(
+        409,
+        `Sinh viên đã có hồ sơ thực tập ở trạng thái "${existingInternship.status}" trong đợt này — không thể chấp nhận đơn ứng tuyển này qua đường tự động, Admin cần xử lý trực tiếp hồ sơ đó trước.`,
+      )
+    }
+
     await connection.execute("UPDATE position_applications SET status = 'accepted' WHERE id = ?", [id])
 
     const newAcceptedCount = acceptedCount + 1
@@ -270,16 +306,10 @@ async function accept(id, currentUser) {
       await connection.execute("UPDATE internship_positions SET status = 'closed' WHERE id = ?", [position.id])
     }
 
-    const [[existingInternship]] = await connection.execute(
-      'SELECT * FROM internships WHERE student_id = ? AND period_id = ? FOR UPDATE',
-      [application.student_id, position.period_id],
-    )
-
     if (existingInternship) {
-      const nextStatus = existingInternship.status === 'pending' ? 'approved' : existingInternship.status
       await connection.execute(
-        'UPDATE internships SET company_id = ?, company_mentor_id = ?, status = ? WHERE id = ?',
-        [position.company_id, mentorIdForInternship, nextStatus, existingInternship.id],
+        "UPDATE internships SET company_id = ?, company_mentor_id = ?, status = 'approved' WHERE id = ?",
+        [position.company_id, mentorIdForInternship, existingInternship.id],
       )
     } else {
       await connection.execute(
@@ -289,11 +319,15 @@ async function accept(id, currentUser) {
       )
     }
 
-    // Chấp nhận 1 đơn -> tự rút toàn bộ đơn 'applied' KHÁC của sinh viên này (đã có chỗ, không cần
-    // giữ các đơn đang chờ khác nữa).
+    // Chấp nhận 1 đơn -> tự rút toàn bộ đơn 'applied' KHÁC của sinh viên này TRONG CÙNG ĐỢT (JOIN
+    // sang internship_positions để lấy period_id) — khác đợt vẫn phải giữ nguyên, sinh viên có thể
+    // đang ứng tuyển đợt khác song song (đã có chỗ ở đợt NÀY, không liên quan đợt khác).
     await connection.execute(
-      "UPDATE position_applications SET status = 'withdrawn' WHERE student_id = ? AND status = 'applied' AND id != ?",
-      [application.student_id, id],
+      `UPDATE position_applications a
+       JOIN internship_positions p ON p.id = a.position_id
+       SET a.status = 'withdrawn'
+       WHERE a.student_id = ? AND a.status = 'applied' AND a.id != ? AND p.period_id = ?`,
+      [application.student_id, id, position.period_id],
     )
 
     await connection.commit()

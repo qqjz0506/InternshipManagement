@@ -27,7 +27,8 @@
 ```bash
 cp .env.production.example .env.production
 # Sửa .env.production: ĐẶC BIỆT là DB_PASSWORD, JWT_SECRET (>= 32 ký tự ngẫu nhiên), CLIENT_URL
-# (domain thật sẽ dùng). Sinh JWT_SECRET nhanh:
+# (domain thật sẽ dùng), ADMIN_EMAIL/ADMIN_PASSWORD (tài khoản Admin đầu tiên, xem Mục 2.2 bước 2).
+# Sinh JWT_SECRET nhanh:
 node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 ```
 
@@ -35,15 +36,29 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
 ### 2.2. Build + chạy
 
-```bash
-docker compose --env-file .env.production up -d --build
-```
+> **⚠️ KHÔNG dùng seed.sql trên production.** `docker-compose.yml` chỉ mount `server/db/schema.sql`
+> (DDL thuần) vào `/docker-entrypoint-initdb.d` — DB mới tạo sẽ KHÔNG có 3 tài khoản demo/dữ liệu
+> mẫu nào. Phải tự tạo Admin đầu tiên qua bước 2 dưới đây.
 
-- Lần đầu chạy: MySQL container tự khởi tạo database từ `server/db/schema.sql` + `server/db/seed.sql`
-  (qua `/docker-entrypoint-initdb.d`, xem comment trong `docker-compose.yml`) — CHỈ chạy đúng 1 lần
-  khi volume `db_data` còn rỗng. Nếu cần reseed lại từ đầu, phải xóa volume:
-  `docker compose --env-file .env.production down -v` (⚠️ **xóa toàn bộ dữ liệu**, chỉ dùng khi chắc
-  chắn muốn làm mới hoàn toàn, không dùng trên dữ liệu production thật đang có người dùng).
+1. **Khởi động:**
+   ```bash
+   docker compose --env-file .env.production up -d --build
+   ```
+   MySQL container tự khởi tạo database từ `server/db/schema.sql` — CHỈ chạy đúng 1 lần khi volume
+   `db_data` còn rỗng. Nếu cần làm lại từ đầu, phải xóa volume:
+   `docker compose --env-file .env.production down -v` (⚠️ **xóa toàn bộ dữ liệu**, chỉ dùng khi
+   chắc chắn muốn làm mới hoàn toàn, không dùng trên dữ liệu production thật đang có người dùng).
+2. **Bootstrap — chạy ĐÚNG 1 LẦN ngay sau lần `up` đầu tiên** (schema.sql không có dữ liệu, kể cả
+   dòng `settings` mặc định mà nhiều tính năng cần có mới chạy được):
+   ```bash
+   docker compose exec app npm run admin:create
+   ```
+   `server/scripts/createAdmin.js` làm 3 việc trong 1 lần chạy: tạo dòng `settings` mặc định (id=1),
+   baseline `schema_migrations` (để `db:migrate` sau này không chạy lại các migration mà
+   `schema.sql` hiện tại đã gộp sẵn), và tạo tài khoản Admin đầu tiên từ `ADMIN_EMAIL`/
+   `ADMIN_PASSWORD`/`ADMIN_FULL_NAME` trong `.env.production` (`must_change_password=1` — bắt đổi
+   mật khẩu ngay lần đăng nhập đầu). An toàn chạy lại nhiều lần (idempotent) nếu cần tạo thêm Admin
+   khác (đổi `ADMIN_EMAIL` trước khi chạy lại).
 - App chạy ở cổng `5000` (map ra host qua `ports: 5000:5000` trong `docker-compose.yml`) — phía
   trước nên đặt Nginx (xem Mục 3), không expose thẳng cổng 5000 ra Internet.
 - Xem log: `npm run docker:logs` (alias của `docker compose --env-file .env.production logs -f app`).
@@ -56,6 +71,28 @@ curl http://localhost:5000/api/health
 curl http://localhost:5000/api/health/db
 curl http://localhost:5000/           # phải trả về HTML của SPA (client/dist/index.html)
 ```
+
+### 2.4. Đã verify thật trên máy này (không qua Docker — xem lưu ý minh bạch ở đầu tài liệu)
+
+Do môi trường phát triển không có Docker, các bước 2.1–2.3 **chưa chạy được bằng `docker compose`
+thật**. Đã verify tương đương bằng bản production LOCAL (không container): build client KHÔNG có
+`client/.env` (để xác nhận đúng mặc định `'/api'` của `apiClient.js`, không phải giá trị dev override
+trong `client/.env`), rồi chạy `NODE_ENV=production node server.js` với `JWT_SECRET` đủ dài,
+`CLIENT_URL=http://localhost:5000`:
+
+| Kiểm tra | Kết quả |
+|---|---|
+| `GET /` | 200, trả về `index.html` của SPA |
+| `GET /admin/students` (F5 route con) | 200 HTML — SPA fallback hoạt động, không bị 404 |
+| `GET /api/health` | 200 JSON như cũ |
+| `GET /api/khong-ton-tai` (route API không khớp) | 404 JSON như cũ — fallback KHÔNG "ăn" nhầm request API |
+| `POST /api/auth/login` (admin@example.com) | 200, đăng nhập thành công |
+| Build output (`client/dist/assets/*.js`) | chứa `/api`, KHÔNG còn `localhost:5000` nào |
+
+Phần CHƯA verify: hành vi thật của `docker-entrypoint-initdb.d` (chỉ mount `schema.sql`, không mount
+`seed.sql`), healthcheck `db`, và `docker compose exec app npm run admin:create` chạy TRONG container
+— chỉ được review bằng mắt (cú pháp YAML/Dockerfile + đối chiếu file thật trong repo), chưa tự
+`docker build`/`docker compose up` để xác nhận end-to-end.
 
 ## 3. Triển khai lên 1 VPS (Nginx reverse proxy + HTTPS Let's Encrypt)
 

@@ -11,11 +11,14 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - db_data:/var/lib/mysql
-      # MySQL image tự chạy MỌI file .sql/.sh nằm TRỰC TIẾP (không đệ quy) trong thư mục này ở LẦN
-      # KHỞI TẠO ĐẦU TIÊN (volume db_data rỗng) — tự nhặt đúng schema.sql + seed.sql theo thứ tự tên
-      # file (schema.sql trước seed.sql), các file khác trong server/db/ (migrate.js, migrations/,
-      # seed.js, sqlRunner.js, testSetup.js) bị bỏ qua vì không khớp *.sql/*.sh ở cấp này.
-      - ./server/db:/docker-entrypoint-initdb.d:ro
+      # CHỈ mount schema.sql (DDL thuần, KHÔNG dữ liệu) — KHÔNG mount seed.sql hay cả thư mục
+      # server/db/: mount cả thư mục sẽ khiến MySQL image tự chạy MỌI *.sql/*.sh nằm trực tiếp trong
+      # đó ở lần khởi tạo đầu tiên (volume db_data rỗng), tức là seed.sql (3 tài khoản demo + dữ liệu
+      # mẫu) SẼ tự chạy vào production — không được phép (xem docs/TRIEN_KHAI.md). Sau khi DB khởi
+      # tạo từ schema.sql, PHẢI chạy đúng 1 lần: `docker compose exec app npm run admin:create` (tạo
+      # settings mặc định + baseline schema_migrations + Admin đầu tiên từ ADMIN_EMAIL/ADMIN_PASSWORD
+      # — xem server/scripts/createAdmin.js).
+      - ./server/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
       interval: 5s
@@ -53,6 +56,11 @@ services:
       # Số hop reverse proxy phía trước (Nginx...) — 1 nếu dùng đúng theo hướng dẫn
       # docs/TRIEN_KHAI.md (1 Nginx duy nhất đứng trước app). Để trống nếu không qua proxy nào.
       TRUST_PROXY_HOPS: ${TRUST_PROXY_HOPS}
+      # Dùng 1 lần bởi `docker compose exec app npm run admin:create` (server/scripts/createAdmin.js)
+      # — KHÔNG phải tài khoản demo, không có UI nào tự tạo tài khoản Admin đầu tiên khi không seed.
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_FULL_NAME: ${ADMIN_FULL_NAME}
     ports:
       - '5000:5000'
     volumes:
